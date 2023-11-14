@@ -1,0 +1,22 @@
+; Each line starting with ; will be neglected by the programme.
+; 
+; Add two point names on each line of this file.
+; The first one is the instrument point, the second one is
+; the target point.
+; For 1D a height difference will be generated between them.
+; For 2D a distance and a direction will be generated between them.
+; For 3D a distance, a direction and a zenith angle will be generated.
+; Use the following format:
+; <point name>    <point name>
+; For example:
+
+A    B
+B    C
+C    A
+A    D
+D    B
+B    A
+A    C
+C    B
+B    D
+D    A

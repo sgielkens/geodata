@@ -1,0 +1,13 @@
+MOVE3 V4.6.0 OBS file
+$
+opgave_40
+$
+ANGLEUNIT GON
+$
+
+GR  A1                B2                C3                                  AN#       34.97100        0.02000
+GR  B2                C3                A1                                  AN#       57.99500        0.01414
+GR  C3                A1                B2                                  AN#      107.11400        0.01414
+GR  D4                E5                B2                                  AN#       82.01300        0.01414
+GR  E5                C3                D4                                  AN#       82.91600        0.01414
+$

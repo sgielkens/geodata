@@ -1,0 +1,38 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<!-- Make the document body take up the full screen -->
+<style type="text/css">
+  html, body {width: 100%; height: 100%}
+  body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
+</style>
+<title>opgave_19a</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <script type="text/javascript" src="http://www.bing.com/api/maps/mapcontrol" async defer></script>
+  <script type="text/javascript">
+  var map = null;
+  var layer;
+  var shape;
+  function initialize() {
+    map = new Microsoft.Maps.Map(document.getElementById('map'), {
+        credentials: 'hC8BA4PftAN2P2Fdh6Ra~1T-XvtFJMcD1gf468jktCw~Aj27oQDxo48X-oeAT9VH3Agy9KkDgLDKPgAxz8jUjCbxnJJcJwaXSxuBxMBbibHA',
+        center:new Microsoft.Maps.Location(0.000226, 0.000449), zoom:16});
+    shape = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(0.000452, 0.000449), {title: 'C', color:'red'});
+    map.entities.push(shape);
+    shape = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(-0.000000, 0.000000), {title: 'A', color:'red'});
+    map.entities.push(shape);
+    shape = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(-0.000000, 0.000898), {title: 'B', color:'red'});
+    map.entities.push(shape);
+    var polyline = new Microsoft.Maps.Polyline([new Microsoft.Maps.Location(-0.000000, 0.000898), new Microsoft.Maps.Location(-0.000000, 0.000000)], {strokeThickness:1, strokeColor:'red'});
+   map.entities.push(polyline);
+    var polyline = new Microsoft.Maps.Polyline([new Microsoft.Maps.Location(-0.000000, 0.000000), new Microsoft.Maps.Location(0.000452, 0.000449)], {strokeThickness:1, strokeColor:'red'});
+   map.entities.push(polyline);
+    var polyline = new Microsoft.Maps.Polyline([new Microsoft.Maps.Location(-0.000000, 0.000898), new Microsoft.Maps.Location(0.000452, 0.000449)], {strokeThickness:1, strokeColor:'red'});
+   map.entities.push(polyline);
+  }
+  </script>
+</head>
+<body onload="initialize()">
+  <div id="map" class="map" style="width: 100%; height: 100%;"></div>
+</body>
+</html>

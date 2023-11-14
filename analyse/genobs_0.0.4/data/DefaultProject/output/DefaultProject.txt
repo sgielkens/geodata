@@ -1,0 +1,42 @@
+Programme:     genobs                                 
+Version:       0.0.4                                  
+Author:        Hiddo Velsink                          
+Date and time: 06-Nov-2023 10:24:17                   
+Project:       DefaultProject                         
+Dimension:     1D                                     
+                                                      
+1. Coordinates and desired observations have been read
+2. Generated: 
+     10 height differences
+3. Noise has been added to observations                       
+     mean distance = 14.783 m                                 
+     mean randomly added to height differences     = 0.0901 mm
+     st. dev. randomly added to height differences = 1.0365 mm
+4. Observations have been written to MOVE3-file
+5. Coordinates have been written to MOVE3-file
+error: 'txtfileinsert' undefined near line 58, column 13
+error: called from
+    WriteToPrjfile at line 58 column 13
+    genobs at line 90 column 14
+>> genobs
+Programme:     genobs                                 
+Version:       0.0.4                                  
+Author:        Hiddo Velsink                          
+Date and time: 06-Nov-2023 10:24:48                   
+Project:       DefaultProject                         
+Dimension:     1D                                     
+                                                      
+1. Coordinates and desired observations have been read
+2. Generated: 
+     10 height differences
+3. Noise has been added to observations                        
+     mean distance = 14.783 m                                  
+     mean randomly added to height differences     = -0.0211 mm
+     st. dev. randomly added to height differences = 0.6111 mm 
+4. Observations have been written to MOVE3-file
+5. Coordinates have been written to MOVE3-file
+error: 'txtfileinsert' undefined near line 58, column 13
+error: called from
+    WriteToPrjfile at line 58 column 13
+    genobs at line 90 column 14
+>> 

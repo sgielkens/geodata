@@ -1,0 +1,11 @@
+MOVE3 V4.6.0 OBS file
+$
+opgave_21
+$
+ANGLEUNIT GON
+$
+
+GR  A                 C                 B                                   AN        57.12200        0.10000
+GR  B                 A                 C                                   AN        76.66400        0.10000
+GR  C                 B                 A                                   AN        66.21100        0.10000
+$

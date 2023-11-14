@@ -1,0 +1,21 @@
+MOVE3 V4.6.0 VAR file
+$
+opgave_20
+$
+PROJECTION  LOCAL
+ELLIPSOID   BESSEL_1841
+COORDINATES ENH
+PHASE       1
+DIMENSION   1
+COVMATRIX   FULL
+$
+A                                                        5.0000
+B                                                       12.4547
+C                                                       42.2349
+D                                                       -4.8476
+$
+  0.00000E+00
+  0.00000E+00  5.00000E-07
+  0.00000E+00  2.50000E-07  6.25000E-07
+  0.00000E+00  2.50000E-07  1.25000E-07  6.25000E-07
+$

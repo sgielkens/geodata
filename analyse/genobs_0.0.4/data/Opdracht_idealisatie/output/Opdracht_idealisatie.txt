@@ -1,0 +1,20 @@
+Programme:     genobs                                 
+Version:       0.0.4                                  
+Author:        Hiddo Velsink                          
+Date and time: 30-Oct-2023 16:31:25                   
+Project:       Opdracht                               
+Dimension:     1D                                     
+                                                      
+1. Coordinates and desired observations have been read
+2. Generated: 
+     19 height differences
+3. Noise has been added to observations                       
+     mean distance = 2062.691 m                               
+     mean randomly added to height differences     = 0.2895 mm
+     st. dev. randomly added to height differences = 0.7510 mm
+4. Observations have been written to MOVE3-file
+5. Coordinates have been written to MOVE3-file
+6. Project file of MOVE3 has been written
+7. End of programme
+Chosen S-base point:
+  A                 
