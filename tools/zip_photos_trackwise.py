@@ -2,7 +2,7 @@
 """
 Created on Fri Nov 10 15:25:36 2023
 
-@author: SCANTEAM
+@author: Serge Gielkens
 """
 
 import os
