@@ -7,17 +7,16 @@ Created on Fri Nov 10 15:25:36 2023
 
 import os
 import sys
-#import re
+import argparse
 
 import pathlib
 import zipfile
+#import re
 
 zip_dir = 'zipped'
 
 pwd = os.path.dirname(os.path.realpath(__file__))
 dir_path = pwd
-dir_list = os.listdir(dir_path)
-#print(dir_list)
 
 #p = re.compile('.*Track10.*')
 
@@ -30,7 +29,6 @@ dir_list = os.listdir(dir_path)
 #    else:
 #        print("No match")
 
-import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument("-i", "--input", help="input directory containing photos with orientation, by default the current directory")
@@ -58,7 +56,6 @@ if not input_dir.is_dir():
     sys.exit(1)
 
 
-
 if args.output == None:
     output_path = dir_path + '/' + zip_dir
 else:
@@ -74,32 +71,16 @@ else:
         sys.exit(1)
 
 
-#with zipfile.ZipFile(dir_path + "/zip/py_test.zip", mode="r") as archive:
-#    archive.printdir()
-
-
-directory = pathlib.Path(input_path)
-
-#with zipfile.ZipFile(dir_path + "/zip/maak_dir.zip", mode="w") as archive:
-#    for file_path in directory.iterdir():
-#        m = p.match(file_path.name)
-#        if m:
-#            archive.write(file_path, arcname=file_path.name)
-
-#tellers = []
 tellers = {}
 
-for file_path in directory.iterdir():
+for file_path in input_dir.iterdir():
     woord = file_path.name
-#    print(woord)
     lettergreep = woord.split('_')
 
     track_naam = lettergreep[3]
     track_nummer = int(track_naam.lstrip("Track"))
-#    print(track_nummer)
 
     camera = lettergreep[4]
-#    print(camera)
     if camera.endswith(".txt"):
         camera = camera.removesuffix(".txt")
         camera = camera + "_int_ort"
@@ -140,8 +121,6 @@ for track, aantallen in tellers.items():
         if not camera.endswith("_ort") and not camera == "totaal":
             nr_fotos = aantal
             break
-
-#print(nr_fotos)
 
 
 for track, aantallen in tellers.items():
@@ -184,7 +163,5 @@ for track, aantallen in tellers.items():
     print("")
 
     if stop == True:
-        print(track + ": unexpected number of files. See the logging above")
+        print(track + ": unexpected number of files. See the logging above.")
         break
-
-
