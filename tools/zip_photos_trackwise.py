@@ -9,6 +9,9 @@ import os
 import sys
 #import re
 
+import pathlib
+import zipfile
+
 zip_dir = 'zipped'
 
 pwd = os.path.dirname(os.path.realpath(__file__))
@@ -36,6 +39,9 @@ parser.add_argument("-v", "--verbose", help="increase output verbosity", action=
 
 args = parser.parse_args()
 
+input_path = ''
+output_path = ''
+
 if args.verbose:
     print("Verbosity turned on")
 
@@ -51,17 +57,21 @@ if args.output == None:
 else:
     output_path = args.output
 
+output_dir = pathlib.Path(output_path)
 
-#sys.exit(42)
+if not output_dir.is_dir():
+    output_dir.mkdir()
+else:
+    if any(os.scandir(output_path)):
+        print("The output directory is not empty: " + output_path + ". Quitting." )
+        sys.exit(1)
 
 
-import zipfile
+sys.exit(42)
 
 #with zipfile.ZipFile(dir_path + "/zip/py_test.zip", mode="r") as archive:
 #    archive.printdir()
 
-        
-import pathlib
 
 directory = pathlib.Path(input_path)
 
