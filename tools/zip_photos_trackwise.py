@@ -6,13 +6,13 @@ Created on Fri Nov 10 15:25:36 2023
 """
 
 import os
+import sys
 #import re
 
+zip_dir = 'zipped'
+
 pwd = os.path.dirname(os.path.realpath(__file__))
-dir_path = pwd + "/.."
-
-input_path = dir_path + "/input"
-
+dir_path = pwd
 dir_list = os.listdir(dir_path)
 #print(dir_list)
 
@@ -27,6 +27,32 @@ dir_list = os.listdir(dir_path)
 #    else:
 #        print("No match")
 
+import argparse
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-i", "--input", help="input directory containing photos with orientation, by default the current directory")
+parser.add_argument("-o", "--output", help="output directory to save the zip files per track, by default ./zipped of the current directory")
+parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+
+args = parser.parse_args()
+
+if args.verbose:
+    print("Verbosity turned on")
+
+
+if args.input == None:
+    input_path = pwd
+else:
+    input_path = args.input
+
+
+if args.output == None:
+    output_path = dir_path + '/' + zip_dir
+else:
+    output_path = args.output
+
+
+#sys.exit(42)
 
 
 import zipfile
