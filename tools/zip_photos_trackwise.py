@@ -77,6 +77,10 @@ for file_path in input_dir.iterdir():
     woord = file_path.name
     lettergreep = woord.split('_')
 
+    if len(lettergreep) < 3:
+        print("Unexpected format of file name: " + woord + ". Quitting.")
+        sys.exit(1)
+
     track_naam = lettergreep[3]
     track_nummer = int(track_naam.lstrip("Track"))
 
@@ -84,10 +88,12 @@ for file_path in input_dir.iterdir():
     if camera.endswith(".txt"):
         camera = camera.removesuffix(".txt")
         camera = camera + "_int_ort"
-
-    if camera.endswith(".csv"):
+    elif camera.endswith(".csv"):
         camera = camera.removesuffix(".csv")
         camera = camera + "_ext_ort"
+    elif not woord.endswith(".jpg"):
+        print("Unexpected format of file name: " + woord + ". Quitting.")
+        sys.exit(1)
 
 
     if not track_naam in tellers:
