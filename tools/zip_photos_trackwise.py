@@ -122,10 +122,12 @@ for file_path in input_dir.iterdir():
 
 # Controle
 
+nr_camera_fotos = {}
+
 for track, aantallen in tellers.items():
     for camera, aantal in aantallen.items():
         if not camera.endswith("_ort") and not camera == "totaal":
-            nr_fotos = aantal
+            nr_camera_fotos[track] = aantal
             break
 
 
@@ -136,6 +138,7 @@ for track, aantallen in tellers.items():
 
     aantal_int_ort = 0
     aantal_ext_ort = 0
+    aantal_jpg = 0
 
     for camera, aantal in aantallen.items():
         if camera == "totaal":
@@ -154,9 +157,11 @@ for track, aantallen in tellers.items():
                     print(camera + ": expected 1 external orientation file but found " + aantal)
                     stop = True
 
-        elif aantal != nr_fotos:
-            print( "Aantal foto's " + str(aantal) + " van " + camera + " verschilt van " + str(nr_fotos) )
-            stop = True
+        else:
+            aantal_jpg += 1
+            if aantal != nr_camera_fotos[track]:
+                print( "Aantal foto's " + str(aantal) + " van " + camera + " verschilt van " + str(nr_camera_fotos[track]) + " van andere camera\'s")
+                stop = True
 
     if aantal_int_ort != 9:
         print( track + ": expected 9 internal orientation txt files but found " + str(aantal_int_ort) )
@@ -164,6 +169,10 @@ for track, aantallen in tellers.items():
 
     if aantal_ext_ort != 9:
         print( track + ": expected 9 external orientation csv files but found " + str(aantal_ext_ort) )
+        stop = True
+
+    if aantal_jpg % 9 != 0:
+        print( track + ": number of jpg files " + str(aantal_jpg) + " is not a multiple of 9" )
         stop = True
 
     print("")
