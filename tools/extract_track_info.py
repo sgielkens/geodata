@@ -5,46 +5,100 @@ Created on Tue Nov 28 16:54:13 2023
 @author: Serge Gielkens
 """
 
+import os
+import sys
+import argparse
+import pathlib
+
 import sqlite3
 import datetime
 import time
 
-con = sqlite3.connect("/home/serge/tmp/Python/track04_scan.db")
-cur = con.cursor()
+zip_dir = 'track_duration'
+scan_db = 'scan.db'
 
-res = cur.execute("select KEYVALUE from [SCAN.SETTINGS] where SECTION = 'Files' AND KEYNAME = 'StartRecording'")
+def unix_timestamp(tuple_timestamp):
+    elementen = tuple_timestamp.split(',')
 
-start_timestamp = res.fetchone()
-start_elementen = start_timestamp[0].split(',')
+    jaar = int(elementen[0])
+    maand = int(elementen[1])
+    dag = int(elementen[2])
+    uur = int(elementen[3])
+    minuut = int(elementen[4])
+    seconde = int(elementen[5])
 
-start_jaar = int(start_elementen[0])
-start_maand = int(start_elementen[1])
-start_dag = int(start_elementen[2])
-start_uur = int(start_elementen[3])
-start_minuut = int(start_elementen[4])
-start_seconde = int(start_elementen[5])
+    datum_tijd = datetime.datetime(jaar, maand, dag, uur, minuut, seconde)
+    unix_timestamp = time.mktime(datum_tijd.timetuple())
 
-start_datetime = datetime.datetime(start_jaar, start_maand, start_dag, start_uur, start_minuut, start_seconde)
-start_unix_timestamp = time.mktime(start_datetime.timetuple())
-
-res = cur.execute("select KEYVALUE from [SCAN.SETTINGS] where SECTION = 'Files' AND KEYNAME = 'StopRecording'")
-
-stop_timestamp = res.fetchone()
-stop_elementen = stop_timestamp[0].split(',')
-
-stop_jaar = int(stop_elementen[0])
-stop_maand = int(stop_elementen[1])
-stop_dag = int(stop_elementen[2])
-stop_uur = int(stop_elementen[3])
-stop_minuut = int(stop_elementen[4])
-stop_seconde = int(stop_elementen[5])
-
-stop_datetime = datetime.datetime(stop_jaar, stop_maand, stop_dag, stop_uur, stop_minuut, stop_seconde)
-stop_unix_timestamp = time.mktime(stop_datetime.timetuple())
-
-duur_unix_seconds = stop_unix_timestamp - start_unix_timestamp
-
-print(duur_unix_seconds)
+    return unix_timestamp
 
 
-con.close()
+pwd = os.path.dirname(os.path.realpath(__file__))
+dir_path = pwd
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-i", "--input", help="input directory pointing to a TRK job, by default the current directory")
+parser.add_argument("-o", "--output", help="output directory to save the duration per track, by default ./track_duration of the current directory")
+parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+
+args = parser.parse_args()
+
+input_path = ''
+output_path = ''
+
+if args.verbose:
+    print("Verbosity turned on")
+
+
+if args.input == None:
+    input_path = pwd
+else:
+    input_path = args.input
+
+input_dir = pathlib.Path(input_path)
+
+if not input_dir.is_dir():
+    print("Input directory does not exist: " + input_path)
+    sys.exit(1)
+
+
+if args.output == None:
+    output_path = dir_path + '/' + zip_dir
+else:
+    output_path = args.output
+
+output_dir = pathlib.Path(output_path)
+
+if not output_dir.is_dir():
+    output_dir.mkdir()
+else:
+    if any(os.scandir(output_path)):
+        print("Output directory is not empty: " + output_path + ". Quitting." )
+        sys.exit(1)
+
+for file_path in input_dir.iterdir():
+    if not file_path.is_dir():
+        continue
+
+    file_naam = file_path.name
+    if not ( file_naam.startswith('Track') and file_naam.endswith('.scan') ):
+        continue
+
+    con = sqlite3.connect(file_path / scan_db)
+    cur = con.cursor()
+
+    res = cur.execute("select KEYVALUE from [SCAN.SETTINGS] where SECTION = 'Files' AND KEYNAME = 'StartRecording'")
+    start_timestamp = res.fetchone()
+    start_unix_timestamp = unix_timestamp(start_timestamp[0])
+
+    res = cur.execute("select KEYVALUE from [SCAN.SETTINGS] where SECTION = 'Files' AND KEYNAME = 'StopRecording'")
+    stop_timestamp = res.fetchone()
+    stop_unix_timestamp = unix_timestamp(stop_timestamp[0])
+
+    duur_unix_seconds = stop_unix_timestamp - start_unix_timestamp
+
+    print(duur_unix_seconds)
+
+
+    con.close()
