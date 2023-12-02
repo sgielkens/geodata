@@ -14,6 +14,8 @@ import sqlite3
 import datetime
 import time
 
+import fiona
+
 zip_dir = 'track_duration'
 scan_db = 'scan.db'
 
@@ -39,7 +41,7 @@ dir_path = pwd
 parser = argparse.ArgumentParser()
 
 parser.add_argument("-i", "--input", help="input directory pointing to a TRK job, by default the current directory")
-parser.add_argument("-o", "--output", help="output directory to save the duration per track, by default ./track_duration of the current directory")
+parser.add_argument("-o", "--output", help="output directory for the duration per track, by default ./track_duration of the current directory")
 parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
 
 args = parser.parse_args()
@@ -51,7 +53,7 @@ if args.verbose:
     print("Verbosity turned on")
 
 
-if args.input == None:
+if args.input is None:
     input_path = pwd
 else:
     input_path = args.input
@@ -63,7 +65,7 @@ if not input_dir.is_dir():
     sys.exit(1)
 
 
-if args.output == None:
+if args.output is None:
     output_path = dir_path + '/' + zip_dir
 else:
     output_path = args.output
@@ -77,6 +79,10 @@ else:
         print("Output directory is not empty: " + output_path + ". Quitting." )
         sys.exit(1)
 
+info_track ={}
+
+# Determine duration of tracks
+
 for file_path in input_dir.iterdir():
     if not file_path.is_dir():
         continue
@@ -85,6 +91,15 @@ for file_path in input_dir.iterdir():
     if not ( file_naam.startswith('Track') and file_naam.endswith('.scan') ):
         continue
 
+    track_naam = file_naam.removesuffix(".scan")
+
+    scan_file = file_path / scan_db
+    if not scan_file.is_file():
+        print("Track: " + file_naam + " has no scan.db file " + scan_db)
+        sys.exit(1)
+
+    info_track[track_naam] = {}
+
     con = sqlite3.connect(file_path / scan_db)
     cur = con.cursor()
 
@@ -92,13 +107,41 @@ for file_path in input_dir.iterdir():
     start_timestamp = res.fetchone()
     start_unix_timestamp = unix_timestamp(start_timestamp[0])
 
+    info_track[track_naam]["start"] = start_unix_timestamp
+
     res = cur.execute("select KEYVALUE from [SCAN.SETTINGS] where SECTION = 'Files' AND KEYNAME = 'StopRecording'")
     stop_timestamp = res.fetchone()
     stop_unix_timestamp = unix_timestamp(stop_timestamp[0])
 
+    info_track[track_naam]["stop"] = stop_unix_timestamp
+
     duur_unix_seconds = stop_unix_timestamp - start_unix_timestamp
-
-    print(duur_unix_seconds)
-
+    info_track[track_naam]["duur"] = duur_unix_seconds
 
     con.close()
+
+print(info_track)
+
+# Determine length of tracks
+
+job_name = input_dir.name
+job_name = job_name.rstrip(os.sep)
+job_name = job_name.removesuffix(".job")
+
+shape_name = job_name + ".shp"
+
+shape_dir = input_dir.parent / "Export/SHP"
+if not shape_dir.is_dir():
+    print("Shape directory: " + str(shape_dir) + " does not exist")
+    sys.exit(1)
+
+shape_file = shape_dir / shape_name
+if not shape_file.is_file():
+    print("Shape file: " + str(shape_file) + " does not exist")
+    sys.exit(1)
+
+with fiona.open(shape_file) as shapefile:
+    for record in shapefile:
+        print(record)
+
+print("OK")
