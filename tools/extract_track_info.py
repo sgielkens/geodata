@@ -15,6 +15,7 @@ import datetime
 import time
 
 import fiona
+from shapely.geometry import shape
 
 zip_dir = 'track_duration'
 scan_db = 'scan.db'
@@ -79,7 +80,8 @@ else:
         print("Output directory is not empty: " + output_path + ". Quitting." )
         sys.exit(1)
 
-info_track ={}
+info_track = {}
+
 
 # Determine duration of tracks
 
@@ -91,14 +93,14 @@ for file_path in input_dir.iterdir():
     if not ( file_naam.startswith('Track') and file_naam.endswith('.scan') ):
         continue
 
-    track_naam = file_naam.removesuffix(".scan")
+    track_name = file_naam.removesuffix(".scan")
 
     scan_file = file_path / scan_db
     if not scan_file.is_file():
         print("Track: " + file_naam + " has no scan.db file " + scan_db)
         sys.exit(1)
 
-    info_track[track_naam] = {}
+    info_track[track_name] = {}
 
     con = sqlite3.connect(file_path / scan_db)
     cur = con.cursor()
@@ -107,20 +109,19 @@ for file_path in input_dir.iterdir():
     start_timestamp = res.fetchone()
     start_unix_timestamp = unix_timestamp(start_timestamp[0])
 
-    info_track[track_naam]["start"] = start_unix_timestamp
+    info_track[track_name]["start"] = start_unix_timestamp
 
     res = cur.execute("select KEYVALUE from [SCAN.SETTINGS] where SECTION = 'Files' AND KEYNAME = 'StopRecording'")
     stop_timestamp = res.fetchone()
     stop_unix_timestamp = unix_timestamp(stop_timestamp[0])
 
-    info_track[track_naam]["stop"] = stop_unix_timestamp
+    info_track[track_name]["stop"] = stop_unix_timestamp
 
-    duur_unix_seconds = stop_unix_timestamp - start_unix_timestamp
-    info_track[track_naam]["duur"] = duur_unix_seconds
+    duration_unix_seconds = stop_unix_timestamp - start_unix_timestamp
+    info_track[track_name]["duration"] = duration_unix_seconds
 
     con.close()
 
-print(info_track)
 
 # Determine length of tracks
 
@@ -142,6 +143,29 @@ if not shape_file.is_file():
 
 with fiona.open(shape_file) as shapefile:
     for record in shapefile:
-        print(record)
+        track_name = record["properties"]["TrackName"]
+        
+        if not track_name in info_track:
+            print("Shape file: " + str(shape_file) + " contains track " + track_name + " without scan")
+            sys.exit(1)
+        
+        geometry = shape(record['geometry'])
+        print(record['geometry'])
+        info_track[track_name]["length"] = geometry.length
+        
 
-print("OK")
+for track in info_track:
+    if info_track[track].get("length") is None:
+        print("Track: " + track + " not present in shape file " + str(shape_file))
+        sys.exit(1)
+              
+    velocity_ms = info_track[track_name]["length"] / info_track[track_name]["duration"]
+    velocity_kmh = velocity_ms / 3.6
+    
+    info_track[track]["velocity_ms"] = velocity_ms
+    info_track[track]["velocity_kmh"] = velocity_kmh    
+
+for track in info_track:
+    print("Track: " + track + " has values " + str(info_track[track]))
+
+       
