@@ -16,6 +16,7 @@ import time
 
 import fiona
 from shapely.geometry import shape
+import geopandas as gpd
 
 zip_dir = 'track_duration'
 scan_db = 'scan.db'
@@ -144,28 +145,34 @@ if not shape_file.is_file():
 with fiona.open(shape_file) as shapefile:
     for record in shapefile:
         track_name = record["properties"]["TrackName"]
-        
+
         if not track_name in info_track:
             print("Shape file: " + str(shape_file) + " contains track " + track_name + " without scan")
             sys.exit(1)
-        
+
         geometry = shape(record['geometry'])
-        print(record['geometry'])
-        info_track[track_name]["length"] = geometry.length
-        
+
+        # Shape files from TRK are WGS84,i.e. in angular units
+        track_line = gpd.GeoSeries(geometry, crs='EPSG:4326')
+        # Convert to RDNAP, i.e. planar CRS for correct length calculation
+        track_line = track_line.to_crs('EPSG:28992')
+
+        info_track[track_name]["length"] = track_line.length[0]
+
 
 for track in info_track:
     if info_track[track].get("length") is None:
         print("Track: " + track + " not present in shape file " + str(shape_file))
         sys.exit(1)
-              
-    velocity_ms = info_track[track_name]["length"] / info_track[track_name]["duration"]
-    velocity_kmh = velocity_ms / 3.6
-    
+
+    velocity_ms = info_track[track]["length"] / info_track[track]["duration"]
+    velocity_kmh = velocity_ms * 3.6
+
     info_track[track]["velocity_ms"] = velocity_ms
-    info_track[track]["velocity_kmh"] = velocity_kmh    
+    info_track[track]["velocity_kmh"] = velocity_kmh
 
 for track in info_track:
-    print("Track: " + track + " has values " + str(info_track[track]))
+    velocity_kmh_rounded = round(info_track[track]["velocity_kmh"], 1)
+    print( "Track: " + track + " was acquired at average speed of " + str(velocity_kmh_rounded) + ' km/h' )
 
-       
+
