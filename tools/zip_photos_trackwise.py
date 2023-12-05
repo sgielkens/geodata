@@ -70,6 +70,12 @@ else:
         print("Output directory is not empty: " + output_path + ". Quitting." )
         sys.exit(1)
 
+output_log = output_path + ".log"
+output_log_file = pathlib.Path(output_log)
+if output_log_file.is_file():
+    print("Output logfile: " + output_log + " already exists. Quitting")
+    sys.exit(1)
+
 
 tellers = {}
 
@@ -130,14 +136,16 @@ for track, aantallen in tellers.items():
             nr_camera_fotos[track] = aantal
             break
 
+f = open(output_log, "x")
+stop = False
 
 for track, aantallen in tellers.items():
     print(track + ': ' + str( aantallen["totaal"] ) + ' bestanden in totaal')
-
-    stop = False
+    f.write(track + ': ' + str( aantallen["totaal"] ) + ' bestanden in totaal' + "\n")
 
     aantal_int_ort = 0
     aantal_ext_ort = 0
+    aantal_camera = 0
     aantal_jpg = 0
 
     for camera, aantal in aantallen.items():
@@ -148,35 +156,52 @@ for track, aantallen in tellers.items():
             if camera.endswith("_int_ort"):
                 aantal_int_ort += 1
                 if aantal != 1:
-                    print(camera + ": expected 1 internal orientation file but found " + aantal)
+                    print(camera + ": expected 1 internal orientation file but found " + str(aantal) )
+                    f.write(camera + ": expected 1 internal orientation file but found " + str(aantal) + "\n")
                     stop = True
 
             else:
                 aantal_ext_ort += 1
                 if aantal != 1:
-                    print(camera + ": expected 1 external orientation file but found " + aantal)
+                    print(camera + ": expected 1 external orientation file but found " + str(aantal) )
+                    f.write(camera + ": expected 1 external orientation file but found " + str(aantal) + "\n")
                     stop = True
 
         else:
-            aantal_jpg += 1
+            aantal_camera += 1
+            aantal_jpg += aantal
             if aantal != nr_camera_fotos[track]:
-                print( "Aantal foto's " + str(aantal) + " van " + camera + " verschilt van " + str(nr_camera_fotos[track]) + " van andere camera\'s")
+                print( "Aantal foto's " + str(aantal) + " van " + camera + " verschilt van " + str(nr_camera_fotos[track]) + " van andere camera\'s" )
+                f.write( "Aantal foto's " + str(aantal) + " van " + camera + " verschilt van " + str(nr_camera_fotos[track]) + " van andere camera\'s" + "\n" )
                 stop = True
 
     if aantal_int_ort != 9:
         print( track + ": expected 9 internal orientation txt files but found " + str(aantal_int_ort) )
+        f.write( track + ": expected 9 internal orientation txt files but found " + str(aantal_int_ort) + "\n" )
         stop = True
 
     if aantal_ext_ort != 9:
         print( track + ": expected 9 external orientation csv files but found " + str(aantal_ext_ort) )
+        f.write( track + ": expected 9 external orientation csv files but found " + str(aantal_ext_ort) + "\n" )
         stop = True
 
-    if aantal_jpg % 9 != 0:
+# Expected cameras: front left+right, rear left+right, left forward+backward, right forward+backward, sphere
+    if aantal_camera != 9:
+        print( track + ": expected 9 cameras but found " + str(aantal_camera) )
+        f.write( track + ": expected 9 cameras but found " + str(aantal_camera) + "\n" )
+        stop = True
+
+    res = aantal_jpg % 9
+    if res != 0:
         print( track + ": number of jpg files " + str(aantal_jpg) + " is not a multiple of 9" )
+        f.write( track + ": number of jpg files " + str(aantal_jpg) + " is not a multiple of 9" + "\n" )
         stop = True
 
     print("")
+    f.write('\n')
 
-    if stop == True:
-        print(track + ": unexpected number of files. See the logging above.")
-        break
+if stop == True:
+    print("Unexpected number of files. See the logfile " + output_log)
+#        break
+
+f.close()
