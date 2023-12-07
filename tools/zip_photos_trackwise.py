@@ -29,7 +29,7 @@ dir_path = pwd
 #    else:
 #        print("No match")
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description="Zip all photos per track including the orientation file")
 
 parser.add_argument("-i", "--input", help="input directory containing photos with orientation, by default the current directory")
 parser.add_argument("-o", "--output", help="output directory to save the zip files per track, by default ./zipped of the current directory")

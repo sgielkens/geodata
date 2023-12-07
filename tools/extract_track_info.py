@@ -40,7 +40,7 @@ def unix_timestamp(tuple_timestamp):
 pwd = os.path.dirname(os.path.realpath(__file__))
 dir_path = pwd
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description="Extract track information from a TRK project")
 
 parser.add_argument("-i", "--input", help="input directory pointing to a TRK job, by default the current directory")
 parser.add_argument("-o", "--output", help="output directory for the duration per track, by default ./track_duration of the current directory")
