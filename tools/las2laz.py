@@ -77,15 +77,17 @@ for las_file in input_dir.iterdir():
     nr_points_in = las_in.header.point_count
 
     with las_in:
-        for points in las_in.chunk_iterator(1_000_000):
-            laz_out.write_points(points)
-
-    laz_out.close()
+        with laz_out:
+            for points in las_in.chunk_iterator(1_000_000):
+                 laz_out.write_points(points)
 
 # Test
     laz_in = laspy.open(laz_file)
     nr_points_out = laz_in.header.point_count
     if nr_points_in != nr_points_out:
-        print( "Number of points in LAS file: " + nr_points_in + " differs from that in LAZ file: " + nr_points_out )
+        print( "Number of points " + str(nr_points_in) + " in LAS file:" )
+        print( str(las_file) + "\n" )
+        print( "differs from number of points " + str(nr_points_out) + " in LAZ file:" )
+        print( str(laz_file) + "\n")
         
 
