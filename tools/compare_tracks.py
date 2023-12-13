@@ -21,8 +21,9 @@ dir_path = pwd
 
 parser = argparse.ArgumentParser(description="Compare actually driven tracks with planned tracks")
 
-parser.add_argument("-i", "--input", help="input shape file of the planned tracks")
+parser.add_argument("-i", "--input", help="input shape file of driven tracks")
 parser.add_argument("-d", "--distance", help="distance of buffer, by default 1. This is used as distance to create a buffer around the planned tracks")
+parser.add_argument("-m", "--master", help="master shape file of tracks to be driven")
 parser.add_argument("-o", "--output", help="output directory to save the generated shape files, by default ./output of the current directory")
 parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
 
@@ -36,11 +37,18 @@ if args.verbose:
 
 
 input_name = args.input
-
 input_shape = pathlib.Path(input_name)
 
 if not input_shape.is_file():
     print("Shape file: " + input_name + " does not exist")
+    sys.exit(1)
+
+
+master_name = args.master
+master_shape = pathlib.Path(master_name)
+
+if not master_shape.is_file():
+    print("Master shape file: " + master_name + " does not exist")
     sys.exit(1)
 
 
@@ -62,8 +70,28 @@ if args.distance:
     buffer_distance = args.distance
 
 
-shape_gdf = gpd.read_file(input_shape)
-shape_buffer = shape_gdf.buffer(int(buffer_distance))
+# Buffer shape of driven tracks
 
-shape_buffer.to_file(output_path + '/test.shp')
-        
+driven_shape_gdf = gpd.read_file(input_shape, crs='EPSG:4326')
+driven_shape_gdf = driven_shape_gdf.to_crs('EPSG:28992')
+
+driven_shape_buffer = driven_shape_gdf.buffer(int(buffer_distance))
+
+# driven_name = input_shape.stem
+# driven_buffered_name = driven_name + "_buffer_" + str(buffer_distance) + ".shp"
+# driven_buffered_path = output_dir / driven_buffered_name
+# driven_shape_buffer.to_file(driven_buffered_path)
+
+# Extract features by location
+
+master_shape_gdf = gpd.read_file(master_shape)
+master_shape_gdf = master_shape_gdf.set_crs('EPSG:28992')
+
+master_shape_within = master_shape_gdf.within(driven_shape_buffer)
+master_shape_within = gpd.GeoDataFrame(geometry = master_shape_within)
+
+master_name = master_shape.stem
+master_within_name = master_name + "_within.shp"
+master_within_path = output_dir / master_within_name
+master_shape_within.to_file(master_within_path)
+
