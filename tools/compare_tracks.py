@@ -84,7 +84,7 @@ driven_buffered_path = output_dir / driven_buffered_name
 driven_shape_buffer.to_file(driven_buffered_path)
 
 
-# Extract features by location
+# Extract features by location ('within')
 
 master_shape_gdf = gpd.read_file(master_shape)
 master_shape_gdf = master_shape_gdf.set_crs('EPSG:28992')
@@ -95,4 +95,16 @@ master_name = master_shape.stem
 master_within_name = master_name + "_within.shp"
 master_within_path = output_dir / master_within_name
 master_shape_within.to_file(master_within_path)
+
+
+# Extract features by distance ('contains')
+
+#master_shape_contains = gpd.sjoin(master_shape_gdf, driven_shape_gdf, how='inner', predicate='contains')
+master_shape_contains = gpd.sjoin_nearest(master_shape_gdf, driven_shape_gdf, how='inner', max_distance='3')
+
+master_within_name = master_name + "_contains.shp"
+master_within_path = output_dir / master_within_name
+master_shape_within.to_file(master_within_path)
+
+
 
