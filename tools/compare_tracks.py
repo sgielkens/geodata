@@ -76,19 +76,20 @@ driven_shape_gdf = gpd.read_file(input_shape, crs='EPSG:4326')
 driven_shape_gdf = driven_shape_gdf.to_crs('EPSG:28992')
 
 driven_shape_buffer = driven_shape_gdf.buffer(int(buffer_distance))
+driven_shape_buffer_gdf = gpd.GeoDataFrame( geometry = gpd.GeoSeries(driven_shape_buffer) )
 
-# driven_name = input_shape.stem
-# driven_buffered_name = driven_name + "_buffer_" + str(buffer_distance) + ".shp"
-# driven_buffered_path = output_dir / driven_buffered_name
-# driven_shape_buffer.to_file(driven_buffered_path)
+driven_name = input_shape.stem
+driven_buffered_name = driven_name + "_buffer_" + str(buffer_distance) + ".shp"
+driven_buffered_path = output_dir / driven_buffered_name
+driven_shape_buffer.to_file(driven_buffered_path)
+
 
 # Extract features by location
 
 master_shape_gdf = gpd.read_file(master_shape)
 master_shape_gdf = master_shape_gdf.set_crs('EPSG:28992')
 
-master_shape_within = master_shape_gdf.within(driven_shape_buffer)
-master_shape_within = gpd.GeoDataFrame(geometry = master_shape_within)
+master_shape_within = gpd.sjoin(master_shape_gdf, driven_shape_buffer_gdf, how='inner', predicate='within')
 
 master_name = master_shape.stem
 master_within_name = master_name + "_within.shp"
