@@ -25,6 +25,7 @@ parser.add_argument("-i", "--input", help="input shape file of driven tracks")
 parser.add_argument("-d", "--distance", help="distance of buffer, by default 1. This is used as distance to create a buffer around the planned tracks")
 parser.add_argument("-m", "--master", help="master shape file of tracks to be driven")
 parser.add_argument("-o", "--output", help="output directory to save the generated shape files, by default ./output of the current directory")
+parser.add_argument("-r", "--remaining", help="Remainig part of master shape file, i.e. still to be driven or missed tracks")
 parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
 
 args = parser.parse_args()
@@ -49,6 +50,14 @@ master_shape = pathlib.Path(master_name)
 
 if not master_shape.is_file():
     print("Master shape file: " + master_name + " does not exist")
+    sys.exit(1)
+
+
+remaining_name = args.remaining
+remaining_shape = pathlib.Path(remaining_name)
+
+if not remaining_shape.is_file():
+    print("Remaining shape file: " + remaining_name + " does not exist")
     sys.exit(1)
 
 
@@ -100,11 +109,22 @@ master_shape_within.to_file(master_within_path)
 # Extract features by distance ('contains')
 
 #master_shape_contains = gpd.sjoin(master_shape_gdf, driven_shape_gdf, how='inner', predicate='contains')
-master_shape_contains = gpd.sjoin_nearest(master_shape_gdf, driven_shape_gdf, how='inner', max_distance='3')
+#master_shape_contains = gpd.sjoin_nearest(master_shape_gdf, driven_shape_gdf, how='inner', max_distance=3)
 
-master_within_name = master_name + "_contains.shp"
-master_within_path = output_dir / master_within_name
-master_shape_within.to_file(master_within_path)
+#master_within_name = master_name + "_contains.shp"
+#master_within_path = output_dir / master_within_name
+#master_shape_within.to_file(master_within_path)
 
 
+# Determine remaining features ('difference')
+
+remaining_shape_gdf = gpd.read_file(remaining_shape)
+remaining_shape_gdf = remaining_shape_gdf.set_crs('EPSG:28992')
+
+remaining_shape_new = remaining_shape_gdf.overlay(master_shape_within, how='difference')
+
+remaining_name = remaining_shape.stem
+remaining_new_name = remaining_name + "_new.shp"
+remaining_new_path = output_dir / remaining_new_name
+remaining_shape_new.to_file(remaining_new_path)
 
