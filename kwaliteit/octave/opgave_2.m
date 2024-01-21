@@ -19,12 +19,12 @@ a0 = [ 5 * sin(pi/5) - pi * cos(pi/5) ; 5 * cos(pi/5) + pi * sin(pi/5) ] ;
 
 uitvoer=['Geschatte waarden voor parameters xdakje:'] ;
 disp(uitvoer)
-print_vector(xdakje, 'xdakje', 3) ;
+print_vector(xdakje, 'xdakje', 5) ;
 disp('')
 
 uitvoer=['Geschatte waarden voor toevallige afwijkingen edakje:'] ;
 disp(uitvoer)
-print_vector(edakje, 'edakje', 4) ;
+print_vector(edakje, 'edakje', 6) ;
 disp('')
 
 uitvoer=['Waarden voor vereffende waarneming ydakje = A * xdakje + a0:'] ;
@@ -37,7 +37,7 @@ nullen = A' * edakje ;
 
 uitvoer=['Controle op A'' * edakje = 0'] ;
 disp(uitvoer)
-print_vector(nullen, 'nullen', 4) ;
+print_vector(nullen, 'nullen', 6) ;
 disp('')
 
 
@@ -57,12 +57,12 @@ a0 = [ 5 * sin(0.686) - (5 * 0.686) * cos(0.686) ; 5 * cos(0.686) + (5 * 0.686) 
 
 uitvoer=['Geschatte waarden voor parameters xdakje:'] ;
 disp(uitvoer)
-print_vector(xdakje, 'xdakje', 3) ;
+print_vector(xdakje, 'xdakje', 5) ;
 disp('')
 
 uitvoer=['Geschatte waarden voor toevallige afwijkingen edakje:'] ;
 disp(uitvoer)
-print_vector(edakje, 'edakje', 4) ;
+print_vector(edakje, 'edakje', 6) ;
 disp('')
 
 uitvoer=['Waarden voor vereffende waarneming ydakje = A * xdakje + a0:'] ;
@@ -75,6 +75,6 @@ nullen = A' * edakje ;
 
 uitvoer=['Controle op A'' * edakje = 0'] ;
 disp(uitvoer)
-print_vector(nullen, 'nullen', 4) ;
+print_vector(nullen, 'nullen', 6) ;
 disp('')
 
