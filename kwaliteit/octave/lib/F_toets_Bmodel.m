@@ -3,14 +3,14 @@
 # Input
 # - Cofactorenmatrix
 # - a priori variantiefactor
-# - toevaliige afwijkingen
+# - toevallige afwijkingen
 
 # Output
 # - F-toetsgrootheid
 
 function F_toetsgrootheid = F_toets_Bmodel(vrijheidsgraden, variantie_factor_priori, Qt, t_sluit)
 
-# Verschuivingsvector
+# Verschuivingsgrootheid
   Vb = t_sluit' * inv(Qt) * t_sluit ;
   variantie_factor_posteriori = Vb / vrijheidsgraden ;
 

@@ -3,14 +3,14 @@
 # Input
 # - Gewichtscoefficientenmatrix
 # - a priori variantiefactor
-# - toevaliige afwijkingen
+# - toevallige afwijkingen
 
 # Output
 # - F-toetsgrootheid
 
 function F_toetsgrootheid = F_toets_Amodel(vrijheidsgraden, variantie_factor_priori, Qy, edakje)
 
-# Verschuivingsvector
+# Verschuivingsgrootheid
   Vb = edakje' * inv(Qy) * edakje ;
   variantie_factor_posteriori = Vb / vrijheidsgraden ;
 
