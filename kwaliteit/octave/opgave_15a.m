@@ -115,13 +115,20 @@ print_vector(w_toetsgrootheid, 'w-', 4) ;
 disp('')
 
 # Algemene F-toets
-randvoorwaarden = 4
+randvoorwaarden = 3
 F_toetsgrootheid = F_toets_Amodel(randvoorwaarden, variantie_factor, Qy, edakje) ;
 
 uitvoer=['Algemene F-toetsgrootheid via geschatte toevallige afwijkingen'] ;
 disp(uitvoer)
 print_vector(F_toetsgrootheid, 'F-', 4) ;
 disp('')
+
+
+uitvoer=['Script vereffent standaard volgens nulhypothese'] ;
+disp(uitvoer)
+uitvoer=['Verwijder deze return om tevens te vereffenen volgens alternatieve hypothese'] ;
+disp(uitvoer)
+return
 
 
 # Alternatieve hypothese
