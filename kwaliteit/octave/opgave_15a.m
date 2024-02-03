@@ -1,14 +1,14 @@
-# Opgave 14b
-# Volgens B-model
+# Opgave 15a
+# Volgens A-model
 
 addpath ("./lib")
 
 # Gegeven
-var_y = [ 1 ; 1 ; 1 ; 1 ; 1 ] ;
+var_y = [ 4 * 10^-6 ; 4 * 10^-6 ; 4 * 10^-6 ; 4 * 10^-6 ; 4 * 10^-6 ] ;
 # Covariantiematrix
 Dy = diag(var_y) ;
 
-variantie_factor = 1 ;
+variantie_factor = 4 * 10^-6 ;
 
 # Gewichtscoefficientenmatrix
 Qy = Dy / variantie_factor ;
@@ -22,46 +22,39 @@ disp(uitvoer)
 disp('')
 
 # Gegeven
-y = [ 10.1 ; 7.7 ; 11.2 ; 11.7 ; 9.3 ] ;
-
-# B-matrix
-B_T = [
--1  1  0  0  0 ;
- 0  1 -1  0  0 ;
- 0  0  1 -1  0 ;
- 0  0  0  1 -1 ;
-] ;
-
-B = B_T' ;
-
-# Vector met constante termen
-b0 = 0 ;
-
+y = [ 15.837 ; 15.827 ; 6.281 ; 6.295 ; 22.136 ] ;
+A = [ 1 0 ; 1 0 ; 0 1 ; 0 1 ; 1 1 ] ;
+a0 = [ 0 ; 0 ; 0 ; 0 ; 0 ] ;
 
 vrijheids_graden = 2 ;
-C = [ 0 0 ; 1 0 ; 0 0 ; 0 1 ; 0 0 ];
+C = [ 0 0 ; 1 0 ; 1 0 ; 0 0 ; 0 1 ];
 
-# Vereffening volgens gewogen B-model
-[ ydakje, edakje, t, Qt, rdakje, Qrdakje, Qedakje, Qydakje ] = B_vereffening(B, y, b0, Qy) ;
+# Vereffening volgens gewogen A-model
+[ xdakje , ydakje , edakje, rdakje, Qxdakje, Qydakje, Qedakje, Qrdakje ] = A_vereffening(A, y, a0, Qy) ;
+
+# Vereffening volgens A-model
+uitvoer=['Geschatte waarden voor parameters xdakje:'] ;
+disp(uitvoer)
+print_vector(xdakje, 'xdakje', 4) ;
+disp('')
 
 uitvoer=['Geschatte waarden voor toevallige afwijkingen edakje:'] ;
 disp(uitvoer)
 print_vector(edakje, 'edakje', 5) ;
 disp('')
 
-uitvoer=['Waarden voor vereffende waarneming ydakje = y - edakje:'] ;
+uitvoer=['Waarden voor vereffende waarneming ydakje = A * xdakje + a0:'] ;
 disp(uitvoer)
-print_vector(ydakje, 'ydakje', 5) ;
+print_vector(ydakje, 'ydakje', 4) ;
 disp('')
 
 # Controle
-nullen = B' * edakje - t ;
+nullen = A' * Wy * edakje ;
 
-uitvoer=['Controle op B'' * edakje - t = 0'] ;
+uitvoer=['Controle op A'' * Wy * edakje = 0'] ;
 disp(uitvoer)
 print_vector(nullen, 'nullen', 4) ;
 disp('')
-
 
 # Toetsing
 uitvoer=['-------------------------------------------------------'] ;
@@ -123,14 +116,13 @@ disp('')
 
 # Algemene F-toets
 randvoorwaarden = 4
-F_toetsgrootheid = F_toets_Bmodel(randvoorwaarden, variantie_factor, Qt, t) ;
+F_toetsgrootheid = F_toets_Amodel(randvoorwaarden, variantie_factor, Qy, edakje) ;
 
-uitvoer=['F-toetsgrootheid via sluittermen'] ;
+uitvoer=['Algemene F-toetsgrootheid via geschatte toevallige afwijkingen'] ;
 disp(uitvoer)
 print_vector(F_toetsgrootheid, 'F-', 4) ;
 disp('')
 
-pause
 
 # Alternatieve hypothese
 uitvoer=['-------------------------------------------------------'] ;
@@ -142,14 +134,10 @@ disp(uitvoer)
 disp('')
 
 # Gegeven
+Aa = [ A C ] ;
 
-B_Ta = [ B_T -B_T * C ] ;
-Ba = B_Ta' ;
-
-
-
-# Vereffening volgens gewogen B-model
-[ ydakje, edakje, t, Qt, rdakje, Qrdakje, Qedakje, Qydakje ] = B_vereffening(Ba, y, b0, Qy) ;
+# Vereffening volgens gewogen A-model
+[ xdakje , ydakje , edakje, rdakje, Qxdakje, Qydakje, Qedakje, Qrdakje ] = A_vereffening(Aa, y, a0, Qy) ;
 
 uitvoer=['Geschatte waarden voor parameters xdakje:'] ;
 disp(uitvoer)
@@ -167,7 +155,7 @@ print_vector(ydakje, 'ydakje', 4) ;
 disp('')
 
 # Controle
-nullen = B' * edakje - t ;
+nullen = A' * Wy * edakje ;
 
 uitvoer=['Controle op A'' * Wy * edakje = 0'] ;
 disp(uitvoer)
