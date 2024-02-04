@@ -1,14 +1,14 @@
-# Opgave 17
+# Opgave 18
 # Volgens A-model
 
 addpath ("./lib")
 
 # Gegeven
-var_y = [ 1 * 10^-6 ; 1 * 10^-6 ; 1 * 10^-6 ; 1 * 10^-6 ; 1 * 10^-6 ; 1 * 10^-6 ] ;
+var_y = [ 4 * 10^-2 ; 4 * 10^-2 ; 4 * 10^-2 ; 4 * 10^-2 ; 4 * 10^-2 ] ;
 # Covariantiematrix
 Dy = diag(var_y) ;
 
-variantie_factor = 10^-6 ;
+variantie_factor = 4 * 10^-2 ;
 
 # Gewichtscoefficientenmatrix
 Qy = Dy / variantie_factor ;
@@ -22,19 +22,21 @@ disp(uitvoer)
 disp('')
 
 # Gegeven
-y = [ -2.014 ; 2.020 ; 3.764 ; -3.770 ; 2.230 ; 5.992 ] ;
-A = [ 1 0 ; -1 0 ; -1 1 ; 1 -1 ; 1 0 ; 0 1 ] ;
-a0 = [ -4.234 ; 4.234 ; 0 ; 0 ; 0 ; 0 ] ;
+y = [ 1.5 ; 2.5 ; 5; 8; 9 ] ;
+A = [ -1 1 ; 0 1 ; 1 1 ; 2 1 ; 3 1 ] ;
+a0 = [ 0 ; 0 ; 0 ; 0 ; 0 ] ;
 
 aantal_y = size(A,1) ;
 aantal_x = size(A,2) ;
 aantal_voorwaarden = aantal_y - aantal_x ;
 
-# Opgave 17b
-#C = [ 0 ; 0 ; 0 ; 0 ; 1 ; 0 ] ;
-# Opgave 17c
-C = [ 1 0 ; 0 0 ; 0 0 ; -1 0 ; 0 1 ; 0 0 ] ;
-#vrijheids_graden = size(C,2) ;
+# Opgave 18c1
+# C = [ 0 ; 1 ; 0 ; 0 ; 0 ] ;
+# Opgave 18c2
+# C = [ 0 ; 0 ; 0 ; 1 ; 0 ] ;
+# Opgave 18d
+C = [ 1 0 ; -1 0 ; 0 0 ; 0 1 ; 0 0 ] ;
+vrijheids_graden = size(C,2) ;
 
 # Vereffening volgens gewogen A-model
 [ xdakje , ydakje , edakje, rdakje, Qxdakje, Qydakje, Qedakje, Qrdakje ] = A_vereffening(A, y, a0, Qy) ;
