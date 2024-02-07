@@ -40,7 +40,7 @@ def unix_timestamp(tuple_timestamp):
 pwd = os.path.dirname(os.path.realpath(__file__))
 dir_path = pwd
 
-parser = argparse.ArgumentParser(description="Extract track information from a TRK project")
+parser = argparse.ArgumentParser()
 
 parser.add_argument("-i", "--input", help="input directory pointing to a TRK job, by default the current directory")
 parser.add_argument("-o", "--output", help="output directory for the duration per track, by default ./track_duration of the current directory")
@@ -80,6 +80,14 @@ else:
     if any(os.scandir(output_path)):
         print("Output directory is not empty: " + output_path + ". Quitting." )
         sys.exit(1)
+
+
+output_log = output_path + "/track_info.log"
+output_log_file = pathlib.Path(output_log)
+if output_log_file.is_file():
+    print("Output logfile: " + output_log + " already exists. Quitting")
+    sys.exit(1)
+
 
 info_track = {}
 
@@ -171,8 +179,26 @@ for track in info_track:
     info_track[track]["velocity_ms"] = velocity_ms
     info_track[track]["velocity_kmh"] = velocity_kmh
 
+
+f = open(output_log, "x")
+
 for track in info_track:
     velocity_kmh_rounded = round(info_track[track]["velocity_kmh"], 1)
-    print( "Track: " + track + " was acquired at average speed of " + str(velocity_kmh_rounded) + ' km/h' )
+    length_m_rounded = round(info_track[track]["length"], 1)
+    duration_m_rounded = round(info_track[track]["duration"], 1)
+
+    print( "Track: " + track + " has a length of: " + str(length_m_rounded) + ' m')
+    f.write( "Track: " + track + " length (m): " + str(length_m_rounded) + "\n" )
+
+    print( "Track: " + track + " has acquisition time of: " + str(duration_m_rounded) + ' s')
+    f.write( "Track: " + track + " duration (s): " + str(duration_m_rounded) + "\n" )
+
+    print( "Track: " + track + " was acquired at average speed of: " + str(velocity_kmh_rounded) + ' km/h' )
+    f.write( "Track: " + track + " average speed (km/h): " + str(velocity_kmh_rounded) + "\n" )
+
+    print("\n")
+    f.write("\n")
+
+f.close()
 
 
