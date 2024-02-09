@@ -11,9 +11,10 @@ import argparse
 
 import pathlib
 import zipfile
+import shutil;
 #import re
 
-zip_dir = 'zipped'
+deliver_dir = 'deliver_photos'
 
 pwd = os.path.dirname(os.path.realpath(__file__))
 dir_path = pwd
@@ -29,11 +30,12 @@ dir_path = pwd
 #    else:
 #        print("No match")
 
-parser = argparse.ArgumentParser(description="Zip all photos per track including the orientation file")
+parser = argparse.ArgumentParser()
 
 parser.add_argument("-i", "--input", help="input directory containing photos with orientation, by default the current directory")
 parser.add_argument("-o", "--output", help="output directory to save the zip files per track, by default ./zipped of the current directory")
 parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+parser.add_argument("-z", "--zip", help="zip photos per track", action="store_true")
 
 args = parser.parse_args()
 
@@ -43,6 +45,8 @@ output_path = ''
 if args.verbose:
     print("Verbosity turned on")
 
+if args.zip:
+    print("Photos will be zipped per track")
 
 if args.input == None:
     input_path = pwd
@@ -57,7 +61,7 @@ if not input_dir.is_dir():
 
 
 if args.output == None:
-    output_path = dir_path + '/' + zip_dir
+    output_path = dir_path + '/' + deliver_dir
 else:
     output_path = args.output
 
@@ -76,6 +80,13 @@ if output_log_file.is_file():
     print("Output logfile: " + output_log + " already exists. Quitting")
     sys.exit(1)
 
+
+ort_parms = 'Image file name;GPS time'
+ort_parms = ort_parms + ';Camera x (m);Camera y (m);Camera z (m)'
+ort_parms = ort_parms + ';Omega (grad);Phi (grad);Kappa (grad)'
+ort_parms = ort_parms + ';m11 (3x3 rotation matrix);m21 (3x3 rotation matrix);m31 (3x3 rotation matrix)'
+ort_parms = ort_parms + ';m12 (3x3 rotation matrix);m22 (3x3 rotation matrix);m32 (3x3 rotation matrix)'
+ort_parms = ort_parms + ';m13 (3x3 rotation matrix);m23 (3x3 rotation matrix);m33 (3x3 rotation matrix)'
 
 tellers = {}
 
@@ -114,17 +125,31 @@ for file_path in input_dir.iterdir():
     tellers[track_naam][camera] += 1
 
 
+    if args.zip:
+        zip_bestand = output_path + "/fotos_" + track_naam + ".zip"
 
-    zip_bestand = output_path + "/fotos_" + track_naam + ".zip"
+        if os.path.exists(zip_bestand):
+            zip_modus = 'a'
+        else:
+            zip_modus = 'w'
 
-    if os.path.exists(zip_bestand):
-        zip_modus = 'a'
+        with zipfile.ZipFile(zip_bestand, mode = zip_modus) as archive:
+            archive.write(file_path, arcname=file_path.name)
+
     else:
-        zip_modus = 'w'
+        ext_ort_file = output_path + '/' + lettergreep[0] + '_' + lettergreep[1] + '_' + lettergreep[2] + '.csv'
+        if not os.path.exists(ext_ort_file):
+            f = open(ext_ort_file,'x')
+            f.write(ort_parms)
+            f.write('\n')
+            f.close()
 
-    with zipfile.ZipFile(zip_bestand, mode = zip_modus) as archive:
-        archive.write(file_path, arcname=file_path.name)
-
+        if camera.endswith("_ext_ort"):
+            with open(file_path, 'r') as f_src:
+                with open(ext_ort_file, 'a') as f_dst:
+                    shutil.copyfileobj(f_src, f_dst)
+        else:
+            shutil.copy(file_path, output_path)
 
 # Controle
 
