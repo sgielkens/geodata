@@ -1,4 +1,4 @@
-# w-toets volgens B-model
+# w-toets conventioneel
 
 # Input
 # - gewichtscoefficientenmatrix van toevallige afwijkingen
