@@ -1,4 +1,4 @@
-# grenswaarden bij w-toets conventioneel
+# grenswaarden voor waarnemingen bij conventionele w-toets
 
 # Input
 # - gewichtscoefficientenmatrix van geschatte toevallige recoproque afwijkingen
@@ -7,7 +7,7 @@
 # Output
 # - grenswaarden
 
-function [ w_toets_nabla_0 ] = w_toets_grenswaarden(Qrdakje, variantie_factor_priori)
+function [ w_toets_nabla_0 ] = w_toets_grenswaarden_y(Qrdakje, variantie_factor_priori)
 
 # Volgens B-methode van toetsen: γ0 = 0.8 en α0 = 0.001
   lambda_0 = 17.075 ;

@@ -123,7 +123,7 @@ disp(uitvoer)
 print_vector(w_toetsgrootheid, 'w-', 4) ;
 disp('')
 
-w_toets_nabla_0 = w_toets_grenswaarden(Qrdakje, variantie_factor) ;
+w_toets_nabla_0 = w_toets_grenswaarden_y(Qrdakje, variantie_factor) ;
 
 uitvoer=['Genswaarden conventionele w-toets:'] ;
 disp(uitvoer)
