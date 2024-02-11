@@ -5,7 +5,7 @@
 # - a priori variantiefactor
 
 # Output
-# - grenswaarden
+# - grenswaarden van waarnemingen
 
 function [ w_toets_nabla_0 ] = w_toets_grenswaarden_y(Qrdakje, variantie_factor_priori)
 
