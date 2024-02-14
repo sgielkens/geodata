@@ -31,9 +31,9 @@ aantal_x = size(A,2) ;
 aantal_voorwaarden = aantal_y - aantal_x ;
 
 # Opgave 17b
-#C = [ 0 ; 0 ; 0 ; 0 ; 1 ; 0 ] ;
+C = [ 0 ; 0 ; 0 ; 0 ; 1 ; 0 ] ;
 # Opgave 17c
-C = [ 1 0 ; 0 0 ; 0 0 ; -1 0 ; 0 1 ; 0 0 ] ;
+#C = [ 1 0 ; 0 0 ; 0 0 ; -1 0 ; 0 1 ; 0 0 ] ;
 #vrijheids_graden = size(C,2) ;
 
 # Vereffening volgens gewogen A-model
@@ -83,13 +83,13 @@ Qrdakje
 disp('')
 
 nabla_dakje = inv(C' * Qrdakje * C) * C' * rdakje ;
-uitvoer=['Schatting grootte van gemaakte fouten nable_dakje:'] ;
+uitvoer=['Schatting grootte van gemaakte fouten nabla_dakje:'] ;
 disp(uitvoer)
 print_vector(nabla_dakje, 'nabla_dakje', 5) ;
 disp('')
 
 nabla_ydakje = C * nabla_dakje ;
-uitvoer=['Schatting gemaakte fouten in waarnemingen nable_ydakje:'] ;
+uitvoer=['Schatting gemaakte fouten in waarnemingen nabla_ydakje:'] ;
 disp(uitvoer)
 print_vector(nabla_ydakje, 'nabla_ydakje', 5) ;
 disp('')

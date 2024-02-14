@@ -79,13 +79,13 @@ Qrdakje
 disp('')
 
 nabla_dakje = inv(C' * Qrdakje * C) * C' * rdakje ;
-uitvoer=['Schatting grootte van gemaakte fouten nable_dakje:'] ;
+uitvoer=['Schatting grootte van gemaakte fouten nabla_dakje:'] ;
 disp(uitvoer)
 print_vector(nabla_dakje, 'nabla_dakje', 4) ;
 disp('')
 
 nabla_ydakje = C * nabla_dakje ;
-uitvoer=['Schatting gemaakte fouten in waarnemingen nable_ydakje:'] ;
+uitvoer=['Schatting gemaakte fouten in waarnemingen nabla_ydakje:'] ;
 disp(uitvoer)
 print_vector(nabla_ydakje, 'nabla_ydakje', 4) ;
 disp('')
