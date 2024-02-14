@@ -3,6 +3,9 @@
 
 addpath ("./lib")
 
+# Volgens B-methode van toetsen: γ0 = 0.8 en α0 = 0.001
+lambda_0 = 17.075 ;
+
 # Gegeven
 var_y = [ 1 ; 1 ; 1 ; 1 ; 1 ] ;
 # Covariantiematrix
@@ -137,6 +140,12 @@ for i=1:aantal
   print_vector(w_toets_nabla_0_xi, 'nabla_0_x_', 4) ;
   disp('')
 end
+
+w_toets_sqrt_lambda_xdakje = sqrt( w_toets_sqrt_lambda_y .^2 - lambda_0 ) ;
+uitvoer=['Verstoringsfactor xdakje conventionele w-toets:'] ;
+disp(uitvoer)
+print_vector(w_toets_sqrt_lambda_xdakje, 'sqrt_lamda_xdakje_', 4) ;
+disp('')
 
 
 # Algemene F-toets

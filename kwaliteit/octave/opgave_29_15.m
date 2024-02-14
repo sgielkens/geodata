@@ -108,21 +108,24 @@ disp('')
 
 # conventionele w-toets
 w_toetsgrootheid = w_toets(edakje, Qedakje, variantie_factor) ;
-
 uitvoer=['Conventionele w-toetsgrootheden'] ;
 disp(uitvoer)
 print_vector(w_toetsgrootheid, 'w-', 4) ;
 disp('')
 
 w_toets_nabla_0 = w_toets_grenswaarden_y(Qrdakje, variantie_factor) ;
-
 uitvoer=['Genswaarden conventionele w-toets:'] ;
 disp(uitvoer)
 print_vector(w_toets_nabla_0, 'nabla_0_', 4) ;
 disp('')
 
-w_toets_nabla_0_x = w_toets_grenswaarden_x(Qxdakje, A, Wy, w_toets_nabla_0) ;
+w_toets_sqrt_lambda_y = w_toets_norm_grenswaarden_y(w_toets_nabla_0, var_y) ;
+uitvoer=['Genormaliseerde grenswaarden y conventionele w-toets:'] ;
+disp(uitvoer)
+print_vector(w_toets_sqrt_lambda_y, 'sqrt_lamda_y_', 4) ;
+disp('')
 
+w_toets_nabla_0_x = w_toets_grenswaarden_x(Qxdakje, A, Wy, w_toets_nabla_0) ;
 uitvoer=['Genswaarden xdakje conventionele w-toets:'] ;
 disp(uitvoer)
 aantal = size(w_toets_nabla_0_x, 2) ;
@@ -134,6 +137,12 @@ for i=1:aantal
   print_vector(w_toets_nabla_0_xi, 'nabla_0_x_', 4) ;
   disp('')
 end
+
+w_toets_sqrt_lambda_xdakje = sqrt( w_toets_sqrt_lambda_y .^2 - lambda_0 ) ;
+uitvoer=['Verstoringsfactor xdakje conventionele w-toets:'] ;
+disp(uitvoer)
+print_vector(w_toets_sqrt_lambda_xdakje, 'sqrt_lamda_xdakje_', 4) ;
+disp('')
 
 
 # Algemene F-toets
