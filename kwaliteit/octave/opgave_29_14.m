@@ -29,6 +29,10 @@ y = [ 10.1 ; 7.7 ; 11.2 ; 11.7 ; 9.3 ] ;
 A = [ 1 ; 1 ; 1 ; 1 ; 1 ] ;
 a0 = [ 0 ; 0 ; 0 ; 0 ; 0 ] ;
 
+aantal_y = size(A,1) ;
+aantal_x = size(A,2) ;
+aantal_voorwaarden = aantal_y - aantal_x ;
+
 vrijheids_graden = 2 ;
 C = [ 0 0 ; 1 0 ; 0 0 ; 0 1 ; 0 0 ];
 
@@ -127,6 +131,29 @@ uitvoer=['Genormaliseerde grenswaarden y conventionele w-toets:'] ;
 disp(uitvoer)
 print_vector(w_toets_sqrt_lambda_y, 'sqrt_lamda_y_', 4) ;
 disp('')
+
+w_toets_redundantie_y =  lambda_0 * w_toets_sqrt_lambda_y .^-2 ;
+uitvoer=['Redundantiegetal y conventionele w-toets:'] ;
+disp(uitvoer)
+print_vector(w_toets_redundantie_y, 'h_', 3) ;
+disp('')
+
+# Controle
+som_redundantie = sum(w_toets_redundantie_y) ;
+
+uitvoer=['Controle op som der redundanties = aantal voorwaarden:'] ;
+disp(uitvoer)
+print_vector(som_redundantie, 'som', 4) ;
+disp('')
+
+uitvoer=['Aantal voorwaarden: ' num2str(aantal_voorwaarden)] ;
+disp(uitvoer)
+uitvoer=['Aantal waarnemingen: ' num2str(aantal_y)] ;
+disp(uitvoer)
+uitvoer=['Gemiddelde redundantie: ' num2str(aantal_voorwaarden / aantal_y)] ;
+disp(uitvoer)
+disp(' ')
+
 
 w_toets_nabla_0_x = w_toets_grenswaarden_x(Qxdakje, A, Wy, w_toets_nabla_0) ;
 uitvoer=['Genswaarden xdakje conventionele w-toets:'] ;

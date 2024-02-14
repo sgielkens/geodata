@@ -123,14 +123,36 @@ disp('')
 w_toets_nabla_0 = w_toets_grenswaarden_y(Qrdakje, variantie_factor) ;
 uitvoer=['Genswaarden conventionele w-toets:'] ;
 disp(uitvoer)
-print_vector(w_toets_nabla_0, 'nabla_0_', 4) ;
+print_vector(w_toets_nabla_0, 'nabla_0_', 5) ;
 disp('')
 
 w_toets_sqrt_lambda_y = w_toets_norm_grenswaarden_y(w_toets_nabla_0, var_y) ;
 uitvoer=['Genormaliseerde grenswaarden y conventionele w-toets:'] ;
 disp(uitvoer)
-print_vector(w_toets_sqrt_lambda_y, 'sqrt_lamda_y_', 4) ;
+print_vector(w_toets_sqrt_lambda_y, 'sqrt_lamda_y_', 2) ;
 disp('')
+
+w_toets_redundantie_y =  lambda_0 * w_toets_sqrt_lambda_y .^-2 ;
+uitvoer=['Redundantiegetal y conventionele w-toets:'] ;
+disp(uitvoer)
+print_vector(w_toets_redundantie_y, 'h_', 3) ;
+disp('')
+
+# Controle
+som_redundantie = sum(w_toets_redundantie_y) ;
+
+uitvoer=['Controle op som der redundanties = aantal voorwaarden:'] ;
+disp(uitvoer)
+print_vector(som_redundantie, 'som', 4) ;
+disp('')
+
+uitvoer=['Aantal voorwaarden: ' num2str(aantal_voorwaarden)] ;
+disp(uitvoer)
+uitvoer=['Aantal waarnemingen: ' num2str(aantal_y)] ;
+disp(uitvoer)
+uitvoer=['Gemiddelde redundantie: ' num2str(aantal_voorwaarden / aantal_y)] ;
+disp(uitvoer)
+disp(' ')
 
 w_toets_nabla_0_x = w_toets_grenswaarden_x(Qxdakje, A, Wy, w_toets_nabla_0) ;
 uitvoer=['Genswaarden xdakje conventionele w-toets:'] ;
