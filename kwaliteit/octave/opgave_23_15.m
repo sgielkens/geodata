@@ -116,7 +116,7 @@ disp('')
 
 w_toets_nabla_0 = w_toets_grenswaarden_y(Qrdakje, variantie_factor) ;
 
-uitvoer=['Genswaarden conventionele w-toets:'] ;
+uitvoer=['Grenswaarden conventionele w-toets:'] ;
 disp(uitvoer)
 print_vector(w_toets_nabla_0, 'nabla_0_', 4) ;
 disp('')

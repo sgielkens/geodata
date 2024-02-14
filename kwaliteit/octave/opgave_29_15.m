@@ -118,7 +118,7 @@ print_vector(w_toetsgrootheid, 'w-', 4) ;
 disp('')
 
 w_toets_nabla_0 = w_toets_grenswaarden_y(Qrdakje, variantie_factor) ;
-uitvoer=['Genswaarden conventionele w-toets:'] ;
+uitvoer=['Grenswaarden conventionele w-toets:'] ;
 disp(uitvoer)
 print_vector(w_toets_nabla_0, 'nabla_0_', 4) ;
 disp('')
@@ -153,7 +153,7 @@ disp(' ')
 
 
 w_toets_nabla_0_x = w_toets_grenswaarden_x(Qxdakje, A, Wy, w_toets_nabla_0) ;
-uitvoer=['Genswaarden xdakje conventionele w-toets:'] ;
+uitvoer=['Grenswaarden xdakje conventionele w-toets:'] ;
 disp(uitvoer)
 aantal = size(w_toets_nabla_0_x, 2) ;
 for i=1:aantal
