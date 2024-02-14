@@ -162,7 +162,7 @@ uitvoer=['Grenswaarden xdakje conventionele w-toets:'] ;
 disp(uitvoer)
 aantal = size(w_toets_nabla_0_x, 2) ;
 for i=1:aantal
-  uitvoer=['Voor waarnmming: ' num2str(i)] ;
+  uitvoer=['Voor waarneming: ' num2str(i)] ;
   disp(uitvoer)
 
   w_toets_nabla_0_xi = w_toets_nabla_0_x(:,i) ;
