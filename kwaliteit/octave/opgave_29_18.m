@@ -3,6 +3,9 @@
 
 addpath ("./lib")
 
+# Volgens B-methode van toetsen: γ0 = 0.8 en α0 = 0.001
+lambda_0 = 17.075 ;
+
 # Gegeven
 var_y = [ 4 * 10^-2 ; 4 * 10^-2 ; 4 * 10^-2 ; 4 * 10^-2 ; 4 * 10^-2 ] ;
 # Covariantiematrix
