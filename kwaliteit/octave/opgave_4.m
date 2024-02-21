@@ -22,55 +22,66 @@ Wy = inv(Qy) ;
 y = [ 27.18 ; 24.98 ; 37.12 ] ;
 a0 = [ 0 ; 0 ; 0 ] ;
 
+xA = 0 ;
+yA = 0 ;
+
+xB = 50 ;
+yB = 0 ;
+
+xC = 20 ;
+yC = 45 ;
+
+vaste_punten = [ xA xB xC ; yA yB yC ]
 
 # Vergelijkingen
-function [ y0 ] = A_non_linear(u = 0, v = 0)
-  xA = 0
-  yA = 0
+function [ y0 ] = A_non_linear(u = 0, v = 0, punten)
+  xA = punten(1, 1) ;
+  yA = punten(2, 1) ;
 
-  xB = 50
-  yB = 0
+  xB = punten(1, 2) ;
+  yB = punten(2, 2) ;
 
-  xC = 20
-  yC = 45
+  xC = punten(1, 3) ;
+  yC = punten(2, 3) ;
 
-  y1_0 = sqrt( (u - xA)^2 + (v - yA)^2 )
-  y2_0 = sqrt( (u - xC)^2 + (yC - v)^2 )
-  y3_0 = sqrt( (xB - u)^2 + (v - yB)^2 )
+  y1_0 = sqrt( (u - xA)^2 + (v - yA)^2 ) ;
+  y2_0 = sqrt( (u - xC)^2 + (yC - v)^2 ) ;
+  y3_0 = sqrt( (xB - u)^2 + (v - yB)^2 ) ;
 
-  y0 = [ y1_0 ; y2_0 ; y3_0 ]
+  y0 = [ y1_0 ; y2_0 ; y3_0 ] ;
 end
 
-function [ dxA_x0 ] = dxA(u = 0, v = 0)
-  xA = 0
-  yA = 0
+function [ dxA_x0 ] = dxA(u = 0, v = 0, punten)
+  xA = punten(1, 1) ;
+  yA = punten(2, 1) ;
 
-  xB = 50
-  yB = 0
+  xB = punten(1, 2) ;
+  yB = punten(2, 2) ;
 
-  xC = 20
-  yC = 45
+  xC = punten(1, 3) ;
+  yC = punten(2, 3) ;
 
-  dy1_du = (u - xA) / sqrt( (u - xA)^2 + (v - yA)^2 )
-  dy1_dv = (v - yA) / sqrt( (u - xA)^2 + (v - yA)^2 )
+  dy1_du = (u - xA) / sqrt( (u - xA)^2 + (v - yA)^2 ) ;
+  dy1_dv = (v - yA) / sqrt( (u - xA)^2 + (v - yA)^2 ) ;
 
-  dy2_du = (u - xC) / sqrt( (u - xC)^2 + (yC - v)^2 )
-  dy2_dv = -(yC - v) / sqrt( (u - xC)^2 + (yC - v)^2 )
+  dy2_du = (u - xC) / sqrt( (u - xC)^2 + (yC - v)^2 ) ;
+  dy2_dv = -(yC - v) / sqrt( (u - xC)^2 + (yC - v)^2 ) ;
 
-  dy3_du = -(xB - u) / sqrt( (xB - u)^2 + (v - yB)^2 )
-  dy3_dv = (v - yB) / sqrt( (xB - u)^2 + (v - yB)^2 )
+  dy3_du = -(xB - u) / sqrt( (xB - u)^2 + (v - yB)^2 ) ;
+  dy3_dv = (v - yB) / sqrt( (xB - u)^2 + (v - yB)^2 ) ;
 
-  dxA_x0 = [ dy1_du dy1_dv ; dy2_du dy2_dv ; dy3_du dy3_dv ]
+  dxA_x0 = [ dy1_du dy1_dv ; dy2_du dy2_dv ; dy3_du dy3_dv ] ;
 end
 
-u0 = 20
-v0 = 20
+# Benaderde waarden
+u0 = 20 ;
+v0 = 20 ;
 
-y0 = A_non_linear(u0, v0)
-dxA_x0 = dxA(u0, v0)
+y0 = A_non_linear(u0, v0, vaste_punten) ;
+dxA_x0 = dxA(u0, v0, vaste_punten) ;
 
-delta_y = y - y0
-A = dxA_x0
+delta_y = y - y0 ;
+A = dxA_x0 ;
 
 aantal_y = size(A,1) ;
 aantal_x = size(A,2) ;
@@ -85,16 +96,13 @@ C = [ 1 ; 0 ; 0 ] ;
 vrijheids_graden = size(C,2) ;
 
 # Vereffening volgens gewogen A-model
-[ xdakje , ydakje , edakje, rdakje, Qxdakje, Qydakje, Qedakje, Qrdakje ] = A_vereffening(A, delta_y, a0, Qy) ;
+[ delta_xdakje , delta_ydakje , edakje, rdakje, Qxdakje, Qydakje, Qedakje, Qrdakje ] = A_vereffening(A, delta_y, a0, Qy) ;
 
 # Vereffening volgens A-model
 
-u0 + xdakje(1)
-v0 + xdakje(2)
-
-uitvoer=['Geschatte waarden voor parameters xdakje:'] ;
+uitvoer=['Geschatte waarden voor parameters delta_xdakje:'] ;
 disp(uitvoer)
-print_vector(xdakje, 'xdakje', 4) ;
+print_vector(delta_xdakje, 'delta_xdakje', 4) ;
 disp('')
 
 uitvoer=['Geschatte waarden voor toevallige afwijkingen edakje:'] ;
@@ -102,9 +110,9 @@ disp(uitvoer)
 print_vector(edakje, 'edakje', 5) ;
 disp('')
 
-uitvoer=['Waarden voor vereffende waarneming ydakje = A * xdakje + a0:'] ;
+uitvoer=['Waarden voor vereffende waarnemingen delta_ydakje = A * delta_xdakje + a0:'] ;
 disp(uitvoer)
-print_vector(ydakje, 'ydakje', 4) ;
+print_vector(delta_ydakje, 'delta_ydakje', 4) ;
 disp('')
 
 # Controle
@@ -114,6 +122,36 @@ uitvoer=['Controle op A'' * Wy * edakje = 0'] ;
 disp(uitvoer)
 print_vector(nullen, 'nullen', 4) ;
 disp('')
+
+# Berekende resultaten
+xdakje = [ u0 + delta_xdakje(1) ; v0 + delta_xdakje(2) ] ;
+
+uitvoer=['Berekende waarden voor parameters xdakje:'] ;
+disp(uitvoer)
+print_vector(xdakje, 'xdakje', 4) ;
+disp('')
+
+ydakje = delta_ydakje + y0 ;
+
+uitvoer=['Berekende waarden voor vereffende waarnemingen ydakje volgens gelineariseerde vergelijkingen:'] ;
+disp(uitvoer)
+print_vector(ydakje, 'ydakje', 4) ;
+disp('')
+
+y_non_linear = A_non_linear(xdakje(1), xdakje(2), vaste_punten) ;
+
+uitvoer=['Berekende waarden voor vereffende waarnemingen y_non_linear volgens niet-lineaire vergelijkingen:'] ;
+disp(uitvoer)
+print_vector(y_non_linear, 'y_non_linear', 4) ;
+disp('')
+
+edakje_non_linear = y - y_non_linear ;
+
+uitvoer=['Berekende waarden voor toevallige afwijkingen edakje_non_linear volgens niet-lineaire vergelijkingen:'] ;
+disp(uitvoer)
+print_vector(edakje_non_linear, 'edakje_non_linear', 4) ;
+disp('')
+
 
 # Toetsing
 uitvoer=['-------------------------------------------------------'] ;
