@@ -153,6 +153,83 @@ print_vector(edakje_non_linear, 'edakje_non_linear', 4) ;
 disp('')
 
 
+disp('#########################################################################################')
+disp('# Iteratie 1 - start')
+disp('#########################################################################################')
+disp('')
+
+# Benaderde waarden
+u0 = xdakje(1) ;
+v0 = xdakje(2) ;
+
+y0 = A_non_linear(u0, v0, vaste_punten) ;
+dxA_x0 = dxA(u0, v0, vaste_punten) ;
+
+delta_y = y - y0 ;
+A = dxA_x0 ;
+
+# Vereffening volgens gewogen A-model
+[ delta_xdakje , delta_ydakje , edakje, rdakje, Qxdakje, Qydakje, Qedakje, Qrdakje ] = A_vereffening(A, delta_y, a0, Qy) ;
+
+# Vereffening volgens A-model
+
+uitvoer=['Geschatte waarden voor parameters delta_xdakje:'] ;
+disp(uitvoer)
+print_vector(delta_xdakje, 'delta_xdakje', 4) ;
+disp('')
+
+uitvoer=['Geschatte waarden voor toevallige afwijkingen edakje:'] ;
+disp(uitvoer)
+print_vector(edakje, 'edakje', 5) ;
+disp('')
+
+uitvoer=['Waarden voor vereffende waarnemingen delta_ydakje = A * delta_xdakje + a0:'] ;
+disp(uitvoer)
+print_vector(delta_ydakje, 'delta_ydakje', 4) ;
+disp('')
+
+# Controle
+nullen = A' * Wy * edakje ;
+
+uitvoer=['Controle op A'' * Wy * edakje = 0'] ;
+disp(uitvoer)
+print_vector(nullen, 'nullen', 4) ;
+disp('')
+
+# Berekende resultaten
+xdakje = [ u0 + delta_xdakje(1) ; v0 + delta_xdakje(2) ] ;
+
+uitvoer=['Berekende waarden voor parameters xdakje:'] ;
+disp(uitvoer)
+print_vector(xdakje, 'xdakje', 4) ;
+disp('')
+
+ydakje = delta_ydakje + y0 ;
+
+uitvoer=['Berekende waarden voor vereffende waarnemingen ydakje volgens gelineariseerde vergelijkingen:'] ;
+disp(uitvoer)
+print_vector(ydakje, 'ydakje', 4) ;
+disp('')
+
+y_non_linear = A_non_linear(xdakje(1), xdakje(2), vaste_punten) ;
+
+uitvoer=['Berekende waarden voor vereffende waarnemingen y_non_linear volgens niet-lineaire vergelijkingen:'] ;
+disp(uitvoer)
+print_vector(y_non_linear, 'y_non_linear', 4) ;
+disp('')
+
+edakje_non_linear = y - y_non_linear ;
+
+uitvoer=['Berekende waarden voor toevallige afwijkingen edakje_non_linear volgens niet-lineaire vergelijkingen:'] ;
+disp(uitvoer)
+print_vector(edakje_non_linear, 'edakje_non_linear', 4) ;
+disp('')
+
+disp('#########################################################################################')
+disp('# Iteratie 1 - eind')
+disp('#########################################################################################')
+disp('')
+
 # Toetsing
 uitvoer=['-------------------------------------------------------'] ;
 disp(uitvoer)
@@ -204,7 +281,7 @@ disp('')
 
 
 # conventionele w-toets
-w_toetsgrootheid = w_toets(edakje, Qedakje, variantie_factor) ;
+w_toetsgrootheid = w_toets(edakje_non_linear, Qedakje, variantie_factor) ;
 uitvoer=['Conventionele w-toetsgrootheden'] ;
 disp(uitvoer)
 print_vector(w_toetsgrootheid, 'w-', 4) ;
@@ -266,7 +343,7 @@ disp('')
 
 
 # Algemene F-toets
-F_toetsgrootheid = F_toets_Amodel(aantal_voorwaarden, variantie_factor, Qy, edakje) ;
+F_toetsgrootheid = F_toets_Amodel(aantal_voorwaarden, variantie_factor, Qy, edakje_non_linear) ;
 
 uitvoer=['Algemene F-toetsgrootheid via geschatte toevallige afwijkingen'] ;
 disp(uitvoer)
