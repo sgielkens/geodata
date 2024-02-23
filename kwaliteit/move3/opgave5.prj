@@ -1,0 +1,145 @@
+MOVE3 V4.6.0    PRJ file
+$
+opgave5
+$ INCLUDED FILE TYPES
+TerCoord            YES
+GPSCoord            NO
+TerObserv           YES
+GPSObserv           NO
+GeoidModel          NO
+FeatureCode         NONE
+ProjectType         DEFAULT
+$ GEOMETRY PARAMETERS
+Dimension           2
+Projection          LOCAL
+ProjName            Lokaal (Stereografisch)
+LonOriginCM            0 00 00.00000
+LatOrigin              0 00 00.00000
+StandPar1           
+StandPar2           
+SkewAzimuth         
+ProjScaleFac             1.000000000
+FalseEasting                  0.0000
+FalseNorthing                 0.0000
+Ellipsoid           BESSEL_1841
+SemiMajAx               6377397.1550
+InvFlatt               299.152812800
+TransProj           NONE
+GPSCoordType        XYZ
+$ ADJUSTMENT PARAMETERS
+AdjDesign           ADJUST
+Phase               1
+InnerConstraint     FALSE
+AngleUnit           GON
+LinearUnit          m  1.0000000000000  METER
+IterMax             3
+Epsilon             0.0001
+Delta               1.0e-06
+CovMatrix           NONE
+APostVarFac         DONOT
+VarComponent        NONE
+VarIterMax          5
+VarEpsilon          0.0100
+FilterFreeStations  FALSE
+EstAddTrf           FREENET
+$ PRECISION AND TESTING PARAMETERS
+Sigma0              1.0e+00
+Alfa0               0.0010
+Beta                    0.80
+ConfidenceLevel1D   0.683
+ConfidenceLevel2D   0.394
+C0                    0.000
+C1                    1.000
+DataSnooping             NO
+DataSnoopingFTestHigh        2.000
+DataSnoopingFTestLow         0.500
+DataSnoopingMaxRemovals         25
+DataSnoopingMinRedundancy    51.00
+$ DEFAULT STANDARD DEVIATIONS
+SigmaAbsR                 0.00100
+SigmaRelR                 0.00000
+SigmaAbsS                  0.0100
+SigmaRelS                     0.0
+SigmaAbsZ                 0.00100
+SigmaRelZ                 0.00000
+SigmaAbsA                 0.00100
+SigmaRelA                 0.00000
+SigmaDHA                     0.00
+SigmaDHB                     1.00
+SigmaDHC                     0.00
+SigmaShiftVectorEN         0.0100
+SigmaShiftVectorH          0.0100
+SigmaLocalCoordEN          0.0100
+SigmaLocalCoordH           0.0100
+SigmaAbsDX                 0.0100
+SigmaRelDX                    1.0
+SigmaAbsX                  0.0100
+SigmaLatLon                0.0100
+SigmaHgt                  0.01000
+SigmaXYZ                   0.0100
+SigmaCentr                 0.0000
+SigmaInstr                0.00000
+SigmaTape                  0.0100
+SigmaOrthogonal            0.0100
+SigmaDistLine              0.0150
+SigmaAngle                0.10000
+SigmaIdealXY               0.0000
+SigmaIdealH                0.0000
+SigmaGeoidAbs              0.0000
+SigmaGeoidRel              0.0000
+$ ADDITIONAL PARAMETERS
+ScaleFac0      FREE   1.0000000
+ScaleFac1      FREE   1.0000000
+ScaleFac2      FREE   1.0000000
+ScaleFac3      FREE   1.0000000
+ScaleFac4      FREE   1.0000000
+ScaleFac5      FREE   1.0000000
+ScaleFac6      FREE   1.0000000
+ScaleFac7      FREE   1.0000000
+ScaleFac8      FREE   1.0000000
+ScaleFac9      FREE   1.0000000
+VertRefr0      FIXED   0.13
+VertRefr1      FIXED   0.13
+VertRefr2      FIXED   0.13
+VertRefr3      FIXED   0.13
+VertRefr4      FIXED   0.13
+VertRefr5      FIXED   0.13
+VertRefr6      FIXED   0.13
+VertRefr7      FIXED   0.13
+VertRefr8      FIXED   0.13
+VertRefr9      FIXED   0.13
+AzimOffs0      FIXED        0.00000
+AzimOffs1      FIXED        0.00000
+AzimOffs2      FIXED        0.00000
+AzimOffs3      FIXED        0.00000
+AzimOffs4      FIXED        0.00000
+AzimOffs5      FIXED        0.00000
+AzimOffs6      FIXED        0.00000
+AzimOffs7      FIXED        0.00000
+AzimOffs8      FIXED        0.00000
+AzimOffs9      FIXED        0.00000
+GPSTrfTX            FREE             0.0000       0.0000
+GPSTrfTY            FREE             0.0000       0.0000
+GPSTrfTZ            FREE             0.0000       0.0000
+GPSTrfRX            FREE            0.00000      0.00000
+GPSTrfRY            FREE            0.00000      0.00000
+GPSTrfRZ            FREE            0.00000      0.00000
+GPSTrfSc            FREE       1.0000000000   0.0000000000
+LocalTrfType        NONE
+$ PRINT OUTPUT SWITCHES
+PrProjConst         YES
+PrInpCoords         YES
+PrAddParms          YES
+PrInpObsv           YES
+PrAdjCoords         YES
+PrExtReliab         YES
+PrAbsStandEll       YES
+PrRelStandEll       YES
+PrTestCoords        YES
+PrErrCoords         YES
+PrAdjParms          YES
+PrAdjObsv           YES
+PrTestObsv          YES
+PrErrObsv           YES
+LogFile             HTML
+$
