@@ -3,9 +3,9 @@ $
 Deformation Analysis with simulated observations
 $ INCLUDED FILE TYPES
 TerCoord            YES
-GPSCoord            NO
+GPSCoord            YES
 TerObserv           YES
-GPSObserv           NO
+GPSObserv           YES
 GeoidModel          NO
 FeatureCode         NONE
 ProjectType         DEFAULT
@@ -28,7 +28,7 @@ TransProj           NONE
 GPSCoordType        XYZ
 $ ADJUSTMENT PARAMETERS
 AdjDesign           ADJUST
-Phase               4
+Phase               1
 InnerConstraint     FALSE
 AngleUnit           GON
 LinearUnit          m  1.0000000000000  METER
