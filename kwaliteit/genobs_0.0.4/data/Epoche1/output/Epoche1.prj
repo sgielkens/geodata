@@ -28,14 +28,14 @@ TransProj           NONE
 GPSCoordType        XYZ
 $ ADJUSTMENT PARAMETERS
 AdjDesign           ADJUST
-Phase               4
+Phase               1
 InnerConstraint     FALSE
 AngleUnit           GON
 LinearUnit          m  1.0000000000000  METER
 IterMax             9
 Epsilon             0.0001
 Delta               1.0e-06
-CovMatrix           NONE
+CovMatrix           ILLWERKE
 APostVarFac         DONOT
 VarComponent        NONE
 VarIterMax          5

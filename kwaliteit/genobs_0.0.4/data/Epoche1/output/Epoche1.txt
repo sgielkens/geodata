@@ -2,7 +2,7 @@ Programme:     genobs
 Version:       0.0.4                                  
 Author:        Hiddo Velsink                          
 Date and time: 24-Feb-2024 17:30:40                   
-Project:       Opdracht                               
+Project:       Epoche1                               
 Dimension:     2D                                     
                                                       
 1. Coordinates and desired observations have been read

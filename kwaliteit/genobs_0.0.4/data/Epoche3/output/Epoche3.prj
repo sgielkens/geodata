@@ -1,4 +1,4 @@
-MOVE3 V4.2.1    PRJ file
+MOVE3 V4.6.0    PRJ file
 $
 Deformation Analysis with simulated observations
 $ INCLUDED FILE TYPES
@@ -8,6 +8,7 @@ TerObserv           YES
 GPSObserv           NO
 GeoidModel          NO
 FeatureCode         NONE
+ProjectType         DEFAULT
 $ GEOMETRY PARAMETERS
 Dimension           2
 Projection          LOCAL
@@ -16,6 +17,7 @@ LonOriginCM            0 00 00.00000
 LatOrigin              0 00 00.00000
 StandPar1           
 StandPar2           
+SkewAzimuth         
 ProjScaleFac             1.000000000
 FalseEasting                  0.0000
 FalseNorthing                 0.0000
@@ -32,8 +34,8 @@ AngleUnit           GON
 LinearUnit          m  1.0000000000000  METER
 IterMax             9
 Epsilon             0.0001
-Delta               1.0e-006
-CovMatrix           NONE
+Delta               1.0e-06
+CovMatrix           ILLWERKE
 APostVarFac         DONOT
 VarComponent        NONE
 VarIterMax          5
@@ -43,7 +45,7 @@ EstAddTrf           FREENET
 BaseStation1        B1
 BaseStation2        B3
 $ PRECISION AND TESTING PARAMETERS
-Sigma0              1.0e+000
+Sigma0              1.0e+00
 Alfa0               0.0010
 Beta                    0.80
 ConfidenceLevel1D   0.683
@@ -85,8 +87,10 @@ SigmaDistLine              0.0150
 SigmaAngle                0.10000
 SigmaIdealXY               0.0000
 SigmaIdealH                0.0000
+SigmaGeoidAbs              0.0000
+SigmaGeoidRel              0.0000
 $ ADDITIONAL PARAMETERS
-ScaleFac0      FREE   1.0000000
+ScaleFac0      FIXED  1.0000000
 ScaleFac1      FREE   1.0000000
 ScaleFac2      FREE   1.0000000
 ScaleFac3      FREE   1.0000000

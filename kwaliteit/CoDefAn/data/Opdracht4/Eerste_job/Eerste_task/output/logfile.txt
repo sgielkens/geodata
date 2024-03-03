@@ -1,0 +1,54 @@
+2024-03-03 12:55:17 (    0.00000 -   0.00000): Start of computations
+2024-03-03 12:55:17 (    0.01607 -   0.01607): Start iteration
+2024-03-03 12:55:17 (    0.01607 -   0.00000): Start Transformation of all epochs to first
+2024-03-03 12:55:17 (    0.01607 -   0.00000): Start building coefficient matrix A
+2024-03-03 12:55:17 (    0.02008 -   0.00401): Start building of observation vector dy
+2024-03-03 12:55:17 (    0.02008 -   0.00000): Start Building cofactor matrix
+2024-03-03 12:55:17 (    0.03033 -   0.01025): Start adjustment
+2024-03-03 12:55:17 (    0.03185 -   0.00153): Start computing yhat
+2024-03-03 12:55:17 (    0.03185 -   0.00000): Start correcting nabla
+2024-03-03 12:55:17 (    0.03185 -   0.00000): Start correcting c0
+2024-03-03 12:55:17 (    0.03185 -   0.00000): Start correcting tranformation parameters
+2024-03-03 12:55:17 (    0.03185 -   0.00000): Start evaluation of iteration criterion
+2024-03-03 12:55:17 (    0.03185 -   0.00000): Start Transformation of all epochs to first
+2024-03-03 12:55:17 (    0.03185 -   0.00000): Start building coefficient matrix A
+2024-03-03 12:55:17 (    0.03185 -   0.00000): Start building of observation vector dy
+2024-03-03 12:55:17 (    0.04037 -   0.00851): Start Building cofactor matrix
+2024-03-03 12:55:17 (    0.04037 -   0.00000): Start adjustment
+2024-03-03 12:55:17 (    0.04037 -   0.00000): Start computing yhat
+2024-03-03 12:55:17 (    0.04037 -   0.00000): Start correcting nabla
+2024-03-03 12:55:17 (    0.04037 -   0.00000): Start correcting c0
+2024-03-03 12:55:17 (    0.04037 -   0.00000): Start correcting tranformation parameters
+2024-03-03 12:55:17 (    0.04037 -   0.00000): Start evaluation of iteration criterion
+2024-03-03 12:55:17 (    0.04037 -   0.00000): Start collecting adjustment results
+2024-03-03 12:55:17 (    0.04037 -   0.00000): 2a: End iteration, start computing results
+2024-03-03 12:55:17 (    0.04037 -   0.00000): Start constructing P
+2024-03-03 12:55:17 (    0.04037 -   0.00000): Start constructing R
+2024-03-03 12:55:17 (    0.04806 -   0.00770): Start computing solution
+2024-03-03 12:55:17 (    0.05811 -   0.01005): Start extracting xhat
+2024-03-03 12:55:17 (    0.05811 -   0.00000): Start extracting C1
+2024-03-03 12:55:17 (    0.05811 -   0.00000): Start extracting C4
+2024-03-03 12:55:17 (    0.05811 -   0.00000): Start extracting Qrhat
+2024-03-03 12:55:17 (    0.05811 -   0.00000): Start extracting Qxhat
+2024-03-03 12:55:17 (    0.05811 -   0.00000): Start computing Qyhat
+2024-03-03 12:55:17 (    0.05811 -   0.00000): Start computing Qehat
+2024-03-03 12:55:17 (    0.06433 -   0.00621): Start filling AdjResult
+2024-03-03 12:55:17 (    0.06856 -   0.00423): 3: End computing results, start showing them
+2024-03-03 12:55:17 (    0.06856 -   0.00000): 5: Start overall model test
+2024-03-03 12:55:17 (    0.06856 -   0.00000): Start computing F via rhat
+2024-03-03 12:55:17 (    0.06856 -   0.00000): 5a: Start computation critical value
+2024-03-03 12:55:17 (    0.06856 -   0.00000): 5b: Start showing B-method parameters
+2024-03-03 12:55:17 (    0.06856 -   0.00000): 5c: Start showing ratio
+2024-03-03 12:55:17 (    0.06856 -   0.00000): 5d: End overall model test
+2024-03-03 12:55:17 (    0.06856 -   0.00000): 6: Start multidim. tests of deformation constraints
+2024-03-03 12:55:17 (    0.06856 -   0.00000): 6a: Start constructing defolist
+2024-03-03 12:55:17 (    0.06856 -   0.00000): 6b: Start testing defolist
+2024-03-03 12:55:17 (    0.12763 -   0.05907): 6b_end: End testing defolist
+2024-03-03 12:55:17 (    0.12763 -   0.00000): 6c: Start writing to xml
+2024-03-03 12:55:17 (    0.12763 -   0.00000): 6d: Start printing results of testing defolist
+2024-03-03 12:55:17 (    0.12763 -   0.00000): 7a: Start Input collecting input parameters w-tests
+2024-03-03 12:55:17 (    0.12763 -   0.00000): 7c: Start w-test of def. constraints
+2024-03-03 12:55:17 (    0.12763 -   0.00000): 9: Start test hypotheses on linear deformations
+2024-03-03 12:55:17 (    0.15332 -   0.02569): 11: End testing
+2024-03-03 12:55:17 (    0.15935 -   0.00603): End of computations
+        0.15935 seconds is in (days,) hours, minutes, seconds: 0:00:00.159352 

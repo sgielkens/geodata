@@ -1,0 +1,7 @@
+Example_ep_1.var = 2018-09-19 16:00:00
+Example_ep_2.var = 2018-09-26 16:00:00
+Example_ep_0.var = 2018-09-12 16:00:00
+
+Example_ep_1.txt = 2018-09-19 16:00:00
+Example_ep_2.txt = 2018-09-26 16:00:00
+Example_ep_0.txt = 2018-09-12 16:00:00

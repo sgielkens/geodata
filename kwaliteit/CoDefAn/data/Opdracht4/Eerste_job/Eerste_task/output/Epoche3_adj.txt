@@ -1,0 +1,16 @@
+# Coordinates of epoch 2: 6 points
+# File: Epoche3_adj.var
+# Date-time: 2.0
+# ----------------------------------------------------------------------------
+# Columns are: 
+# 1: point name; 
+# 2, 3: coordinates (x, y) in meters (or any other length unit)
+# 4, 5: standard deviations (x, y) in mm (one thousandth of length unit)
+# 6: correlation coefficient (xy), between -1 and +1
+# ----------------------------------------------------------------------------
+P       -0.0010      0.0022     1.7     1.8    -0.0367
+B1     400.0054     -0.0013     0.0     0.0     0.0000
+B2      70.0016    299.9941     0.0     0.0     0.0000
+B3    -400.0050     99.9999     0.0     0.0     0.0000
+B4    -200.0014   -299.9986     0.0     0.0     0.0000
+B5     299.9997   -399.9944     0.0     0.0     0.0000
