@@ -1,0 +1,23 @@
+Programme:     genobs                                 
+Version:       0.0.4                                  
+Author:        Hiddo Velsink                          
+Date and time: 24-Feb-2024 17:30:40                   
+Project:       Opdracht                               
+Dimension:     2D                                     
+                                                      
+1. Coordinates and desired observations have been read
+2. Generated: 
+     5 distances
+     5 directions
+3. Noise has been added to observations                  
+     mean randomly added to distances     = 0.56555 mm   
+     st. dev. randomly added to distances = 3.0552 mm    
+     mean randomly added to directions     = 0.18906 mgon
+     st. dev. randomly added to directions = 0.12897 mgon
+4. Observations have been written to MOVE3-file
+5. Coordinates have been written to MOVE3-file
+6. Project file of MOVE3 has been written
+7. End of programme
+Chosen S-base points:
+  B1                 
+  B3                 

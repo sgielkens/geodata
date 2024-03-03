@@ -1,0 +1,15 @@
+; Each line starting with ; will be neglected by the programme.
+; 
+; Add points and coordinates to this file.
+; Use the following format for 2D:
+; <point name>    <x-coordinate>    <y-coordinate>
+; Use the following format for 1D and 3D:
+; <point name>    <x-coordinate>    <y-coordinate>    <z-coordinate>
+; For example:
+
+P    0          0
+B1   400.009    -0.008
+B2   70.008     299.990
+B3  -400        100
+B4  -200       -300  
+B5   300       -400
