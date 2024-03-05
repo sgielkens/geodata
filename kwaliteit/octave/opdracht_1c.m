@@ -4,19 +4,6 @@
 addpath ("./lib")
 
 # Gegeven
-var_y = [ 7.84 ; 6.76 ; 7.84 ; 7.29 ; 9.00 ] ;
-var_y = var_y * 10^-6 ;
-# Covariantiematrix
-Dy = diag(var_y) ;
-
-variantie_factor = 9 * 10^-6 ;
-
-# Gewichtscoefficientenmatrix
-Qy = Dy / variantie_factor ;
-# Gewichtsmatrix
-Wy = inv(Qy) ;
-
-# Gegeven
 y = [ 399.9972 ; 308.0578 ; 412.3118 ; 360.5547 ; 500.0054 ] ;
 a0 = 0 ;
 
@@ -36,6 +23,23 @@ uB5 = 300 ;
 vB5 = -400 ;
 
 vaste_punten = [ uB1 uB2 uB3 uB4 uB5 ; vB1 vB2 vB3 vB4 vB5 ] ;
+
+std_vast = 0.002
+std_rel = 2e-6
+
+std_afw = y * std_rel + std_vast
+var_y = std_afw.^2
+
+# Covariantiematrix
+Dy = diag(var_y) ;
+
+variantie_factor = 9 * 10^-6 ;
+
+# Gewichtscoefficientenmatrix
+Qy = Dy / variantie_factor ;
+# Gewichtsmatrix
+Wy = inv(Qy) ;
+
 
 # Vergelijkingen
 function [ y0 ] = A_non_linear(uP = 0, vP = 0, punten)
