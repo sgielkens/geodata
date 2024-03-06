@@ -90,7 +90,7 @@ SigmaIdealH                0.0000
 SigmaGeoidAbs              0.0000
 SigmaGeoidRel              0.0000
 $ ADDITIONAL PARAMETERS
-ScaleFac0      FREE   1.0000000
+ScaleFac0      FIXED  1.0000000
 ScaleFac1      FREE   1.0000000
 ScaleFac2      FREE   1.0000000
 ScaleFac3      FREE   1.0000000
