@@ -134,7 +134,7 @@ PrInpCoords         YES
 PrAddParms          YES
 PrInpObsv           YES
 PrAdjCoords         YES
-PrExtReliab         NO
+PrExtReliab         YES
 PrAbsStandEll       NO
 PrRelStandEll       NO
 PrTestCoords        YES

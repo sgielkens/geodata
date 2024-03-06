@@ -292,7 +292,7 @@ disp('')
 w_toets_redundantie_y =  lambda_0 * w_toets_sqrt_lambda_y .^-2 ;
 uitvoer=['Redundantiegetal y conventionele w-toets:'] ;
 disp(uitvoer)
-print_vector(w_toets_redundantie_y, 'h_', 3) ;
+print_vector(w_toets_redundantie_y, 'h_', 4) ;
 disp('')
 
 # Controle
