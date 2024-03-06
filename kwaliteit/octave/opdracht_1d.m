@@ -4,7 +4,14 @@
 addpath ("./lib")
 
 # Gegeven
-y = [ 399.9972 ; 308.0578 ; 412.3118 ; 360.5547 ; 500.0054 ] ;
+y= [
+  399.9992 ;
+  308.0570 ;
+  412.3117 ;
+  360.5578 ;
+  500.0000
+] ;
+
 a0 = 0 ;
 
 uB1 = 400 ;
@@ -24,16 +31,16 @@ vB5 = -400 ;
 
 vaste_punten = [ uB1 uB2 uB3 uB4 uB5 ; vB1 vB2 vB3 vB4 vB5 ] ;
 
-std_vast = 0.002
-std_rel = 2e-6
+std_vast = 0.001 ;
+std_rel = 1.5e-6 ;
 
 std_afw = y * std_rel + std_vast
-var_y = std_afw.^2
+var_y = std_afw.^2 ;
 
 # Covariantiematrix
 Dy = diag(var_y) ;
 
-variantie_factor = 9 * 10^-6 ;
+variantie_factor = 2 * 10^-6 ;
 
 # Gewichtscoefficientenmatrix
 Qy = Dy / variantie_factor ;
@@ -138,6 +145,24 @@ do
   print_vector(delta_xdakje, 'delta_xdakje', 4) ;
   disp('')
 
+  # Standaardafwijking van geschatte parameters
+  Dxdakje = variantie_factor * Qxdakje ;
+  sigma_xdakje = sqrt( diag(Dxdakje) );
+
+  uitvoer=['Standaardafwijking van geschatte coordinaten:'] ;
+  disp(uitvoer)
+  print_vector(sigma_xdakje, 'sigma_xdakje', 7) ;
+  disp('')
+
+  # Standaardafwijking van vereffende waarnemingen
+  Dydakje = variantie_factor * Qydakje ;
+  sigma_ydakje = sqrt( diag(Dydakje) );
+
+  uitvoer=['Standaardafwijking van vereffende waarnemingen:'] ;
+  disp(uitvoer)
+  print_vector(sigma_ydakje, 'sigma_ydakje', 5) ;
+  disp('')
+
   uitvoer=['Geschatte waarden voor toevallige afwijkingen edakje:'] ;
   disp(uitvoer)
   print_vector(edakje, 'edakje', 5) ;
@@ -171,18 +196,18 @@ do
   print_vector(ydakje, 'ydakje', 4) ;
   disp('')
 
-  y_non_linear = A_non_linear(xdakje(1), xdakje(2), vaste_punten) ;
+  ydakje_non_linear = A_non_linear(xdakje(1), xdakje(2), vaste_punten) ;
 
-  uitvoer=['Berekende waarden voor vereffende waarnemingen y_non_linear volgens niet-lineaire vergelijkingen:'] ;
+  uitvoer=['Berekende waarden voor vereffende waarnemingen ydakje_non_linear volgens niet-lineaire vergelijkingen:'] ;
   disp(uitvoer)
-  print_vector(y_non_linear, 'y_non_linear', 4) ;
+  print_vector(ydakje_non_linear, 'ydakje_non_linear', 4) ;
   disp('')
 
-  edakje_non_linear = y - y_non_linear ;
+  edakje_non_linear = y - ydakje_non_linear ;
 
   uitvoer=['Berekende waarden voor toevallige afwijkingen edakje_non_linear volgens niet-lineaire vergelijkingen:'] ;
   disp(uitvoer)
-  print_vector(edakje_non_linear, 'edakje_non_linear', 4) ;
+  print_vector(edakje_non_linear, 'edakje_non_linear', 5) ;
   disp('')
 
   abs_diff = norm(delta_xdakje) ;

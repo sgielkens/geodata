@@ -3,9 +3,9 @@ $
 Deformation Analysis with simulated observations
 $ INCLUDED FILE TYPES
 TerCoord            YES
-GPSCoord            YES
+GPSCoord            NO
 TerObserv           YES
-GPSObserv           YES
+GPSObserv           NO
 GeoidModel          NO
 FeatureCode         NONE
 ProjectType         DEFAULT
@@ -90,7 +90,7 @@ SigmaIdealH                0.0000
 SigmaGeoidAbs              0.0000
 SigmaGeoidRel              0.0000
 $ ADDITIONAL PARAMETERS
-ScaleFac0      FIXED  1.0000000
+ScaleFac0      FREE   1.0000000
 ScaleFac1      FREE   1.0000000
 ScaleFac2      FREE   1.0000000
 ScaleFac3      FREE   1.0000000
@@ -134,7 +134,7 @@ PrInpCoords         YES
 PrAddParms          YES
 PrInpObsv           YES
 PrAdjCoords         YES
-PrExtReliab         YES
+PrExtReliab         NO
 PrAbsStandEll       NO
 PrRelStandEll       NO
 PrTestCoords        YES
