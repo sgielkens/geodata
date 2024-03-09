@@ -3,13 +3,11 @@
 
 addpath ("./lib")
 
-# Oorspronkelijk puntenveld
-#pA = [ 0 ; 0 ] ;
-#pB = [ 50 ; 0 ] ;
-#pC = [ 60 ; 70 ] ;
-#pD = [ 20 ; 55 ] ;
+# Volgens B-methode van toetsen: γ0 = 0.8 en α0 = 0.001
+lambda_0 = 17.075 ;
 
-uP = 0.0004 ;
+# Puntenveld uit opdracht 2 na vereffening
+uP = 0.0014 ;
 vP = 0.0015 ;
 
 uB1 = 400 ;
@@ -27,8 +25,8 @@ vB4 = -300 ;
 uB5 = 300 ;
 vB5 = -400 ;
 
-CRS_I_T = [ uP uB1 uB2 uB3 uB4 uB5 ; vP vB1 vB2 vB3 vB4 vB5 ] ;
-
+crs1 = [ uP uB1 uB2 uB3 uB4 uB5 ;
+          vP vB1 vB2 vB3 vB4 vB5 ] ;
 
 # Ruis in mm
 Pn = [ -4.1 ; -2.0 ] ;
@@ -38,84 +36,72 @@ B3n = [ -1.3 ; 1.0 ] ;
 B4n = [ 2.6 ; 4.1 ] ;
 B5n = [ 1.3 ; -3.0 ] ;
 
-noiseT = [ Pn B1n B2n B3n B4n B5n ] ;
-noiseT = noiseT / 1000 ;
-#noiseT = noiseT / 200 ;
-noise = noiseT' ;
+noise = [ Pn B1n B2n B3n B4n B5n ] ;
+noise = noise / 1000 ;
 
-CRS_I_Tn = CRS_I_T + noiseT ;
-
-# Extra punt
-#pE = [ 30 ; 50 ]
+crs1_noise = crs1 + noise ;
 
 # Transformatieparameters
-phi = 0.5 ; # in rad
+phi = -0.15 ; # in rad
 lambda = 0.1 ;
-tu = 135258.38 ;
-tv = 455477.61 ;
+
+tu = 135237.93 ;
+tv = 455509.29 ;
 
 t = [ tu ; tv ] ;
 R = [ cos(phi) sin(phi) ; -sin(phi) cos(phi) ] ;
 
 # Getransformeerde parameters
-aantal_punten = size(uT, 2) ;
+aantal_punten = size(crs1, 2) ;
 eT = ones(1, aantal_punten) ;
 
-CRS_II_T = lambda * R * CRS_I_Tn + t * eT ;
+crs2 = lambda * R * crs1_noise + t * eT ;
 
-# Extra punt
-#pEf = lambda * R * pE + t
-
-# Getransformeerde parameters met ruis
-#UfnT = UfT + noiseT ;
-#ufnT = UfnT(1,:) ;
-#vfnT = UfnT(2,:) ;
-
-#ufn = ufnT' ;
-#vfn = vfnT' ;
-
-uT = CRS_I_T(1,:) ;
-vT = CRS_I_T(2,:) ;
+uT = crs1(1,:) ;
+vT = crs1(2,:) ;
 u = uT' ;
 v = vT' ;
 
-ufT = CRS_II_T(1,:) ;
-vfT = CRS_II_T(2,:) ;
-
+ufT = crs2(1,:) ;
+vfT = crs2(2,:) ;
 uf = ufT' ;
 vf = vfT' ;
 
-y = [ uf ; vf ] ;
+y = [ uf ;
+      vf ] ;
+
 # Als onbekende parameters worden gekozen: p, q, tx, ty
 e = eT' ;
 nT = zeros(1, aantal_punten) ;
 n = nT' ;
 
-A = [ u v e n ; v -u n e ] ;
-
-# Volgens B-methode van toetsen: γ0 = 0.8 en α0 = 0.001
-lambda_0 = 17.075 ;
-
-# Gegeven
-a0 = zeros( size(A,1) , 1) ;
-
-# var_y = [ (1.7228e-3)^2 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ; (1.7863e-03)^2 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ] ;
-var_y = [ 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ; 1e-6 ] ;
-# Covariantiematrix
-Dy = diag(var_y) ;
-
-variantie_factor = 1 * 10^-6 ;
-
-# Gewichtscoefficientenmatrix
-Qy = Dy / variantie_factor ;
-# Gewichtsmatrix
-Wy = inv(Qy) ;
-
+A = [ u v e n ;
+      v -u n e ] ;
 
 aantal_y = size(A,1) ;
 aantal_x = size(A,2) ;
 aantal_voorwaarden = aantal_y - aantal_x ;
 
+# Gegeven
+a0 = zeros( size(A,1) , 1) ;
+
+var_y = ones(aantal_y,1) ;
+var_y = var_y * 1e-8 ;
+
+# Instelparameter
+var_factor = 4 ;
+var_y = var_y * var_factor ;
+
+# Covariantiematrix
+Dy = diag(var_y) ;
+
+variantie_factor = 10^-8 ;
+variantie_factor = variantie_factor * var_factor ;
+
+# Gewichtscoefficientenmatrix
+Qy = Dy / variantie_factor ;
+# Gewichtsmatrix
+Wy = inv(Qy) ;
 
 # Vereffening volgens gewogen A-model
 [ xdakje , ydakje , edakje, rdakje, Qxdakje, Qydakje, Qedakje, Qrdakje ] = A_vereffening(A, y, a0, Qy) ;
@@ -128,22 +114,17 @@ disp('')
 
 lambda
 phi
-tx
-ty
+tu
+tv
 disp('')
 
 pdakje = xdakje(1) ;
 qdakje= xdakje(2) ;
 lambda_dakje = sqrt(pdakje^2 + qdakje^2)
-phidakje = atan(qdakje/pdakje)
-txdakje = xdakje(3)
-tydakje = xdakje(4)
+phi_dakje = atan(qdakje/pdakje)
+tu_dakje = xdakje(3)
+tv_dakje = xdakje(4)
 disp('')
-
-# Extra punt terug transformeren
-#pE = pEf - [ txdakje ; tydakje ]
-#pE = inv([ pdakje qdakje ; -qdakje pdakje ]) * pE
-
 
 uitvoer=['Geschatte waarden voor toevallige afwijkingen edakje:'] ;
 disp(uitvoer)
@@ -223,7 +204,7 @@ disp('')
 w_toets_nabla_0 = w_toets_grenswaarden_y(Qrdakje, variantie_factor) ;
 uitvoer=['Grenswaarden conventionele w-toets:'] ;
 disp(uitvoer)
-print_vector(w_toets_nabla_0, 'nabla_0_', 4) ;
+print_vector(w_toets_nabla_0, 'nabla_0_', 5) ;
 disp('')
 
 w_toets_sqrt_lambda_y = w_toets_norm_grenswaarden_y(w_toets_nabla_0, var_y) ;
@@ -264,7 +245,17 @@ for i=1:aantal
   disp(uitvoer)
 
   w_toets_nabla_0_xi = w_toets_nabla_0_x(:,i) ;
-  print_vector(w_toets_nabla_0_xi, 'nabla_0_x_', 4) ;
+  print_vector(w_toets_nabla_0_xi, 'nabla_0_x_', 8) ;
+  disp('')
+end
+
+# Hoogste waarden
+aantal = size(w_toets_nabla_0_x, 1) ;
+for i=1:aantal
+  uitvoer=['Maximale grenswaarde xdakje voor parameter: ' num2str(i)] ;
+  disp(uitvoer)
+  w_toets_nabla_0_x_max = max( abs( w_toets_nabla_0_x(i,:) ) )
+  sort(w_toets_nabla_0_x(i,:))
   disp('')
 end
 
