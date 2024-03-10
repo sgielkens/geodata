@@ -1,7 +1,7 @@
 Programme:     genobs                                 
 Version:       0.0.4                                  
 Author:        Hiddo Velsink                          
-Date and time: 03-Mar-2024 11:08:41                   
+Date and time: 09-Mar-2024 20:16:51                   
 Project:       Epoche2                                
 Dimension:     2D                                     
                                                       
@@ -9,11 +9,11 @@ Dimension:     2D
 2. Generated: 
      5 distances
      5 directions
-3. Noise has been added to observations                   
-     mean randomly added to distances     = -0.60526 mm   
-     st. dev. randomly added to distances = 3.7256 mm     
-     mean randomly added to directions     = -0.21089 mgon
-     st. dev. randomly added to directions = 0.28401 mgon 
+3. Noise has been added to observations                  
+     mean randomly added to distances     = 0.72778 mm   
+     st. dev. randomly added to distances = 1.379 mm     
+     mean randomly added to directions     = 0.18393 mgon
+     st. dev. randomly added to directions = 0.29236 mgon
 4. Observations have been written to MOVE3-file
 5. Coordinates have been written to MOVE3-file
 6. Project file of MOVE3 has been written
