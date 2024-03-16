@@ -1,6 +1,6 @@
 # Coordinates of epoch 1: 6 points
 # File: Epoche2.var
-# Date-time: 1.4339622641509433
+# Date-time: 1.0
 # ----------------------------------------------------------------------------
 # Columns are: 
 # 1: point name; 

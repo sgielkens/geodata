@@ -1,7 +1,7 @@
 Programme CoDefAn (Coordinate Deformation Analysis), version 0.0.12 
 
 Author and copyright: Hiddo Velsink
-Date and time       : 2024-03-09 20:44:31
+Date and time       : 2024-03-11 16:53:55
 
 Ini file            = Opdracht4_Eerste_job_Eerste_task.ini
 Output file         = output_Opdracht4_Eerste_job_Eerste_task.txt
@@ -13,9 +13,9 @@ Folder of input files:
   rste_task/input
   
 Files (epoch number: epoch time in uot: date & time: filename)
-  0: 0.000: 2024-01-19 16:00:00: Epoche1.var
-  1: 1.434: 2024-02-26 16:00:00: Epoche2.var
-  2: 2.000: 2024-03-12 16:00:00: Epoche3.var
+  0: 0.000: 2024-02-12 16:00:00: Epoche1.var
+  1: 1.000: 2024-02-19 16:00:00: Epoche2.var
+  2: 2.000: 2024-02-26 16:00:00: Epoche3.var
 
 Coordinates have been read from (co)var-file(s) successfully
 Coordinates have been written to txt-file(s) in output directory
@@ -26,13 +26,13 @@ Adjustment with Pandora box matrix of Rao 1971
 ========================================================================
 Results have been saved to cache file 'adjustment_results.adj'
 ------------------------------------------------------------------------
-Time related point noise: xy: 1e-06 m
+Time related point noise: xy: 0.0002 m
 ------------------------------------------------------------------------
 Unit of length  = 336.7 m
 Stop criterion  = 1.0e-6
 Number of computations = 2
-Max correction in last computation     = 3.3635e-12
-Max correction in previous computation = 8.5128e-06
+Max correction in last computation     = 3.1899e-12
+Max correction in previous computation = 8.1412e-06
 ------------------------------------------------------------------------
 Number of points in epoch 0   =  6
 
@@ -55,9 +55,9 @@ alpha_b = 0.080
 alpha_0 = 0.001
 gamma_0 = 0.8
 
-F              = 4034391.068
+F              = 102.326
 Critical value = 1.529
-Ratio          = 2637955.4237
+Ratio          = 66.9077
 ========================================================================
       Conventional 2D tests of deformation constraints                  
 ========================================================================
@@ -67,33 +67,33 @@ The estimated deformations in x, y and z direction are in millimeters.
 File "times_of_files.txt" is used to determine the time intervals.
 If this file is absent, one day is chosen as time interval between
 any two consecutive epochs. The time intervals are expressed in 
-units of time. Here the unit of time is 26 days, 12 hours
+units of time. Here the unit of time is 7 days
 
-nr  pnt ep  dt   |   x     y   | len  || ratio        AICc      Fq          
-1.  B5  0-1 1.43 |  0.54 -5.21 | 5.24 || 1312066.4997 1411.3090 7695254.8680
-2.  B2  0-1 1.43 | -1.02  4.77 | 4.87 || 1280080.2791 1411.7956 7507656.0536
-3.  B1  0-1 1.43 | -4.76  0.98 | 4.86 || 1256837.1275 1412.1469 7371335.2384
-4.  B2  1-2 0.57 | -1.40  4.50 | 4.72 || 1199461.9171 1413.0059 7034830.2916
-5.  B5  1-2 0.57 |  0.01 -4.89 | 4.89 || 1143291.8869 1413.8358 6705393.7130
-6.  B3  0-1 1.43 |  4.81  0.13 | 4.81 || 1037805.5104 1415.3659 6086717.3331
-7.  B3  1-2 0.57 |  4.79 -0.08 | 4.79 || 1030060.9016 1415.4768 6041295.2921
-8.  B1  1-2 0.57 | -3.76  0.98 | 3.89 ||  803469.9055 1418.6394 4712341.7170
-9.  B4  0-1 1.43 |  1.19 -1.17 | 1.67 ||  155282.8440 1426.9087  910732.0867
-10. B4  1-2 0.57 |  1.08 -1.02 | 1.49 ||  123731.5705 1427.2852  725684.2320
+nr  pnt ep  dt   |   x     y   | len  || ratio   AICc     Fq      
+1.  B5  0-1 1.00 |  0.51 -5.18 | 5.21 || 32.4714 734.5323 190.4443
+2.  B2  0-1 1.00 | -1.05  4.78 | 4.90 || 32.3897 734.5811 189.9651
+3.  B1  0-1 1.00 | -4.78  1.00 | 4.89 || 31.8132 734.9244 186.5840
+4.  B2  1-2 1.00 | -1.43  4.53 | 4.75 || 30.4759 735.7137 178.7407
+5.  B5  1-2 1.00 | -0.02 -4.85 | 4.85 || 28.2324 737.0164 165.5826
+6.  B3  0-1 1.00 |  4.75  0.15 | 4.75 || 25.3393 738.6582 148.6146
+7.  B3  1-2 1.00 |  4.73 -0.04 | 4.73 || 25.1846 738.7447 147.7074
+8.  B1  1-2 1.00 | -3.78  1.01 | 3.91 || 20.3842 741.3757 119.5529
+9.  B4  0-1 1.00 |  1.15 -1.15 | 1.63 ||  3.7156 749.7529  21.7920
+10. B4  1-2 1.00 |  1.05 -1.00 | 1.45 ||  2.9315 750.1212  17.1933
 
 Minimal detectable biases in millimeters.
 
 nr  pnt ep  dt   | mdb-x mdb-y 
-1.  B5  0-1 1.43 |  0.00  0.00 
-2.  B2  0-1 1.43 |  0.00  0.00 
-3.  B1  0-1 1.43 |  0.00  0.00 
-4.  B2  1-2 0.57 |  0.01  0.01 
-5.  B5  1-2 0.57 |  0.01  0.01 
-6.  B3  0-1 1.43 |  0.00  0.00 
-7.  B3  1-2 0.57 |  0.01  0.01 
-8.  B1  1-2 0.57 |  0.01  0.01 
-9.  B4  0-1 1.43 |  0.00  0.00 
-10. B4  1-2 0.57 |  0.01  0.01 
+1.  B5  0-1 1.00 |  1.10  1.10 
+2.  B2  0-1 1.00 |  1.04  1.04 
+3.  B1  0-1 1.00 |  1.05  1.05 
+4.  B2  1-2 1.00 |  1.04  1.04 
+5.  B5  1-2 1.00 |  1.10  1.10 
+6.  B3  0-1 1.00 |  1.14  1.14 
+7.  B3  1-2 1.00 |  1.14  1.14 
+8.  B1  1-2 1.00 |  1.05  1.05 
+9.  B4  0-1 1.00 |  1.02  1.02 
+10. B4  1-2 1.00 |  1.02  1.02 
 ========================================================================
       Conventional w-tests of deformation constraints                   
 ========================================================================
@@ -101,71 +101,70 @@ Critical value of w-test = 3.29 (squared: 10.83)
 
 20 largest w-values of deformation constraints
 nr  ep. point        w       ratio       AICc     
-1.  0-1 B5 y -3.90e+03   1.41e+06   1.36e+03
-2.  0-1 B2 y  3.79e+03   1.33e+06   1.36e+03
-3.  0-1 B1 x -3.76e+03   1.31e+06   1.36e+03
-4.  1-2 B5 y -3.66e+03   1.24e+06   1.36e+03
-5.  1-2 B2 y  3.58e+03   1.18e+06   1.36e+03
-6.  0-1 B3 x  3.49e+03   1.12e+06   1.36e+03
-7.  1-2 B3 x  3.48e+03   1.12e+06   1.36e+03
-8.  1-2 B1 x -2.97e+03   8.15e+05   1.37e+03
-9.  1-2 B2 x -1.12e+03   1.15e+05   1.38e+03
-10. 0-1 B4 x  962.9399   85638.2029   1376.1223
-11. 0-1 B4 y -945.6272   82586.5062   1376.1555
-12. 1-2 B4 x  874.1600   70575.0139   1376.2861
-13. 1-2 B4 y -828.9830   63468.8181   1376.3633
-14. 0-1 B2 x -809.1079   60461.9326   1376.3959
-15. 0-1 B1 y  771.4205   54960.6037   1376.4555
-16. 1-2 B1 y  771.3969   54957.2420   1376.4556
-17. 0-1 B5 x  406.5170   15262.5298   1376.8842
-18. 0-1 B3 y   91.9568   780.9740   1377.0399
-19. 1-2 B3 y  -57.3358   303.6137   1377.0450
-20. 1-2 B5 x    8.1399     6.1193   1377.0482
+1.  0-1 B5 y  -19.4219    34.8380   683.0271
+2.  0-1 B2 y   19.0364    33.4687   683.7757
+3.  0-1 B1 x  -18.9081    33.0190   684.0197
+4.  1-2 B5 y  -18.1979    30.5851   685.3243
+5.  1-2 B2 y   18.0265    30.0119   685.6277
+6.  0-1 B3 x   17.2318    27.4238   686.9800
+7.  1-2 B3 x   17.1869    27.2812   687.0537
+8.  1-2 B1 x  -14.9416    20.6187   690.4051
+9.  1-2 B2 x   -5.7015     3.0022   698.5039
+10. 0-1 B4 x    4.6715     2.0155   698.9286
+11. 0-1 B4 y   -4.6645     2.0094   698.9312
+12. 1-2 B4 x    4.2393     1.6598   699.0810
+13. 0-1 B2 x   -4.1870     1.6191   699.0984
+14. 1-2 B4 y   -4.0512     1.5158   699.1426
+15. 1-2 B1 y    3.9811     1.4637   699.1649
+16. 0-1 B1 y    3.9553     1.4449   699.1729
+17. 0-1  P x    3.3426     1.0319   699.3492
+18. 1-2  P x    2.9371     0.7967   699.4493
+19. 1-2  P y   -2.8818     0.7670   699.4619
+20. 0-1  P y   -2.1257     0.4173   699.6105
 
 ========================================================================
       Tests of special deformation hypotheses                           
 ========================================================================
-Hypothesis 1: <generated> Suspicious points
-Gr.  1:   ep: 0-1: point : B5
-Gr.  2:   ep: 0-1: point : B2
-Gr.  3:   ep: 0-1: point : B1
-Gr.  4:   ep: 1-2: point : B2
-Gr.  5:   ep: 1-2: point : B5
-Gr.  6:   ep: 0-1: point : B3
-Gr.  7:   ep: 1-2: point : B3
-Gr.  8:   ep: 1-2: point : B1
-Gr.  9:   ep: 0-1: point : B4
-Gr. 10:   ep: 1-2: point : B4
+Hypothesis 1: A1
+Gr. 1:   ep: 0-2: points: B1, B2
 
->>> Ratio = 6393667.81, AICc = -inf
-q = 20, signif. level = 10.61%
-Vq = 179925503.874, Crit. value Vq = 28.141
-Fq = 8996275.194, Crit. value Fq = 1.407
+>>> Ratio = 136.60, AICc = 505.10639
+q = 2, signif. level = 0.28%
+Vq = 1602.364, Crit. value Vq = 11.730
+Fq = 801.182, Crit. value Fq = 5.865
 MDB-axes in mm:
--inf.-, -inf.-, 7928.71, 2033.22, 24.02, 22.65,  7.87,  7.42,  0.01,  0.01,  0.01,  0.01,  0.01,  0.01,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00
+ 0.66,  0.66
 
 Estimated shift in mm per unit of time (= average epoch interval)
-Unit of time is 2289600.0 seconds, that is:
-  26 days, 12 hours
-          x      y   
-Gr.  1:   680066.3,  -980436.1,  length = 1193207.9
-Gr.  2:   1429255.4,   572481.9,  length = 1539645.0
-Gr.  3:   1498111.0,  -468873.8,  length = 1569770.5
-Gr.  4:  -31.2,  -5.4,  length = 31.7
-Gr.  5:   18.2,   16.1,  length = 24.3
-Gr.  6:   312572.5,   998743.7,  length = 1046513.5
-Gr.  7:  -4.0,  -3.5,  length = 5.3
-Gr.  8:  -9.9,   13.3,  length = 16.6
-Gr.  9:  -1.3,  -0.6,  length = 1.4
-Gr. 10:   3.9,  -11.5,  length = 12.1
+Unit of time is 604800.0 seconds, that is:
+  7 days
+         x      y   
+Gr. 1:  -4.5,   4.6,  length = 6.4
 ------------------------------------------------------------------------
+Hypothesis 2: <generated> Suspicious points
+Gr. 1:   ep: 0-1: point : B5
+Gr. 2:   ep: 0-1: point : B2
+Gr. 3:   ep: 0-1: point : B1
+Gr. 4:   ep: 1-2: point : B2
+Gr. 5:   ep: 1-2: point : B5
+Gr. 6:   ep: 0-1: point : B3
 
-========================================================================
-      Warnings                                                          
-========================================================================
+>>> Ratio = 72.45, AICc = 3949.05580
+q = 12, signif. level = 5.32%
+Vq = 1507.822, Crit. value Vq = 20.811
+Fq = 125.652, Crit. value Fq = 1.734
+MDB-axes in mm:
+17.18, 16.24,  1.41,  1.41,  1.24,  1.24,  0.95,  0.95,  0.83,  0.83,  0.83,  0.83
 
-Function get_AICc: Tq is larger than Tb: this should never occur. 
-Tq is set equal to Tb. This results in an AICc of "-inf"
+Estimated shift in mm per unit of time (= average epoch interval)
+Unit of time is 604800.0 seconds, that is:
+  7 days
+         x      y   
+Gr. 1:   0.3,   3.5,  length = 3.5
+Gr. 2:  -8.3,   6.4,  length = 10.5
+Gr. 3:  -7.6,   7.9,  length = 10.9
+Gr. 4:  -0.4,   4.4,  length = 4.4
+Gr. 5:   1.0,  -4.3,  length = 4.5
+Gr. 6:  -2.6,  -1.7,  length = 3.1
 ------------------------------------------------------------------------
-
 End of file

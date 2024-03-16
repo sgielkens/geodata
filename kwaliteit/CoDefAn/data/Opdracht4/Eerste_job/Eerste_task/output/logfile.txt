@@ -1,54 +1,54 @@
-2024-03-09 20:44:31 (    0.00000 -   0.00000): Start of computations
-2024-03-09 20:44:31 (    0.05463 -   0.05463): Start iteration
-2024-03-09 20:44:31 (    0.05474 -   0.00011): Start Transformation of all epochs to first
-2024-03-09 20:44:31 (    0.05501 -   0.00027): Start building coefficient matrix A
-2024-03-09 20:44:31 (    0.06769 -   0.01267): Start building of observation vector dy
-2024-03-09 20:44:31 (    0.07296 -   0.00527): Start Building cofactor matrix
-2024-03-09 20:44:31 (    0.07660 -   0.00364): Start adjustment
-2024-03-09 20:44:31 (    0.07812 -   0.00152): Start computing yhat
-2024-03-09 20:44:31 (    0.07863 -   0.00051): Start correcting nabla
-2024-03-09 20:44:31 (    0.07865 -   0.00002): Start correcting c0
-2024-03-09 20:44:31 (    0.07872 -   0.00007): Start correcting tranformation parameters
-2024-03-09 20:44:31 (    0.07910 -   0.00038): Start evaluation of iteration criterion
-2024-03-09 20:44:31 (    0.07913 -   0.00003): Start Transformation of all epochs to first
-2024-03-09 20:44:31 (    0.07936 -   0.00023): Start building coefficient matrix A
-2024-03-09 20:44:31 (    0.08978 -   0.01042): Start building of observation vector dy
-2024-03-09 20:44:31 (    0.09249 -   0.00271): Start Building cofactor matrix
-2024-03-09 20:44:31 (    0.09455 -   0.00207): Start adjustment
-2024-03-09 20:44:31 (    0.09542 -   0.00086): Start computing yhat
-2024-03-09 20:44:31 (    0.09571 -   0.00030): Start correcting nabla
-2024-03-09 20:44:31 (    0.09572 -   0.00001): Start correcting c0
-2024-03-09 20:44:31 (    0.09576 -   0.00004): Start correcting tranformation parameters
-2024-03-09 20:44:31 (    0.09597 -   0.00021): Start evaluation of iteration criterion
-2024-03-09 20:44:31 (    0.09601 -   0.00003): Start collecting adjustment results
-2024-03-09 20:44:31 (    0.09602 -   0.00001): 2a: End iteration, start computing results
-2024-03-09 20:44:31 (    0.09602 -   0.00001): Start constructing P
-2024-03-09 20:44:31 (    0.09655 -   0.00053): Start constructing R
-2024-03-09 20:44:31 (    0.09705 -   0.00050): Start computing solution
-2024-03-09 20:44:31 (    0.11166 -   0.01461): Start extracting xhat
-2024-03-09 20:44:31 (    0.11172 -   0.00006): Start extracting C1
-2024-03-09 20:44:31 (    0.11179 -   0.00007): Start extracting C4
-2024-03-09 20:44:31 (    0.11188 -   0.00009): Start extracting Qrhat
-2024-03-09 20:44:31 (    0.11189 -   0.00001): Start extracting Qxhat
-2024-03-09 20:44:31 (    0.11189 -   0.00000): Start computing Qyhat
-2024-03-09 20:44:31 (    0.11225 -   0.00036): Start computing Qehat
-2024-03-09 20:44:31 (    0.11238 -   0.00012): Start filling AdjResult
-2024-03-09 20:44:31 (    0.11398 -   0.00160): 3: End computing results, start showing them
-2024-03-09 20:44:31 (    0.11457 -   0.00059): 5: Start overall model test
-2024-03-09 20:44:31 (    0.11463 -   0.00006): Start computing F via rhat
-2024-03-09 20:44:31 (    0.11502 -   0.00038): 5a: Start computation critical value
-2024-03-09 20:44:31 (    0.11799 -   0.00297): 5b: Start showing B-method parameters
-2024-03-09 20:44:31 (    0.11802 -   0.00003): 5c: Start showing ratio
-2024-03-09 20:44:31 (    0.11805 -   0.00003): 5d: End overall model test
-2024-03-09 20:44:31 (    0.11805 -   0.00000): 6: Start multidim. tests of deformation constraints
-2024-03-09 20:44:31 (    0.11818 -   0.00013): 6a: Start constructing defolist
-2024-03-09 20:44:31 (    0.11822 -   0.00004): 6b: Start testing defolist
-2024-03-09 20:44:32 (    0.17054 -   0.05233): 6b_end: End testing defolist
-2024-03-09 20:44:32 (    0.17055 -   0.00001): 6c: Start writing to xml
-2024-03-09 20:44:32 (    0.17072 -   0.00017): 6d: Start printing results of testing defolist
-2024-03-09 20:44:32 (    0.17439 -   0.00367): 7a: Start Input collecting input parameters w-tests
-2024-03-09 20:44:32 (    0.17439 -   0.00001): 7c: Start w-test of def. constraints
-2024-03-09 20:44:32 (    0.18077 -   0.00638): 9: Start test hypotheses on linear deformations
-2024-03-09 20:44:32 (    0.18871 -   0.00794): 11: End testing
-2024-03-09 20:44:32 (    0.19201 -   0.00330): End of computations
-        0.19201 seconds is in (days,) hours, minutes, seconds: 0:00:00.192010 
+2024-03-11 16:53:55 (    0.00000 -   0.00000): Start of computations
+2024-03-11 16:53:55 (    0.03470 -   0.03470): Start iteration
+2024-03-11 16:53:55 (    0.03480 -   0.00010): Start Transformation of all epochs to first
+2024-03-11 16:53:55 (    0.03501 -   0.00021): Start building coefficient matrix A
+2024-03-11 16:53:55 (    0.04835 -   0.01333): Start building of observation vector dy
+2024-03-11 16:53:55 (    0.05265 -   0.00430): Start Building cofactor matrix
+2024-03-11 16:53:55 (    0.05596 -   0.00331): Start adjustment
+2024-03-11 16:53:55 (    0.05739 -   0.00142): Start computing yhat
+2024-03-11 16:53:55 (    0.05830 -   0.00091): Start correcting nabla
+2024-03-11 16:53:55 (    0.05831 -   0.00001): Start correcting c0
+2024-03-11 16:53:55 (    0.05838 -   0.00006): Start correcting tranformation parameters
+2024-03-11 16:53:55 (    0.05874 -   0.00037): Start evaluation of iteration criterion
+2024-03-11 16:53:55 (    0.05877 -   0.00003): Start Transformation of all epochs to first
+2024-03-11 16:53:55 (    0.05899 -   0.00021): Start building coefficient matrix A
+2024-03-11 16:53:55 (    0.07040 -   0.01141): Start building of observation vector dy
+2024-03-11 16:53:55 (    0.07462 -   0.00422): Start Building cofactor matrix
+2024-03-11 16:53:55 (    0.07786 -   0.00324): Start adjustment
+2024-03-11 16:53:55 (    0.07921 -   0.00135): Start computing yhat
+2024-03-11 16:53:55 (    0.07967 -   0.00046): Start correcting nabla
+2024-03-11 16:53:55 (    0.07968 -   0.00001): Start correcting c0
+2024-03-11 16:53:55 (    0.07974 -   0.00006): Start correcting tranformation parameters
+2024-03-11 16:53:55 (    0.08009 -   0.00034): Start evaluation of iteration criterion
+2024-03-11 16:53:55 (    0.08014 -   0.00005): Start collecting adjustment results
+2024-03-11 16:53:55 (    0.08016 -   0.00002): 2a: End iteration, start computing results
+2024-03-11 16:53:55 (    0.08017 -   0.00001): Start constructing P
+2024-03-11 16:53:55 (    0.08099 -   0.00082): Start constructing R
+2024-03-11 16:53:55 (    0.08151 -   0.00052): Start computing solution
+2024-03-11 16:53:55 (    0.09656 -   0.01505): Start extracting xhat
+2024-03-11 16:53:55 (    0.09662 -   0.00006): Start extracting C1
+2024-03-11 16:53:55 (    0.09669 -   0.00007): Start extracting C4
+2024-03-11 16:53:55 (    0.09678 -   0.00009): Start extracting Qrhat
+2024-03-11 16:53:55 (    0.09678 -   0.00000): Start extracting Qxhat
+2024-03-11 16:53:55 (    0.09679 -   0.00000): Start computing Qyhat
+2024-03-11 16:53:55 (    0.09716 -   0.00038): Start computing Qehat
+2024-03-11 16:53:55 (    0.09729 -   0.00012): Start filling AdjResult
+2024-03-11 16:53:55 (    0.09888 -   0.00159): 3: End computing results, start showing them
+2024-03-11 16:53:55 (    0.10036 -   0.00148): 5: Start overall model test
+2024-03-11 16:53:55 (    0.10042 -   0.00006): Start computing F via rhat
+2024-03-11 16:53:55 (    0.10081 -   0.00039): 5a: Start computation critical value
+2024-03-11 16:53:55 (    0.10439 -   0.00358): 5b: Start showing B-method parameters
+2024-03-11 16:53:55 (    0.10443 -   0.00004): 5c: Start showing ratio
+2024-03-11 16:53:55 (    0.10447 -   0.00003): 5d: End overall model test
+2024-03-11 16:53:55 (    0.10447 -   0.00000): 6: Start multidim. tests of deformation constraints
+2024-03-11 16:53:55 (    0.10459 -   0.00012): 6a: Start constructing defolist
+2024-03-11 16:53:55 (    0.10465 -   0.00005): 6b: Start testing defolist
+2024-03-11 16:53:55 (    0.15802 -   0.05337): 6b_end: End testing defolist
+2024-03-11 16:53:55 (    0.15802 -   0.00001): 6c: Start writing to xml
+2024-03-11 16:53:55 (    0.15822 -   0.00020): 6d: Start printing results of testing defolist
+2024-03-11 16:53:55 (    0.16194 -   0.00372): 7a: Start Input collecting input parameters w-tests
+2024-03-11 16:53:55 (    0.16195 -   0.00001): 7c: Start w-test of def. constraints
+2024-03-11 16:53:55 (    0.16837 -   0.00642): 9: Start test hypotheses on linear deformations
+2024-03-11 16:53:55 (    0.17933 -   0.01096): 11: End testing
+2024-03-11 16:53:55 (    0.18321 -   0.00388): End of computations
+        0.18321 seconds is in (days,) hours, minutes, seconds: 0:00:00.183207 
