@@ -11,7 +11,8 @@ import argparse
 
 import pathlib
 import zipfile
-import shutil;
+import shutil
+import glob
 #import re
 
 deliver_dir = 'deliver_photos'
@@ -90,7 +91,11 @@ ort_parms = ort_parms + ';m13 (3x3 rotation matrix);m23 (3x3 rotation matrix);m3
 
 tellers = {}
 
-for file_path in input_dir.iterdir():
+for file_name in glob.iglob(input_path + '/**', recursive=True):
+    file_path = pathlib.Path(file_name)
+    if file_path.is_dir():
+        continue
+
     woord = file_path.name
     lettergreep = woord.split('_')
 
