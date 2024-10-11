@@ -1,21 +1,65 @@
 #!/usr/bin/bash
 
-src="/mnt/v/1045001_Rivierenland/Verwerking/24006 Berg en Dal/Beek_26092024.PegasusProject/Export/JPEG/Job_20240926_0724"
-tgt="/mnt/t/export_sphere/Beek_26092024/Job_20240926_0724"
+usage()
+{
+   cat << EOF
+usage: ${0##*/} [-i input_dir] [-o output_dir] [-v]
 
-pushd "$src" 1>/dev/null
+This script copies the spheric images only to a destination folder.
 
-ls -d Track*/Sphere | \
+The options are as follows:
+   -i   input directory. By default current directory.
+   -o   output directory. By default current directory.
+   -v   be verbose
+EOF
+	exit 1
+}
+
+input_dir=$(pwd)
+output_dir=$(pwd)
+
+unset verbose
+
+while getopts ":i:o:v" option ; do
+   case ${option} in
+      "i") input_dir="${OPTARG}"
+           ;;
+      "o") output_dir="${OPTARG}"
+           ;;
+      "v") verbose="yes"
+           ;;
+      *) usage
+         ;;
+   esac
+done
+
+if [[ ! -d "$input_dir" ]] ; then
+	echo "$0: input directory $input_dir does not exist" >&2
+	exit 1
+fi
+
+if [[ ! -d "$output_dir" ]] ; then
+	mkdir -p "$output_dir"
+fi
+
+pushd "$input_dir" 1>/dev/null
+
+find . -type d -name Sphere | \
 	while read i ; do
+		if [[ -n "$verbose" ]] ; then
+			echo "$0: copying spherical images from $i"
+		fi
+
 		track=${i%/Sphere}
-		mkdir -p "$tgt/$track"
-		cp -ax "$i" "$tgt/$track"
+		mkdir -p "$output_dir/$track"
+		cp -ax "$i" "$output_dir/$track"
 	done
 
 popd 1>/dev/null
 
-pushd "$tgt" 1>/dev/null
+pushd "$output_dir" 1>/dev/null
 find . -type f -size 0 -exec rm {} \;
 popd 1>/dev/null
 
 exit 0
+
