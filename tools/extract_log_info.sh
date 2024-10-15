@@ -70,6 +70,9 @@ find . -mindepth 3 -maxdepth 3 -type d -name 'Logs' | \
 			echo "$0: checking log directory:   $i"
 		fi
 
+		unset PEF_version
+		unset TRK_type
+
 		job_dir="${i%/Logs}"
 		job_dir="${job_dir##*/}"
 		
@@ -90,7 +93,9 @@ find . -mindepth 3 -maxdepth 3 -type d -name 'Logs' | \
 
 		# Several fldClient logs may exist
 		logfile=$(find . -name 'fldClient*.log' -print -quit)
-		TRK_type="$( grep -m 1 ' product:' "$logfile" | sed -n -e 's/.*product: \(.*\)\r/\1/p' )"
+		if [[ -n "$logfile" ]] ; then
+			TRK_type="$( grep -m 1 ' product:' "$logfile" | sed -n -e 's/.*product: \(.*\)\r/\1/p' )"
+		fi
 
 		popd 1>/dev/null
 
