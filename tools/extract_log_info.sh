@@ -54,7 +54,7 @@ if [[ ! -d "$output_dir" ]] ; then
 	mkdir -p "$output_dir"
 fi
 
-echo 'Pegasus Project,job,PEF version,path' > "$output_file"
+echo 'Pegasus Project,job,PEF version,PEF license,TRK type,path' > "$output_file"
 
 pushd "$input_dir" 1>/dev/null
 
@@ -78,18 +78,24 @@ find . -mindepth 3 -maxdepth 3 -type d -name 'Logs' | \
 		job_name="${job_dir%.job}"
 	
 		pushd $i 1>/dev/null
-		logfile=$(find . -name LeicaField*.log)
+
+		logfile=$(find . -name 'LeicaField*.log')
 		PEF_version="$( head -n 1 "$logfile" | sed -n -e 's/.*\(v.*\)\r/\1/p' )"
-		#PEF_version="${PEF_version##*v}"
+		license="$( grep -m 1 'License.*Valid' "$logfile" | sed -n -e 's/.*License:.* \(.*\)\r/\1/p' )"
+
+		# Several fldClient logs may exist
+		logfile=$(find . -name 'fldClient*.log' -print -quit)
+		TRK_type="$( grep -m 1 ' product:' "$logfile" | sed -n -e 's/.*product: \(.*\)\r/\1/p' )"
+
 		popd 1>/dev/null
-		
+
 		project_dir="${i%/Logs}"
 		project_dir="${project_dir%/*}"
 		project_dir="${project_dir##*/}"
 		
 		project_name="${project_dir%.PegasusProject}"
 		
-		echo ${project_name},${job_name},${PEF_version},${input_dir}/${i} >> "$output_file"
+		echo ${project_name},${job_name},${PEF_version},${license},${TRK_type},${input_dir}/${i} >> "$output_file"
 	done
 
 )
