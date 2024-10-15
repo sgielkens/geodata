@@ -50,6 +50,11 @@ fi
 output_dir="${output_file%/*}"
 output_file_name="${output_file##*/}"
 
+if [[ -f "$output_file" ]] ; then
+	echo "$0: output file alreasdy exists" >&2
+	exit 1
+fi
+
 if [[ ! -d "$output_dir" ]] ; then
 	mkdir -p "$output_dir"
 fi
