@@ -82,7 +82,7 @@ find . -mindepth 3 -maxdepth 3 -type d -name 'Logs' | \
 	
 		job_name="${job_dir%.job}"
 	
-		pushd $i 1>/dev/null
+		pushd "$i" 1>/dev/null
 
 		logfile=$(find . -name 'LeicaField*.log')
 		PEF_version="$( head -n 1 "$logfile" | sed -n -e 's/.*\(v.*\)\r/\1/p' )"
