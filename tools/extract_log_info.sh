@@ -28,7 +28,7 @@ while getopts ":i:o:v" option ; do
    case ${option} in
       "i") input_dir="${OPTARG}"
            ;;
-      "o") output_file"${OPTARG}"
+      "o") output_file="${OPTARG}"
            ;;
       "v") verbose="yes"
            ;;
