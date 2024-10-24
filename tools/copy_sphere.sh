@@ -52,7 +52,7 @@ find . -type d -name Sphere | \
 
 		track=${i%/Sphere}
 		mkdir -p "$output_dir/$track"
-		cp -ax "$i" "$output_dir/$track"
+		cp -dR -x "$i" "$output_dir/$track"
 	done
 
 popd 1>/dev/null
