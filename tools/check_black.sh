@@ -49,7 +49,11 @@ fi
 
 pushd "$input_dir" 1>/dev/null
 
+i=0
+rc=0
+
 find . -type d -name 'Track*' | \
+(
 	while read track ; do 
 		if [[ -n "$verbose" ]] ; then
 			echo "$0: checking Track: $track"
@@ -60,19 +64,38 @@ find . -type d -name 'Track*' | \
 		jpeg_file=$(find . -name '*.jpg' -print -quit)
 		if [[ -z "$jpeg_file" ]] ; then
 			echo "$0: no JPG found for track $track" >&2
+			rc=1
 		fi
 
 		mean_jpg=$(convert "$jpeg_file" -format "%[mean]" info:)
 		if [[ $? -ne 0 ]] ; then
 			echo "$0: failed to determine the mean pixel value for $jpeg_file" >&2
+			rc=1
 		fi
 
 		if [[ $mean_jpg = 0 ]] ; then
 			echo "$0: track $track contains black only pictures" >&2
+			rc=1
 		fi
+
+		i=$((i + 1))
 
 		popd 1>/dev/null
 	done
+
+if [[ -n "$verbose" ]] ; then
+	echo "" >&2
+	echo "$0: number of tracks checked: $i" >&2
+fi
+
+if [[ $rc -ne 0 ]] ; then
+	exit 1
+fi
+)
+
+if [[ $? -ne 0 ]] ; then
+	exit 1
+fi
 
 popd 1>/dev/null
 
