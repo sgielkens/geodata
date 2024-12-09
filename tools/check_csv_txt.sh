@@ -48,7 +48,6 @@ csv_list="${tmp_dir}/csv.lst"
 
 pushd "$input_dir" 1>/dev/null
 
-i=0
 rc=0
 
 find . -name '*.txt' | sed -n -e 's/\.txt//p' > "$txt_list"
@@ -75,7 +74,7 @@ if [[ -n $verbose ]] ; then
 fi
 
 if [[ $count_txt -ne $count_csv ]] ; then
-	echo "$0: number of txt files $count_txt not equal to number of csv files $count_csv" >&2
+	echo "$0: number of txt files ($count_txt) not equal to number of csv files ($count_csv)" >&2
 	rc=1
 fi
 
@@ -98,6 +97,32 @@ if [[ -s "$csv_only" ]] ; then
 	echo "" >&2
 	rc=1
 fi
+
+i=0
+while read regel ; do
+	i=$((i + 1))
+
+	track_nr="${regel##*Track}"
+	track_nr="${track_nr%%_*}"
+
+	if [[ $i -ne $track_nr ]] ; then
+		echo "$0: no txt file for track $track_nr" >&2
+		rc=1
+	fi
+done < "$txt_list"
+
+i=0
+while read regel ; do
+	i=$((i + 1))
+
+	track_nr="${regel##*Track}"
+	track_nr="${track_nr%_*}"
+
+	if [[ $i -ne $track_nr ]] ; then
+		echo "$0: no csv file for track $track_nr" >&2
+		rc=1
+	fi
+done < "$csv_list"
 
 if [[ $rc -ne 0 ]] ; then
 	exit 1
