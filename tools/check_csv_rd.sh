@@ -9,7 +9,7 @@ RD_Y_MAX='629000'
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-i input_dir] [-v]
+usage: ${0##*/} [-d] [-i input_dir] [-v]
 
 This script checks if the coordinates of csv files have valid RD values, i.e.
 
@@ -20,6 +20,7 @@ Values are in meters. It searches recursively for csv files in the track directo
 It is assumed that the x and y coordinates are in columns 3 and 4 respectively.
 
 The options are as follows:
+   -d   be very verbosea for debugging
    -i   input track directory. By default current directory.
    -v   be verbose
 EOF
@@ -29,9 +30,12 @@ EOF
 track_dir="$(pwd)"
 
 unset verbose
+unset debug
 
-while getopts ":i:v" option ; do
+while getopts ":di:v" option ; do
    case ${option} in
+      "d") debug="yes"
+           ;;
       "i") track_dir="${OPTARG}"
            ;;
       "v") verbose="yes"
@@ -55,7 +59,7 @@ rc=0
 find . -name '*.csv' | \
 (	
 	while read csv_file ; do
-		if [[ -n "$verbose" ]] ; then
+		if [[ -n "$debug" ]] ; then
 			echo "$0: checking RD coordinates for $csv_file"
 		fi
 
@@ -82,7 +86,7 @@ find . -name '*.csv' | \
 		i=$((i + 1))
 	done
 
-if [[ -n "$verbose" ]] ; then
+if [[ -n "$verbose" || -n "$debug" ]] ; then
 	echo "" >&2
 	echo "$0: number of csv files checked: $i" >&2
 fi
