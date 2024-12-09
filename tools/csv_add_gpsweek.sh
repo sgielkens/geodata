@@ -76,16 +76,27 @@ fi
 
 pushd "$output_dir" 1>/dev/null
 
+i=0
+
 find . -name *.csv | \
-	while read i ; do
+(
+	while read csv_file ; do
 		if [[ -n "$verbose" ]] ; then
-			echo "$0: adding GPS $gps_week week to $i"
+			echo "$0: adding GPS $gps_week week to $csv_file"
 		fi
 
-		csv_original="${i}.leica"
-		mv "$i" "$csv_original"
-		sed -n -e 's/;/;'$gps_week';/p' "$csv_original" > "$i"
+		csv_original="${csv_file}.leica"
+		mv "$csv_file" "$csv_original"
+		sed -n -e 's/;/;'$gps_week';/p' "$csv_original" > "$csv_file"
+
+		i=$((i + 1))
 	done
+
+if [[ -n "$verbose" ]] ; then
+	echo "" >&2
+	echo "$0: number of csv files with added GPS week: $i" >&2
+fi
+)
 
 popd 1>/dev/null
 
