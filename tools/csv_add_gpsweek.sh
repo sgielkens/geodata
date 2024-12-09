@@ -79,7 +79,7 @@ pushd "$output_dir" 1>/dev/null
 find . -name *.csv | \
 	while read i ; do
 		if [[ -n "$verbose" ]] ; then
-			echo "$0: adding GPS week to $i"
+			echo "$0: adding GPS $gps_week week to $i"
 		fi
 
 		csv_original="${i}.leica"
