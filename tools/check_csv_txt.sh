@@ -105,7 +105,8 @@ while read regel ; do
 	track_nr="${regel##*Track}"
 	track_nr="${track_nr%%_*}"
 
-	if [[ $i -ne $track_nr ]] ; then
+	# Strip leading 0 to prevent interpretation as octal (08) e.g.
+	if [[ $i -ne ${track_nr#0} ]] ; then
 		echo "$0: no txt file for track $track_nr" >&2
 		rc=1
 	fi
@@ -118,7 +119,8 @@ while read regel ; do
 	track_nr="${regel##*Track}"
 	track_nr="${track_nr%_*}"
 
-	if [[ $i -ne $track_nr ]] ; then
+	# Strip leading 0 to prevent interpretation as octal (08) e.g.
+	if [[ $i -ne ${track_nr#0} ]] ; then
 		echo "$0: no csv file for track $track_nr" >&2
 		rc=1
 	fi
