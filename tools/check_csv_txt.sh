@@ -107,7 +107,10 @@ while read regel ; do
 
 	# Strip leading 0 to prevent interpretation as octal (08) e.g.
 	if [[ $i -ne ${track_nr#0} ]] ; then
-		echo "$0: no txt file for track $track_nr" >&2
+		until [[ $i -eq ${track_nr#0} ]] ; do
+			echo "$0: no txt file for track $i" >&2
+			i=$((i + 1))
+		done
 		rc=1
 	fi
 done < "$txt_list"
@@ -121,7 +124,10 @@ while read regel ; do
 
 	# Strip leading 0 to prevent interpretation as octal (08) e.g.
 	if [[ $i -ne ${track_nr#0} ]] ; then
-		echo "$0: no csv file for track $track_nr" >&2
+		until [[ $i -eq ${track_nr#0} ]] ; do
+			echo "$0: no csv file for track $i" >&2
+			i=$((i + 1))
+		done
 		rc=1
 	fi
 done < "$csv_list"
