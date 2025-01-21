@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jan 20 15:18:56 2025
+
+@author: Serge Gielkens
+"""
+
+import sys
+import os
+import argparse
+import pathlib
+
+import laspy
+
+pwd = os.path.dirname(os.path.realpath(__file__))
+dir_path = pwd
+
+parser = argparse.ArgumentParser(description="Check LAS/LAZ files")
+
+parser.add_argument("-i", "--input", help="input directory containing LAS or LAZ files, by default the current directory")
+parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+
+args = parser.parse_args()
+
+input_path = ''
+
+if args.verbose:
+    print("Verbosity turned on")
+
+
+if args.input == None:
+    input_path = pwd
+else:
+    input_path = args.input
+
+input_dir = pathlib.Path(input_path)
+
+if not input_dir.is_dir():
+    print("Input directory does not exist: " + input_path)
+    sys.exit(1)
+
+
+for las_file in input_dir.iterdir():
+    las_name = las_file.name
+    
+    if not ( las_name.endswith(".las") or las_name.endswith(".laz") ):
+        if args.verbose:
+            print("Unexpected file type: " + las_name)
+#        sys.exit(1)
+    
+    las_in = laspy.open(las_file)
+    nr_points_in = las_in.header.point_count
+    
+    print( "Number of points " + str(nr_points_in) + " in LAS file:" )
+    print( str(las_file) + "\n" )
+        
+
