@@ -47,7 +47,8 @@ for las_file in input_dir.iterdir():
     if not ( las_name.endswith(".las") or las_name.endswith(".laz") ):
         if args.verbose:
             print("Unexpected file type: " + las_name)
-#        sys.exit(1)
+
+        continue
     
     las_in = laspy.open(las_file)
     nr_points_in = las_in.header.point_count
