@@ -3,7 +3,7 @@
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-i input_dir] [-v]
+usage: ${0##*/} [-a] [-i input_dir] [-r] [-v]
 
 Use this script to check if LAS/LAZ files have the wrong file
 signature, aka magic number. For LAS/LAZ files this number is the four first 
@@ -51,24 +51,25 @@ pushd "$input_dir" 1>/dev/null
 i=0
 rc=0
 
-maxdepth=1
+unset find_opts
 if [[ -z "$recursive" ]] ; then
-	maxdepth=0
+	find_opts="-maxdepth 1"
 fi
 
-find_opts="-name '*.las' -o -name '*.laz'"
+find_opts="$find_opts -type f"
+
 if [[ -z "$all" ]] ; then
-	unset find_opts
+	find_opts="$find_opts -name "'"*.las"'" -o -name "'"*.laz"'
 fi
 
-find . -maxdepth $maxdepth -type f $find_opts | \
+echo $find_opts | xargs find . | \
 (
 	while read las_file ; do 
 		if [[ -n "$verbose" ]] ; then
 			echo "$0: checking LAS/LAZ file: $las_file"
 		fi
 
-		signature=$(od -read-bytes=4 --address-radix=n --format=c "$las" )
+		signature=$(od --read-bytes=4 --address-radix=n --format=c "$las_file" )
 		if [[ $? -ne 0 ]] ; then
 			echo "$0: failed to determine the file signature for LAS/LAZ file $las_file" >&2
 			rc=1
@@ -82,8 +83,6 @@ find . -maxdepth $maxdepth -type f $find_opts | \
 		fi
 
 		i=$((i + 1))
-
-		popd 1>/dev/null
 	done
 
 if [[ -n "$verbose" ]] ; then
