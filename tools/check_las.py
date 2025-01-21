@@ -41,19 +41,25 @@ if not input_dir.is_dir():
     sys.exit(1)
 
 
-for las_file in input_dir.iterdir():
-    las_name = las_file.name
+#for las_file in input_dir.iterdir():
+for root, dirs, files in os.walk(input_path):
+    print ( "root: " + root)
     
-    if not ( las_name.endswith(".las") or las_name.endswith(".laz") ):
-        if args.verbose:
-            print("Unexpected file type: " + las_name)
+    for las_name in files:
+                
+        if not ( las_name.endswith(".las") or las_name.endswith(".laz") ):
+            if args.verbose:
+                print("Unexpected file type: " + las_name)
+            continue
 
-        continue
+        las_file = os.path.join(root, las_name)
+                
+        las_in = laspy.open(las_file)
+        nr_points_in = las_in.header.point_count
     
-    las_in = laspy.open(las_file)
-    nr_points_in = las_in.header.point_count
-    
-    print( "Number of points " + str(nr_points_in) + " in LAS file:" )
-    print( str(las_file) + "\n" )
+        print ( "Las file: " + las_file)
+        print( "Number of points " + str(nr_points_in) + "\n")
+
+
         
 
