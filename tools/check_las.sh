@@ -77,7 +77,7 @@ echo $find_opts | xargs find . | \
 
 		# Remove whitespaces
 		signature="${signature// /}"
-		if [[ $signature -ne 'LASF' ]] ; then
+		if [[ $signature != 'LASF' ]] ; then
 			echo "$0: LAS/LAZ file $las_file has wrong signature $signature" >&2
 			rc=1
 		fi
