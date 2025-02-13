@@ -105,6 +105,9 @@ while read regel ; do
 	track_nr="${regel##*Track}"
 	track_nr="${track_nr%%_*}"
 
+	# In case a track is split, a suffix is added, e.g. g-1, 9-2
+	track_nr="${track_nr%%-*}"
+
 	# Strip leading 0 to prevent interpretation as octal (08) e.g.
 	if [[ $i -ne ${track_nr#0} ]] ; then
 		until [[ $i -eq ${track_nr#0} ]] ; do
@@ -121,6 +124,9 @@ while read regel ; do
 
 	track_nr="${regel##*Track}"
 	track_nr="${track_nr%_*}"
+
+	# In case a track is split a suffix is added, e.g. 9-1, 9-2
+	track_nr="${track_nr%-*}"
 
 	# Strip leading 0 to prevent interpretation as octal (08) e.g.
 	if [[ $i -ne ${track_nr#0} ]] ; then
