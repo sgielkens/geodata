@@ -43,6 +43,8 @@ if [[ $? -ne 0 ]] ; then
 	exit 1
 fi
 
+trap "rm -fr $tmp_dir" EXIT
+
 txt_list="${tmp_dir}/txt.lst"
 csv_list="${tmp_dir}/csv.lst"
 
