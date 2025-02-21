@@ -6,7 +6,7 @@ sphere_dir='Sphere'
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-e export_dir] [-j job_dir] [-v]
+usage: ${0##*/} [-d debug] [-e export_dir] [-j job_dir] [-v]
 
 This script checks if for eacht track the number of exported JPEGs is equal
 to the number of frames according to the scan.db. It does this only
@@ -21,6 +21,7 @@ That last one contains the scan directories Track*.scan.
 
 
 The options are as follows:
+   -d   be more verbose
    -e   JPEG export directory, containing the images per Track.
         By default th current directory.
    -j   Job directory, i.e. directory containing the scan directories.
@@ -36,7 +37,7 @@ job_dir="$(pwd)"
 unset debug
 unset verbose
 
-while getopts ":d:e:j:v" option ; do
+while getopts ":de:j:v" option ; do
    case ${option} in
       "d") debug="yes"
            ;;
@@ -93,16 +94,19 @@ while read track ; do
 	if [[ ! -d "$track/$sphere_dir" ]] ; then
 		echo "$0: track $track has no Sphere directory $track/$sphere_dir" >&2
 		rc=1
+		continue
 	fi
 
 	if [[ ! -d "$job_dir/$track.scan" ]] ; then
 		echo "$0: track $track has no scan directory $job_dir/$track.scan" >&2
 		rc=1
+		continue
 	fi
 
 	if [[ ! -e "$job_dir/$track.scan/$scan_db_file" ]] ; then
 		echo "$0: track $track has no scan.db $job_dir/$track.scan/$scan_db_file" >&2
 		rc=1
+		continue
 	fi
 	
 	if [[ -n $verbose ]] ; then
@@ -127,13 +131,15 @@ while read track ; do
 		rc=1
 	fi
 
-	if [[ -n "$verbose" ]] ; then
-		echo "$0: number of exported JPEGs $nr_jpegs and of frame count in scan.db $nr_frames" >&2
+	if [[ -n "$debug" ]] ; then
+		echo "$0: number of exported JPEGs in $track/$sphere_dir: $nr_jpegs" >&2
+		echo "$0: frame count in scan.db $job_dir/$track.scan/$scan_db_file: $nr_frames" >&2
 		echo "" >&2
 	fi
 
 	if [[ $nr_frames -ne $nr_jpegs ]] ; then
 		echo "$0: mismatch between number of frames $nr_frames and number of JPEGs $nr_jpegs" >&2
+		echo "" >&2
 		rc=1
 	fi
 
