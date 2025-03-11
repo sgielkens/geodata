@@ -65,8 +65,8 @@ ls -d Track*/Sphere | \
 
 popd 1>/dev/null
 
-pushd "$output_dir" 1>/dev/null
-find . -type f -size 0 -exec rm {} \;
-popd 1>/dev/null
+#pushd "$output_dir" 1>/dev/null
+#find . -type f -size 0 -exec rm {} \;
+#popd 1>/dev/null
 
 exit 0
