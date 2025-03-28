@@ -3,14 +3,15 @@
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-i input_dir] [-v]
+usage: ${0##*/} [-d] [-i input_dir] [-v]
 
 Use this script to check if all Ladybug recordings have the necessary files.
 
-It reads in the input directory all subdirectories. These subdirectories
+It reads from the input directory all subdirectories. These subdirectories
 are assumed to be the recording directories of the Ladybug.
 
 The options are as follows:
+   -d   debugging output
    -i   input directory. By default current directory.
    -v   be verbose
 EOF
@@ -19,10 +20,13 @@ EOF
 
 input_dir=$(pwd)
 
+unset debug
 unset verbose
 
-while getopts ":i:v" option ; do
+while getopts ":di:v" option ; do
    case ${option} in
+      "d") debug="yes"
+           ;;
       "i") input_dir="${OPTARG}"
            ;;
       "v") verbose="yes"
@@ -54,7 +58,7 @@ rc=0
 lbg_items=("Ladybug Grabber" "Serial NMEA Reader" "SystemState" "Triggerbox")
 lbg_suffix=("dat" "idx")
 
-find . -type d > "$tmp_file"
+find . -mindepth 1 -type d > "$tmp_file"
 
 rc=0
 i=0
@@ -66,12 +70,16 @@ while read record ; do
 
 	j=0
 
-	while [[ $i -lt ${items[@]} ]] ; do
+	while [[ $j -lt ${#lbg_items[@]} ]] ; do
 
 		k=0
-		while [[ $k -lt ${lbg_suffix[@]} ]] ; do
-			if [[ ! -f "$record/${item[$j]}.${lbg_suffix[$k]}" ]] ; then
-				echo "$0: missing Ladybug item: $record/${item[$j]}.${lbg_suffix[$k]}" >&2	
+		while [[ $k -lt ${#lbg_suffix[@]} ]] ; do
+			if [[ -n "$debug" ]] ; then
+				echo "$0: checking recording file: $record/${lbg_items[$j]}.${lbg_suffix[$k]}" >&2
+			fi
+
+			if [[ ! -f "$record/${lbg_items[$j]}.${lbg_suffix[$k]}" ]] ; then
+				echo "$0: missing Ladybug item: $record/${lbg_items[$j]}.${lbg_suffix[$k]}" >&2
 				rc=1
 			fi
 			k=$((k + 1))
