@@ -2,6 +2,9 @@
 
 scan_db_file='scan.db'
 
+trk_proj_suf='PegasusProject'
+lbg_record_suf='ecordings'
+
 usage()
 {
    cat << EOF
@@ -20,15 +23,14 @@ with Ladybug recording directories.
 
 The options are as follows:
    -p   TRK project directory, i.e. the directory with suffix PegasusProject
+        If left empty, it is constructed from the Ladybug record directory
    -r   directory with Ladybug recording directories. These subdirs have
         timestamps as directory names
+        If left empty, it is constructed from the TRK project directory
    -v   be verbose
 EOF
 	exit 1
 }
-
-trk_proj="$(pwd)"
-lbg_record="$(pwd)"
 
 unset verbose
 
@@ -45,6 +47,31 @@ while getopts ":p:r:v" option ; do
    esac
 done
 
+trk_proj=${trk_proj%/}
+lbg_record=${lbg_record%/}
+
+if [[ -z "${trk_proj}" ]] ; then
+	if [[ -n "$lbg_record" ]] ; then
+		lbg_record_path="${lbg_record%/*}"
+		lbg_record_main="${lbg_record##*/}"
+		lbg_record_main="${lbg_record_main%_[rR]$lbg_record_suf}"
+
+		trk_proj="$lbg_record_path/$lbg_record_main.$trk_proj_suf"
+	fi
+fi
+
+if [[ -z "${lbg_record}" ]] ; then
+	if [[ -n "$trk_proj" ]] ; then
+		trk_proj_path="${trk_proj%/*}"
+		trk_proj_main="${trk_proj##*/}"
+		trk_proj_main="${trk_proj_main%.$trk_proj_suf}"
+
+		lbg_record="$trk_proj_path/$trk_proj_main"'_r'"$lbg_record_suf"
+		if [[ ! -d  "$lbg_record" ]] ; then
+			lbg_record="$trk_proj_path/$trk_proj_main"'_R'"$lbg_record_suf"
+		fi
+	fi
+fi
 
 if [[ ! -d  "$trk_proj" ]] ; then
 	echo "$0: TRK project $trk_proj does not exist" >&2
@@ -55,6 +82,8 @@ if [[ ! -d  "$lbg_record" ]] ; then
 	echo "$0: Ladybug record $lbg_record does not exist" >&2
 	exit 1
 fi
+
+exit 42
 
 sqlite3_bin="$(which sqlite3)"
 
