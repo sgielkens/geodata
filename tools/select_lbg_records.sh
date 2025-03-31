@@ -69,6 +69,8 @@ if [[ $? -ne 0 ]] ; then
 	exit 1
 fi
 
+trap 'rm -fr "$tmp_dir"' EXIT
+
 pushd "$trk_proj" 2>/dev/null
 
 find . -maxdepth 1 -name 'Job_*.job' > "$tmp_dir/job.lst"
