@@ -5,28 +5,28 @@ scan_db_file='scan.db'
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-j job_db] [-o output_dir] [-v]
+usage: ${0##*/} [-p trk_project] [-r ladybug_recordings] [-v]
 
-This script adds the GPS week number to all csv files of a Pegasus job.
-It uses the default job database job.db to extract the GPS week number.
-It adds this to the csv files of the extenal orientation as a seperate column.
+This script determines the start time of the first track and the stop time
+of the last trackof a TRK project. It does this per job.
 
-It needs as input the job.db file. The output directory
-is the JPEG export directory at the level of the tracks, e.g.
+Then it compares these timestamps with the directory names of the
+Ladybug recordings.Those names are timestamps themselves.
+Directories that fall outside of the range determined by
+the start and stop times of the tracks are displayed.
 
-foo.PegasusProject/Export/JPEG/bar.job
-
+It needs both the TRK project directory and the associated directory
+with Ladybug recording directories.
 
 The options are as follows:
-   -j   job.db file. By default job.db in the current directory.
-   -o   output directory. By default current directory.
+   -p   job.db file. By default job.db in the current directory.
+   -r   output directory. By default current directory.
    -v   be verbose
 EOF
 	exit 1
 }
 
 input_dir="$(pwd)"
-job_db="${input_dir}/$job_db_file"
 
 unset verbose
 
@@ -145,15 +145,57 @@ popd >/dev/null
 #
 pushd "$lbg_record" >/dev/null
 
+convert_date () {
+	date_str="$1"
+
+	if [[ -z "$date_str" ]] ; then
+	       echo "$0: empty input argument date_str" >&2
+	       exit 1
+	fi
+
+	date_str=\
+		$(echo $date_str | sed -n -e 's/,/:/g ; \
+		s/\([^:]\+\):\([^:]\+\):\([^:]\+\):\(.*\)/\1-\2-\3 \4/p')
+
+	date_str=$(date -d "$date_str" '+%Y_%m_%d_%H_%M_%S')
+
+	if [[ -z "$date_str" ]] ; then
+	       echo "$0: could not convert date_str $date_str" >&2
+	       exit 1
+	fi
+
+	echo "$date_str"
+}
+
 while read job ; do
 	scan_first_start=$(< $tmp_dir/${job}_scan_first_start)
+	scan_first_start=$(convert_date "$scan_first_start")
+
+	if [[ $? -ne 0 ]] ; then
+		echo "$0: could determine scan_first_start for job $job" >&2
+		exit 1
+	fi
+
 	scan_last_stop=$(< $tmp_dir/${job}_scan_last_stop)
-
-	s
+	scan_last_stop=$(convert_date "$scan_last_stop")
 	
+	if [[ $? -ne 0 ]] ; then
+		echo "$0: could determine scan_last_stop for job $job" >&2
+		exit 1
+	fi
+
+	find . -mindepth 1 -maxdepth 1 -type d |
+		while read record ; do
+			if [[ "$record" < "$scan_first_start" ]] ; then
+				echo "$0: recording $record start before start first track of job $job" >&2
+			fi
+
+			if [[ "$record" > "$scan_last_stop" ]] ; then
+				echo "$0: recording $record start after stop last track of job $job" >&2
+			fi
+		done
+
 done < "$tmp_dir/job.lst"
-
-
 
 popd 1>/dev/null
 
