@@ -184,6 +184,7 @@ convert_date () {
 while read job ; do
 	scan_first_start=$(< $tmp_dir/${job}_scan_first_start)
 	scan_first_start=$(convert_date "$scan_first_start")
+	scan_first_start_year="${scan_first_start%%_*}"
 
 	if [[ $? -ne 0 ]] ; then
 		echo "$0: could determine scan_first_start for job $job" >&2
@@ -195,6 +196,7 @@ while read job ; do
 
 	scan_last_stop=$(< $tmp_dir/${job}_scan_last_stop)
 	scan_last_stop=$(convert_date "$scan_last_stop")
+	scan_last_stop_year="${scan_last_stop%%_*}"
 	
 	if [[ $? -ne 0 ]] ; then
 		echo "$0: could determine scan_last_stop for job $job" >&2
@@ -204,7 +206,12 @@ while read job ; do
 		echo "$0: last scan stop time $scan_last_stop" >&2
 	fi
 
-	find . -mindepth 1 -maxdepth 1 -type d -printf '%f\n' |
+	if [[ "$scan_first_start_year" != "$scan_last_stop_year" ]] ; then
+		echo "$0: mismatch of year in scan_first_start $scan_first_start_year and scan_last_stop $scan_last_stop_year"
+		exit 1
+	fi
+
+	find . -mindepth 1 -maxdepth 1 -type d -name "${scan_first_start_year}*" -printf '%f\n' |
 		while read record ; do
 			if [[ "$record" < "$scan_first_start" ]] ; then
 				echo "$0: recording $record start before start first track of job $job" >&2
