@@ -19,38 +19,82 @@ Directories that fall outside of the range determined by
 the start and stop times of the tracks are displayed.
 
 It needs both the TRK project directory and the associated directory
-with Ladybug recording directories.
+with Ladybug recording directories. These can be explicitly set by the
+relevant options. When one or both options are left empty, the script tries
+to deduce the directory or directories.
 
 The options are as follows:
+   -d   show detailed debug information. This implies verbosity.
    -p   TRK project directory, i.e. the directory with suffix PegasusProject
         If left empty, it is constructed from the Ladybug record directory
+        If option -r is also unset, it checks if the current directory
+        is a TRK project or Ladybug record.
    -r   directory with Ladybug recording directories. These subdirs have
-        timestamps as directory names
-        If left empty, it is constructed from the TRK project directory
+        timestamps as directory names.
+        If left empty, it is constructed from the TRK project directory.
+        If option -p is also unset, it checks if the current directory
+        is a TRK project or Ladybug record.
    -v   be verbose
 EOF
 	exit 1
 }
 
+unset debug
 unset verbose
 
-while getopts ":p:r:v" option ; do
+while getopts ":p:dr:v" option ; do
    case ${option} in
+      "d") debug='yes'
+           ;;
       "p") trk_proj="${OPTARG}"
            ;;
       "r") lbg_record="${OPTARG}"
            ;;
-      "v") verbose="yes"
+      "v") verbose='yes'
            ;;
       *) usage
          ;;
    esac
 done
 
+if [[ -n "$debug" ]] ; then
+	verbose='yes'
+fi
+
 trk_proj=${trk_proj%/}
 lbg_record=${lbg_record%/}
 
+if [[ -z "$trk_proj" && -z "$lbg_record" ]] ; then
+	if [[ -n "$debug" ]] ; then
+		echo "$0: checking if current directory is a TRK project or Ladybug record" >&2
+	fi
+
+	work_dir="$(pwd)"
+	work_dir_suf="${work_dir##*[._]}"
+
+	if [[ "$work_dir_suf" == "$trk_proj_suf" ]] ; then
+		trk_proj="$work_dir"
+
+		if [[ -n "$debug" ]] ; then
+			echo "$0: deduced TRK project as $trk_proj" >&2
+		fi
+	elif [[ "${work_dir_suf#?}" == "$lbg_record_suf" ]] ; then
+		lbg_record="$work_dir"
+
+		if [[ -n "$debug" ]] ; then
+			echo "$0: deduced Ladybug record as $lbg_record" >&2
+		fi
+	else
+		echo "$0: could not determine TRK project and Ladybug record" >&2
+		exit 1
+	fi
+fi
+
 if [[ -z "${trk_proj}" ]] ; then
+	if [[ -n "$debug" ]] ; then
+		echo "$0: deducing TRK project" >&2
+	fi
+
 	if [[ -n "$lbg_record" ]] ; then
 		lbg_record_path="${lbg_record%/*}"
 		lbg_record_main="${lbg_record##*/}"
@@ -58,9 +102,17 @@ if [[ -z "${trk_proj}" ]] ; then
 
 		trk_proj="$lbg_record_path/$lbg_record_main.$trk_proj_suf"
 	fi
+
+	if [[ -n "$debug" ]] ; then
+		echo "$0: deduced TRK project as $trk_proj" >&2
+	fi
 fi
 
 if [[ -z "${lbg_record}" ]] ; then
+	if [[ -n "$debug" ]] ; then
+		echo "$0: deducing Ladybug record" >&2
+	fi
+
 	if [[ -n "$trk_proj" ]] ; then
 		trk_proj_path="${trk_proj%/*}"
 		trk_proj_main="${trk_proj##*/}"
@@ -70,6 +122,10 @@ if [[ -z "${lbg_record}" ]] ; then
 		if [[ ! -d  "$lbg_record" ]] ; then
 			lbg_record="$trk_proj_path/$trk_proj_main"'_R'"$lbg_record_suf"
 		fi
+	fi
+
+	if [[ -n "$debug" ]] ; then
+		echo "$0: deduced Ladybug record as $lbg_record" >&2
 	fi
 fi
 
@@ -82,8 +138,6 @@ if [[ ! -d  "$lbg_record" ]] ; then
 	echo "$0: Ladybug record $lbg_record does not exist" >&2
 	exit 1
 fi
-
-exit 42
 
 sqlite3_bin="$(which sqlite3)"
 
@@ -245,11 +299,11 @@ while read job ; do
 	find . -mindepth 1 -maxdepth 1 -type d -name "${scan_first_start_year}*" -printf '%f\n' |
 		while read record ; do
 			if [[ "$record" < "$scan_first_start" ]] ; then
-				echo "$0: recording $record start before start first track of job $job" >&2
+				echo "$0: recording $record starts before start first track of job $job" >&2
 			fi
 
 			if [[ "$record" > "$scan_last_stop" ]] ; then
-				echo "$0: recording $record start after stop last track of job $job" >&2
+				echo "$0: recording $record starts after stop last track of job $job" >&2
 			fi
 		done
 
