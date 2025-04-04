@@ -154,7 +154,7 @@ fi
 
 trap 'rm -fr "$tmp_dir"' EXIT
 
-pushd "$trk_proj" 2>/dev/null
+pushd "$trk_proj" 1>/dev/null
 
 find . -maxdepth 1 -name 'Job_*.job' > "$tmp_dir/job.lst"
 
@@ -235,15 +235,15 @@ while read job ; do
 		exit 1
 	fi
 
-	popd >/dev/null
+	popd 1>/dev/null
 done < "$tmp_dir/job.lst"
 
-popd >/dev/null
+popd 1>/dev/null
 
 #
 # Ladybug part
 #
-pushd "$lbg_record" >/dev/null
+pushd "$lbg_record" 1>/dev/null
 
 convert_date () {
 	date_elems="$1"
@@ -296,6 +296,7 @@ while read job ; do
 		exit 1
 	fi
 
+	echo "" >&2
 	find . -mindepth 1 -maxdepth 1 -type d -name "${scan_first_start_year}*" -printf '%f\n' |
 		while read record ; do
 			if [[ "$record" < "$scan_first_start" ]] ; then
