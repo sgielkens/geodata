@@ -68,6 +68,11 @@ while read record ; do
 		echo "$0: checking recording: $record" >&2
 	fi
 
+	if [[ ! "$record" =~ ...._.._.._.._.._.. ]] ; then
+		echo "$0: skipping unexpected recording format $record" >&2
+		continue
+	fi
+
 	j=0
 
 	while [[ $j -lt ${#lbg_items[@]} ]] ; do
