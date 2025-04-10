@@ -245,7 +245,8 @@ popd 1>/dev/null
 #
 pushd "$lbg_record" 1>/dev/null
 
-convert_date () {
+# Convert YYYY,MM,DD,HH,MM,SS -> YYYY_MM_DD_HH_MM_SS
+convert_date_trk () {
 	date_elems="$1"
 
 	if [[ -z "$date_elems" ]] ; then
@@ -259,16 +260,52 @@ convert_date () {
 	date_str_conv="$(date -d "$date_str" '+%Y_%m_%d_%H_%M_%S')"
 
 	if [[ -z "$date_str_conv" ]] ; then
-	       echo "$0: could not convert date_str $date_str" >&2
+	       echo "$0: could not convert date_str $date_elems" >&2
 	       exit 1
 	fi
 
 	echo "$date_str_conv"
 }
 
+# Convert YYYY_MM_DD_HH_MM_SS -> YYYY-MM-DD HH:MM:SS
+convert_date_lbg () {
+	date_elems="$1"
+
+	if [[ -z "$date_elems" ]] ; then
+	       echo "$0: empty input argument date_elems" >&2
+	       exit 1
+	fi
+
+	date_str_conv="$(echo "$date_elems" | \
+		sed -n -e 's/_/:/g ; s/\([^:]\+\):\([^:]\+\):\([^:]\+\):\(.*\)/\1-\2-\3 \4/p')"
+
+	if [[ -z "$date_str_conv" ]] ; then
+	       echo "$0: could not convert date_str $date_elems" >&2
+	       exit 1
+	fi
+
+	echo "$date_str_conv"
+}
+
+# Convert number of seconds -> HH:MM:SS
+convert_secs () {
+	nr_secs="$1"
+
+	if [[ -z "$nr_secs" ]] ; then
+	       echo "$0: empty input argument nr_secs" >&2
+	       exit 1
+	fi
+
+	nr_hours=$(( $nr_secs / 3600 ))
+	nr_mins=$(( ($nr_secs - 3600 * $nr_hours) / 60 ))
+	nr_secs=$(( $nr_secs - 3600 * $nr_hours - 60 * $nr_mins ))
+
+	echo "$nr_hours:$nr_mins:$nr_secs"
+}
+
 while read job ; do
 	scan_first_start=$(< $tmp_dir/${job}_scan_first_start)
-	scan_first_start=$(convert_date "$scan_first_start")
+	scan_first_start=$(convert_date_trk "$scan_first_start")
 	scan_first_start_year="${scan_first_start%%_*}"
 
 	if [[ $? -ne 0 ]] ; then
@@ -280,7 +317,7 @@ while read job ; do
 	fi
 
 	scan_last_stop=$(< $tmp_dir/${job}_scan_last_stop)
-	scan_last_stop=$(convert_date "$scan_last_stop")
+	scan_last_stop=$(convert_date_trk "$scan_last_stop")
 	scan_last_stop_year="${scan_last_stop%%_*}"
 	
 	if [[ $? -ne 0 ]] ; then
@@ -297,16 +334,44 @@ while read job ; do
 	fi
 
 	echo "" >&2
-	find . -mindepth 1 -maxdepth 1 -type d -name "${scan_first_start_year}*" -printf '%f\n' |
-		while read record ; do
-			if [[ "$record" < "$scan_first_start" ]] ; then
-				echo "$0: recording $record starts before start first track of job $job" >&2
-			fi
 
-			if [[ "$record" > "$scan_last_stop" ]] ; then
-				echo "$0: recording $record starts after stop last track of job $job" >&2
-			fi
-		done
+	find . -mindepth 1 -maxdepth 1 -type d -name "${scan_first_start_year}*" -printf '%f\n' | \
+		sort > "$tmp_dir/record.lst"
+
+	while read record ; do
+		if [[ "$record" < "$scan_first_start" ]] ; then
+			echo "$0: recording $record starts before start first track of job $job" >&2
+		fi
+
+		if [[ "$record" > "$scan_last_stop" ]] ; then
+			echo "$0: recording $record starts after stop last track of job $job" >&2
+		fi
+	done < "$tmp_dir/record.lst"
+
+	record_first_start="$(head -n1 "$tmp_dir/record.lst")"
+	record_first_start=$(convert_date_lbg "$record_first_start")
+	record_first_start_s="$(date -d "$record_first_start" '+%s')"
+
+	record_last_start="$(tail -n1 "$tmp_dir/record.lst")"
+	record_last_start=$(convert_date_lbg "$record_last_start")
+	record_last_start_s="$(date -d "$record_last_start" '+%s')"
+
+	scan_first_start=$(convert_date_lbg "$scan_first_start")
+	scan_first_start_s="$(date -d "$scan_first_start" '+%s')"
+
+	scan_last_stop=$(convert_date_lbg "$scan_last_stop")
+	scan_last_stop_s="$(date -d "$scan_last_stop" '+%s')"
+
+	diff_scan_record_first="$(( $scan_first_start_s - $record_first_start_s ))"
+	diff_scan_record_first="$(convert_secs "$diff_scan_record_first")"
+
+	diff_scan_record_last="$(( $scan_last_stop_s - $record_last_start_s ))"
+	diff_scan_record_last="$(convert_secs "$diff_scan_record_last")"
+
+	echo "" >&2
+
+	echo "Duration between start first track and start first record: $diff_scan_record_first" >&2
+	echo "Duration between stop last track and start last record: $diff_scan_record_last" >&2
 
 done < "$tmp_dir/job.lst"
 
