@@ -18,6 +18,10 @@ Ladybug recordings. Those names are timestamps themselves.
 Directories that fall outside of the range determined by
 the start and stop times of the tracks are displayed.
 
+In addition the duration between the start of the first track and recording
+is shown. This is also done for the stop of the last track and the start of
+the last recording.
+
 It needs both the TRK project directory and the associated directory
 with Ladybug recording directories. These can be explicitly set by the
 relevant options. When one or both options are left empty, the script tries
@@ -190,7 +194,7 @@ while read job ; do
 		exit 1
 	fi
 	if [[ -n "$verbose" ]] ; then
-		echo "$0: last scan $scan_last" >&2
+		echo "$0: last scan  $scan_last" >&2
 	fi
 
 
@@ -300,6 +304,18 @@ convert_secs () {
 	nr_mins=$(( ($nr_secs - 3600 * $nr_hours) / 60 ))
 	nr_secs=$(( $nr_secs - 3600 * $nr_hours - 60 * $nr_mins ))
 
+	if [[ $nr_hours != ${nr_hours#0} ]] ; then
+		nr_hours="0$nr_hours"
+	fi
+
+	if [[ $nr_mins != ${nr_mins#0} ]] ; then
+		nr_mins="0$nr_mins"
+	fi
+
+	if [[ $nr_secs != ${nr_secs#0} ]] ; then
+		nr_secs="0$nr_secs"
+	fi
+
 	echo "$nr_hours:$nr_mins:$nr_secs"
 }
 
@@ -325,7 +341,7 @@ while read job ; do
 		exit 1
 	fi
 	if [[ -n "$verbose" ]] ; then
-		echo "$0: last scan stop time $scan_last_stop" >&2
+		echo "$0: last scan stop time   $scan_last_stop" >&2
 	fi
 
 	if [[ "$scan_first_start_year" != "$scan_last_stop_year" ]] ; then
@@ -370,8 +386,8 @@ while read job ; do
 
 	echo "" >&2
 
-	echo "Duration between start first track and start first record: $diff_scan_record_first" >&2
-	echo "Duration between stop last track and start last record: $diff_scan_record_last" >&2
+	echo "Duration between start first track and start first record $diff_scan_record_first" >&2
+	echo "Duration between stop last track and start last record    $diff_scan_record_last" >&2
 
 done < "$tmp_dir/job.lst"
 
