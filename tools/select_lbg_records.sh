@@ -293,11 +293,18 @@ convert_date_lbg () {
 
 # Convert number of seconds -> HH:MM:SS
 convert_secs () {
+	minus=' '
+
 	nr_secs="$1"
 
 	if [[ -z "$nr_secs" ]] ; then
 	       echo "$0: empty input argument nr_secs" >&2
 	       exit 1
+	fi
+
+	if [[ $nr_secs =~ ^- ]] ; then
+		minus='-'
+		nr_secs="${nr_secs#-}"
 	fi
 
 	nr_hours=$(( $nr_secs / 3600 ))
@@ -316,7 +323,7 @@ convert_secs () {
 		nr_secs="0$nr_secs"
 	fi
 
-	echo "$nr_hours:$nr_mins:$nr_secs"
+	echo "${minus}$nr_hours:$nr_mins:$nr_secs"
 }
 
 while read job ; do
@@ -364,11 +371,21 @@ while read job ; do
 		fi
 	done < "$tmp_dir/record.lst"
 
+	echo "" >&2
+
 	record_first_start="$(head -n1 "$tmp_dir/record.lst")"
+	if [[ -n "$verbose" ]] ; then
+		echo "$0: first record start time $record_first_start" >&2
+	fi
+
 	record_first_start=$(convert_date_lbg "$record_first_start")
 	record_first_start_s="$(date -d "$record_first_start" '+%s')"
 
 	record_last_start="$(tail -n1 "$tmp_dir/record.lst")"
+	if [[ -n "$verbose" ]] ; then
+		echo "$0: last record start time  $record_last_start" >&2
+	fi
+
 	record_last_start=$(convert_date_lbg "$record_last_start")
 	record_last_start_s="$(date -d "$record_last_start" '+%s')"
 
@@ -381,13 +398,13 @@ while read job ; do
 	diff_scan_record_first="$(( $scan_first_start_s - $record_first_start_s ))"
 	diff_scan_record_first="$(convert_secs "$diff_scan_record_first")"
 
-	diff_scan_record_last="$(( $scan_last_stop_s - $record_last_start_s ))"
+	diff_scan_record_last="$(( $record_last_start_s - $scan_last_stop_s ))"
 	diff_scan_record_last="$(convert_secs "$diff_scan_record_last")"
 
 	echo "" >&2
 
-	echo "Duration between start first track and start first record $diff_scan_record_first" >&2
-	echo "Duration between stop last track and start last record    $diff_scan_record_last" >&2
+	echo "Delay between start first record and start first track $diff_scan_record_first" >&2
+	echo "Delay between stop last track and start last record    $diff_scan_record_last" >&2
 
 done < "$tmp_dir/job.lst"
 
