@@ -304,15 +304,15 @@ convert_secs () {
 	nr_mins=$(( ($nr_secs - 3600 * $nr_hours) / 60 ))
 	nr_secs=$(( $nr_secs - 3600 * $nr_hours - 60 * $nr_mins ))
 
-	if [[ $nr_hours != ${nr_hours#0} ]] ; then
+	if [[ $nr_hours =~ ^.$ ]] ; then
 		nr_hours="0$nr_hours"
 	fi
 
-	if [[ $nr_mins != ${nr_mins#0} ]] ; then
+	if [[ $nr_mins =~ ^.$ ]] ; then
 		nr_mins="0$nr_mins"
 	fi
 
-	if [[ $nr_secs != ${nr_secs#0} ]] ; then
+	if [[ $nr_secs =~ ^.$ ]] ; then
 		nr_secs="0$nr_secs"
 	fi
 
