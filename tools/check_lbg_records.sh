@@ -64,11 +64,13 @@ rc=0
 i=0
 
 while read record ; do 
+	record="${record##*/}"
+
 	if [[ -n "$verbose" ]] ; then
 		echo "$0: checking recording: $record" >&2
 	fi
 
-	if [[ ! "$record" =~ ...._.._.._.._.._.. ]] ; then
+	if [[ ! "$record" =~ ^...._.._.._.._.._..$ ]] ; then
 		echo "$0: skipping unexpected recording format $record" >&2
 		continue
 	fi
