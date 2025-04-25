@@ -23,6 +23,7 @@ EOF
 }
 
 input_dir=$(pwd)
+pgr_dir=${input_dir}'/PGR'
 
 unset debug
 unset verbose
@@ -94,6 +95,12 @@ while read record ; do
 	if [[ ! -s "$tmp_pgr" ]] ; then
 		echo "$0: missing PGR file(s) for recording $record" >&2
 		rc=1
+	fi
+
+	if [[ -n "$debug" ]] ; then
+		echo "$0: recording $record has the following PGR files" >&2
+		cat "$tmp_pgr" >&2
+		echo "" >&2
 	fi
 
 	i=$((i + 1))
