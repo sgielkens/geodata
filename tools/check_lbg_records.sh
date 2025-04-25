@@ -8,7 +8,8 @@ usage: ${0##*/} [-d] [-i input_dir] [-v]
 Use this script to check if all Ladybug recordings have the necessary files.
 
 It reads from the input directory all subdirectories. These subdirectories
-are assumed to be the recording directories of the Ladybug.
+are assumed to be the recording directories of the Ladybug. Directories not
+having the correct name pattern (YYYY_MM_DD_hh_mm_ss) are skipped.
 
 The options are as follows:
    -d   debugging output
@@ -52,13 +53,15 @@ trap 'rm -f $tmp_file' EXIT
 
 pushd "$input_dir" 1>/dev/null
 
-i=0
-rc=0
-
 lbg_items=("Ladybug Grabber" "Serial NMEA Reader" "SystemState" "Triggerbox")
 lbg_suffix=("dat" "idx")
 
 find . -mindepth 1 -type d > "$tmp_file"
+
+if [[ ! -s "$tmp_file" ]] ; then
+	echo "$0: no recordings found" >&2
+	exit 1
+fi
 
 rc=0
 i=0
