@@ -3,7 +3,7 @@
 scan_db_file='scan.db'
 
 trk_proj_suf='PegasusProject'
-lbg_record_suf='ecordings'
+lbg_record_suf='ec'
 
 usage()
 {
