@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 trk_proj_suf='PegasusProject'
-lbg_record_suf='ecordings'
+lbg_record_suf='ec'
 
 usage()
 {
@@ -170,7 +170,7 @@ trap 'rm -fr "$tmp_dir"' EXIT
 
 pushd "$trk_proj" 1>/dev/null
 
-find . -maxdepth 1 -name 'Job_*.job' > "$tmp_dir/job.lst"
+find . -maxdepth 1 -name 'Job_*.job' > "${tmp_dir}/job.lst"
 
 #
 # TRK part
@@ -192,20 +192,20 @@ while read job ; do
 	if [[ -n "$verbose" ]] ; then
 		echo "$0: uploading Leica Field log for job $job" >&2
 	fi
-	rclone copy --verbose Logs --include LeicaField_* "$connection:$geo_prefix/${job_name}/$geo_log"
+	rclone copy --verbose Logs --include 'LeicaField_*' "$connection:$geo_prefix/${job_name}/$geo_log"
 
 	if [[ -n "$verbose" ]] ; then
 		echo "$0: uploading IE trajectory for job $job" >&2
 	fi
-	rclone copy --verbose Trajectory_ok/IE/ --include *.cts "$connection:$geo_prefix/${job_name}/$geo_traj"
+	rclone copy --verbose Trajectory_ok/IE/ --include '*.cts' "$connection:$geo_prefix/${job_name}/$geo_traj"
 	 
 	if [[ -n "$verbose" ]] ; then
 		echo "$0: uploading LiDAR data for job $job" >&2
 	fi
-	rclone copy --verbose . --include *lidar* "$connection:$geo_prefix/${job_name}/$geo_lidar"
+	rclone copy --verbose . --include '*lidar*' "$connection:$geo_prefix/${job_name}/$geo_lidar"
 
 	popd 1>/dev/null
-done < "$tmp_dir/job.lst"
+done < "${tmp_dir}/job.lst"
 
 popd 1>/dev/null
 
@@ -213,11 +213,6 @@ popd 1>/dev/null
 # Ladybug part
 #
 pushd "$lbg_record" 1>/dev/null
-
-if [[ ! -d 'Logs' ]] ; then
-	echo "$0: job $job has no directory Logs" >&2
-	exit 1
-fi
 
 if [[ -n "$verbose" ]] ; then
 	echo "$0: uploading mark4 data for job $job" >&2
