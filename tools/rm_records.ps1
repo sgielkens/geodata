@@ -1,3 +1,5 @@
+$cur_path = (pwd)
+
 cd \\wsl.localhost\Ubuntu\mnt\wsl
 
 $drive = (Get-ChildItem . -directory -filter 'PHYSICALDRIVE*')
@@ -15,13 +17,16 @@ cd $drive
 
 $recs = (Get-ChildItem . -Exclude 'lost+found')
 
-foreach ($rec in $recs{
-	rec_path = "/mnt/wsl/$drive/$rec"
+foreach ($rec in $recs) {
+	$rec_path = $rec.fullname.replace('\','\\')
 
-	wsl --user root rm -fr "$rec_path"
+	$unix_path = (wsl --user root wslpath "$rec_path")
+	wsl --user root rm -fr $unix_path
 
 	if (-not $?) {
-		echo "Could not remove directory $rec_path"
+		echo "Could not remove directory $rec"
 	}
 }
+
+cd $cur_path
 
