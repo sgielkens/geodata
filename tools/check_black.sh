@@ -61,22 +61,36 @@ find . -type d -name 'Track*' | \
 
 		pushd "$track" 1>/dev/null
 
-		jpeg_file=$(find . -name '*.jpg' -print -quit)
-		if [[ -z "$jpeg_file" ]] ; then
-			echo "$0: no JPG found for track $track" >&2
-			rc=1
-		fi
+		find . -mindepth 1 -type d | \
+		(
 
-		mean_jpg=$(convert "$jpeg_file" -format "%[mean]" info:)
-		if [[ $? -ne 0 ]] ; then
-			echo "$0: failed to determine the mean pixel value for $jpeg_file" >&2
-			rc=1
-		fi
+		while read camera ; do
+			if [[ -n "$verbose" ]] ; then
+				echo "$0: checking camera: $camera"
+			fi
 
-		if [[ $mean_jpg = 0 ]] ; then
-			echo "$0: track $track contains black only pictures" >&2
-			rc=1
-		fi
+			pushd "$camera" 1>/dev/null
+
+			jpeg_file=$(find . -name '*.jpg' -print -quit)
+			if [[ -z "$jpeg_file" ]] ; then
+				echo "$0: no JPG found for track $track, camera $camera" >&2
+				rc=1
+			fi
+
+			mean_jpg=$(convert "$jpeg_file" -format "%[mean]" info:)
+			if [[ $? -ne 0 ]] ; then
+				echo "$0: failed to determine the mean pixel value for $jpeg_file" >&2
+				rc=1
+			fi
+
+			if [[ $mean_jpg = 0 ]] ; then
+				echo "$0: track $track contains black only pictures" >&2
+				rc=1
+			fi
+
+			popd 1>/dev/null
+		done
+		)
 
 		i=$((i + 1))
 
