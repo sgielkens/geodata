@@ -6,7 +6,7 @@ lbg_record_suf='ec'
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-p trk_project] [-r ladybug_recordings] [-v] <connection>
+usage: ${0##*/} [-p trk_project] [-r ladybug_recordings] [-t] [-v] <connection>
 
 Use this script to upload the necessary files from the TRK project and Ladybug
 recordings to the online Geo-platform. It does this per job. As background tool
@@ -33,6 +33,7 @@ The options are as follows:
         If left empty, it is constructed from the TRK project directory.
         If option -p is also unset, it checks if the current directory
         is a TRK project or Ladybug record.
+   -t   upload trajectory only
    -v   be verbose
 EOF
 	exit 1
@@ -46,15 +47,20 @@ geo_traj='Trajectory'
 
 unset debug
 unset connection
+unset progress
+unset traj_only
+unset traj_skip
 unset verbose
 
-while getopts ":p:dr:v" option ; do
+while getopts ":p:dr:tv" option ; do
    case ${option} in
       "d") debug='yes'
            ;;
       "p") trk_proj="${OPTARG}"
            ;;
       "r") lbg_record="${OPTARG}"
+           ;;
+      "t") traj_only='yes'
            ;;
       "v") verbose='yes'
            ;;
@@ -70,9 +76,12 @@ if [[ $# -ne 1 ]] ; then
 fi
 
 connection="$1"
+# Remove accidental end colon
+connection="${connection%:}"
 
 if [[ -n "$debug" ]] ; then
 	verbose='yes'
+	progress='--progress'
 fi
 
 trk_proj=${trk_proj%/}
@@ -183,26 +192,33 @@ while read job ; do
 		exit 1
 	fi
 	if [[ ! -d 'Trajectory_ok/IE' ]] ; then
-		echo "$0: job $job has no directory Trajectory_ok" >&2
-		exit 1
+		echo "$0: job $job has no directory Trajectory_ok, skipping" >&2
+		traj_skip='yes'
 	fi
 
 	job_name="${job%.job}"
 
+	if [[ -z $traj_skip ]] ; then
+		if [[ -n "$verbose" ]] ; then
+			echo "$0: uploading IE trajectory for job $job" >&2
+		fi
+		rclone copy --verbose $progress Trajectory_ok/IE/ --include '*.cts' "$connection:$geo_prefix/${job_name}/$geo_traj"
+	fi
+
+	if [[ -n $traj_only ]] ; then
+		exit 0
+	fi
+
+
 	if [[ -n "$verbose" ]] ; then
 		echo "$0: uploading Leica Field log for job $job" >&2
 	fi
-	rclone copy --verbose Logs --include 'LeicaField_*' "$connection:$geo_prefix/${job_name}/$geo_log"
+	rclone copy --verbose $progress Logs --include 'LeicaField_*' "$connection:$geo_prefix/${job_name}/$geo_log"
 
-	if [[ -n "$verbose" ]] ; then
-		echo "$0: uploading IE trajectory for job $job" >&2
-	fi
-	rclone copy --verbose Trajectory_ok/IE/ --include '*.cts' "$connection:$geo_prefix/${job_name}/$geo_traj"
-	 
 	if [[ -n "$verbose" ]] ; then
 		echo "$0: uploading LiDAR data for job $job" >&2
 	fi
-	rclone copy --verbose . --include '*lidar*' "$connection:$geo_prefix/${job_name}/$geo_lidar"
+	rclone copy --verbose $progress . --include '*lidar*' "$connection:$geo_prefix/${job_name}/$geo_lidar"
 
 	popd 1>/dev/null
 done < "${tmp_dir}/job.lst"
@@ -217,13 +233,18 @@ pushd "$lbg_record" 1>/dev/null
 if [[ -n "$verbose" ]] ; then
 	echo "$0: uploading mark4 data for job $job" >&2
 fi
-rclone copy --verbose ./mark4_ladybug_mapping.csv "$connection:$geo_prefix/${job_name}/$geo_pgr"
+rclone copy --verbose $progress ./mark4_ladybug_mapping.csv "$connection:$geo_prefix/${job_name}/$geo_pgr"
 
 if [[ -n "$verbose" ]] ; then
 	echo "$0: uploading PGR data for job $job" >&2
 fi
-rclone copy --verbose PGR "$connection:$geo_prefix/${job_name}/$geo_pgr"
+rclone copy --verbose $progress PGR "$connection:$geo_prefix/${job_name}/$geo_pgr"
 
 popd 1>/dev/null
+
+if [[ -n $traj_skip ]] ; then
+	echo >&2
+	echo "$0: job $job has no directory Trajectory_ok, it was skipped" >&2
+fi
 
 exit 0
