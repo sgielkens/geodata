@@ -6,7 +6,7 @@ lbg_record_suf='ec'
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-p trk_project] [-r ladybug_recordings] [-t] [-v] <connection>
+usage: ${0##*/} [-d] [-l] [-p trk_project] [-r ladybug_recordings] [-s] [-t] [-v] <connection>
 
 Use this script to upload the necessary files from the TRK project and Ladybug
 recordings to the online Geo-platform. It does this per job. As background tool
@@ -14,7 +14,7 @@ rclone is used.
 
 To be able to upload connection details for the platform are needed. These are
 stored in the rclone configuration file. This file had to be prepared before
-involing this script. See the rclone documentation for details. Use the 
+involing this script. See the rclone documentation for details. Use the
 connection name in this configuration as <connection>.
 
 Furthermore it needs both the TRK project directory and the associated directory
@@ -24,6 +24,7 @@ to deduce the directory or directories.
 
 The options are as follows:
    -d   show detailed debug information. This implies verbosity.
+   -l   upload Ladybug recordings only
    -p   TRK project directory, i.e. the directory with suffix PegasusProject
         If left empty, it is constructed from the Ladybug record directory
         If option -r is also unset, it checks if the current directory
@@ -33,6 +34,7 @@ The options are as follows:
         If left empty, it is constructed from the TRK project directory.
         If option -p is also unset, it checks if the current directory
         is a TRK project or Ladybug record.
+   -s   upload only scan TRK project
    -t   upload trajectory only
    -v   be verbose
 EOF
@@ -48,17 +50,23 @@ geo_traj='Trajectory'
 unset debug
 unset connection
 unset progress
+unset ladybug_only
+unset scan_only
 unset traj_only
 unset traj_skip
 unset verbose
 
-while getopts ":p:dr:tv" option ; do
+while getopts ":p:dlr:stv" option ; do
    case ${option} in
       "d") debug='yes'
+           ;;
+      "l") ladybug_only='yes'
            ;;
       "p") trk_proj="${OPTARG}"
            ;;
       "r") lbg_record="${OPTARG}"
+           ;;
+      "s") scan_only='yes'
            ;;
       "t") traj_only='yes'
            ;;
@@ -113,7 +121,11 @@ if [[ -z "$trk_proj" && -z "$lbg_record" ]] ; then
 	fi
 fi
 
+#
+# TRK project must exist as the upload depends on the job names
+#
 if [[ -z "${trk_proj}" ]] ; then
+
 	if [[ -n "$debug" ]] ; then
 		echo "$0: deducing TRK project" >&2
 	fi
@@ -131,35 +143,38 @@ if [[ -z "${trk_proj}" ]] ; then
 	fi
 fi
 
-if [[ -z "${lbg_record}" ]] ; then
-	if [[ -n "$debug" ]] ; then
-		echo "$0: deducing Ladybug record" >&2
-	fi
-
-	if [[ -n "$trk_proj" ]] ; then
-		trk_proj_path="${trk_proj%/*}"
-		trk_proj_main="${trk_proj##*/}"
-		trk_proj_main="${trk_proj_main%.$trk_proj_suf}"
-
-		lbg_record="$trk_proj_path/$trk_proj_main"'_r'"$lbg_record_suf"
-		if [[ ! -d  "$lbg_record" ]] ; then
-			lbg_record="$trk_proj_path/$trk_proj_main"'_R'"$lbg_record_suf"
-		fi
-	fi
-
-	if [[ -n "$debug" ]] ; then
-		echo "$0: deduced Ladybug record as $lbg_record" >&2
-	fi
-fi
-
 if [[ ! -d  "$trk_proj" ]] ; then
 	echo "$0: TRK project $trk_proj does not exist" >&2
 	exit 1
 fi
 
-if [[ ! -d  "$lbg_record" ]] ; then
-	echo "$0: Ladybug record $lbg_record does not exist" >&2
-	exit 1
+if [[ -z "$trk_only" ]] ; then
+
+	if [[ -z "${lbg_record}" ]] ; then
+		if [[ -n "$debug" ]] ; then
+			echo "$0: deducing Ladybug record" >&2
+		fi
+
+		if [[ -n "$trk_proj" ]] ; then
+			trk_proj_path="${trk_proj%/*}"
+			trk_proj_main="${trk_proj##*/}"
+			trk_proj_main="${trk_proj_main%.$trk_proj_suf}"
+
+			lbg_record="$trk_proj_path/$trk_proj_main"'_r'"$lbg_record_suf"
+			if [[ ! -d  "$lbg_record" ]] ; then
+				lbg_record="$trk_proj_path/$trk_proj_main"'_R'"$lbg_record_suf"
+			fi
+		fi
+
+		if [[ -n "$debug" ]] ; then
+			echo "$0: deduced Ladybug record as $lbg_record" >&2
+		fi
+	fi
+
+	if [[ ! -d  "$lbg_record" ]] ; then
+		echo "$0: Ladybug record $lbg_record does not exist" >&2
+		exit 1
+	fi
 fi
 
 rclone_bin="$(which rclone)"
@@ -184,63 +199,74 @@ find . -maxdepth 1 -name 'Job_*.job' > "${tmp_dir}/job.lst"
 #
 # TRK part
 #
-while read job ; do
-	pushd "$job" >/dev/null
+if [[ -z "$ladybug_only" ]] ; then
 
-	if [[ ! -d 'Logs' ]] ; then
-		echo "$0: job $job has no directory Logs" >&2
-		exit 1
-	fi
-	if [[ ! -d 'Trajectory_ok/IE' ]] ; then
-		echo "$0: job $job has no directory Trajectory_ok, skipping" >&2
-		traj_skip='yes'
-	fi
+	while read job ; do
+		pushd "$job" >/dev/null
 
-	job_name="${job%.job}"
-
-	if [[ -z $traj_skip ]] ; then
-		if [[ -n "$verbose" ]] ; then
-			echo "$0: uploading IE trajectory for job $job" >&2
+		if [[ ! -d 'Logs' ]] ; then
+			echo "$0: job $job has no directory Logs" >&2
+			exit 1
 		fi
-		rclone copy --verbose $progress Trajectory_ok/IE/ --include '*.cts' "$connection:$geo_prefix/${job_name}/$geo_traj"
-	fi
+		if [[ ! -d 'Trajectory_ok/IE' ]] ; then
+			echo "$0: job $job has no directory Trajectory_ok, skipping" >&2
+			traj_skip='yes'
+		fi
 
-	if [[ -n $traj_only ]] ; then
-		exit 0
-	fi
+		job_name="${job%.job}"
+
+		if [[ -z $traj_skip ]] ; then
+			if [[ -n "$verbose" ]] ; then
+				echo "$0: uploading IE trajectory for job $job" >&2
+			fi
+			rclone copy --verbose $progress Trajectory_ok/IE/ --include '*.cts' "$connection:$geo_prefix/${job_name}/$geo_traj"
+		fi
+
+		if [[ -n $traj_only ]] ; then
+			exit 0
+		fi
 
 
-	if [[ -n "$verbose" ]] ; then
-		echo "$0: uploading Leica Field log for job $job" >&2
-	fi
-	rclone copy --verbose $progress Logs --include 'LeicaField_*' "$connection:$geo_prefix/${job_name}/$geo_log"
+		if [[ -n "$verbose" ]] ; then
+			echo "$0: uploading Leica Field log for job $job" >&2
+		fi
+		rclone copy --verbose $progress Logs --include 'LeicaField_*' "$connection:$geo_prefix/${job_name}/$geo_log"
 
-	if [[ -n "$verbose" ]] ; then
-		echo "$0: uploading LiDAR data for job $job" >&2
-	fi
-	rclone copy --verbose $progress . --include '*lidar*' "$connection:$geo_prefix/${job_name}/$geo_lidar"
+		if [[ -n "$verbose" ]] ; then
+			echo "$0: uploading LiDAR data for job $job" >&2
+		fi
+		rclone copy --verbose $progress . --include '*lidar*' "$connection:$geo_prefix/${job_name}/$geo_lidar"
+
+		popd 1>/dev/null
+	done < "${tmp_dir}/job.lst"
 
 	popd 1>/dev/null
-done < "${tmp_dir}/job.lst"
-
-popd 1>/dev/null
+fi
 
 #
 # Ladybug part
 #
-pushd "$lbg_record" 1>/dev/null
+if [[ -z "$trk_only" ]] ; then
 
-if [[ -n "$verbose" ]] ; then
-	echo "$0: uploading mark4 data for job $job" >&2
+	pushd "$lbg_record" 1>/dev/null
+
+	while read job ; do
+		job_name="${job%.job}"
+
+		if [[ -n "$verbose" ]] ; then
+			echo "$0: uploading mark4 data for job $job" >&2
+		fi
+		rclone copy --verbose $progress ./mark4_ladybug_mapping.csv "$connection:$geo_prefix/${job_name}/$geo_pgr"
+
+		if [[ -n "$verbose" ]] ; then
+			echo "$0: uploading PGR data for job $job" >&2
+		fi
+
+		rclone copy --verbose $progress PGR "$connection:$geo_prefix/${job_name}/$geo_pgr"
+	done < "${tmp_dir}/job.lst"
+
+	popd 1>/dev/null
 fi
-rclone copy --verbose $progress ./mark4_ladybug_mapping.csv "$connection:$geo_prefix/${job_name}/$geo_pgr"
-
-if [[ -n "$verbose" ]] ; then
-	echo "$0: uploading PGR data for job $job" >&2
-fi
-rclone copy --verbose $progress PGR "$connection:$geo_prefix/${job_name}/$geo_pgr"
-
-popd 1>/dev/null
 
 if [[ -n $traj_skip ]] ; then
 	echo >&2
