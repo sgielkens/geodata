@@ -148,7 +148,7 @@ if [[ ! -d  "$trk_proj" ]] ; then
 	exit 1
 fi
 
-if [[ -z "$trk_only" ]] ; then
+if [[ -z "$scan_only" ]] ; then
 
 	if [[ -z "${lbg_record}" ]] ; then
 		if [[ -n "$debug" ]] ; then
@@ -246,7 +246,7 @@ fi
 #
 # Ladybug part
 #
-if [[ -z "$trk_only" ]] ; then
+if [[ -z "$scan_only" ]] ; then
 
 	pushd "$lbg_record" 1>/dev/null
 
