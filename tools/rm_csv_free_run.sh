@@ -115,7 +115,7 @@ while read mapping ; do
 		echo $mapping >> $mapping_csv_file
 	fi
 
-	sec_week_1=$sec_of_week_2
+	sec_of_week_1=$sec_of_week_2
 	i=$((i + 1))
 
 done < "$mapping_horus_file"
