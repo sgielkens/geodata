@@ -83,12 +83,14 @@ mv "$mapping_csv_file" "$mapping_horus_file"
 echo > "$mapping_csv_file"
 
 i=0
+j=0
+
 rc=0
 unset sec_of_week_1
 unset sec_of_week_2
 
-echo 'count,freq' >> "$signal_freq_full_file"
-echo 'count,freq' >> "$signal_freq_filtered_file"
+echo 'count,freq' > "$signal_freq_full_file"
+echo 'count,freq' > "$signal_freq_filtered_file"
 
 while read mapping ; do
 	if [[ $i -eq 0 ]] ; then
@@ -144,6 +146,8 @@ while read mapping ; do
 	if [[ $free_run -eq 0 ]] ; then
 		echo $mapping >> $mapping_csv_file
 		echo "$i,$freq" >> "$signal_freq_filtered_file"
+
+		j=$((j + 1))
 	fi
 	echo "$i,$freq" >> "$signal_freq_full_file"
 
@@ -151,5 +155,9 @@ while read mapping ; do
 	i=$((i + 1))
 
 done < "$mapping_horus_file"
+
+if [[ -n $verbose ]] ; then
+	echo "$0: wrote $j filtered lines out of $nr_lines to $mapping_csv_file" >&2
+fi
 
 exit 0
