@@ -9,6 +9,7 @@ This script removes from the so-called mapping csv file the entries in
 free run mode. These are the signals at 7 HZ or above.
 
 The options are as follows:
+   -f   frequency above which free run mode is supposed, by default $freq HZ
    -m   mapping csv. By default $mapping_csv_name in current directory.
    -v   be verbose
 EOF
@@ -19,13 +20,17 @@ cur_dir="$(pwd)"
 mapping_csv_name='mark4_ladybug_mapping.csv'
 horus_suf='horus'
 
+freq=7
+
 csv_header='sec_of_week,week_nr,labybug_idx,sec_ladybug'
 
 unset verbose
 unset debug
 
-while getopts ":m:v" option ; do
+while getopts ":f:m:v" option ; do
    case ${option} in
+      "f") freq="${OPTARG}"
+           ;;
       "m") mapping_csv_file="${OPTARG}"
            ;;
       "v") verbose="yes"
@@ -110,7 +115,7 @@ while read mapping ; do
 
 	# Calculate time difference of consecutive timestampt and
 	# compare that with the interval at 7 Hz, i.e. free run mode
-	free_run=$( echo "scale=3 ; ($sec_of_week_2 - $sec_of_week_1) < (1/7)" | bc )
+	free_run=$( echo "scale=3 ; ($sec_of_week_2 - $sec_of_week_1) < (1 / $freq)" | bc )
 	if [[ $free_run -eq 0 ]] ; then
 		echo $mapping >> $mapping_csv_file
 	fi
