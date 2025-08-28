@@ -1,0 +1,1 @@
+"C:\Program Files\Horus View and Explore\Horus SystemV2\horus_app_system_v2.exe" --lua-run frames "C:\HORUS\kempkes_frames_writer.lua" "%~1" ^"Ladybug Grabber^" > "%~1\horus_frames_writer.log"
