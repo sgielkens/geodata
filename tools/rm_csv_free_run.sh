@@ -105,7 +105,7 @@ while read mapping ; do
 			exit 1
 		fi
 
-		echo $mapping >> $mapping_csv_file
+		echo "$mapping" >> "$mapping_csv_file"
 
 		i=$((i + 1))
 		continue
@@ -144,7 +144,7 @@ while read mapping ; do
 	freq=$( echo "scale=3; 1 / $interval" | bc )
 
 	if [[ $free_run -eq 0 ]] ; then
-		echo $mapping >> $mapping_csv_file
+		echo "$mapping" >> "$mapping_csv_file"
 		echo "$i,$freq" >> "$signal_freq_filtered_file"
 
 		j=$((j + 1))
