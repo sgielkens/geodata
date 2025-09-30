@@ -3,7 +3,7 @@
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-i input_dir] [-v]
+usage: ${0##*/} [-i input_dir] [-n num_cams] [-v]
 
 This script checks for a job if:
 - the number of txt files matches that of the csv files
@@ -11,18 +11,24 @@ This script checks for a job if:
 
 The options are as follows:
    -i   input directory. By default current directory.
+   -n   number of cameras per track to take into account. Default is ${num_cams}, i.e.
+        Front Left/Right, Left Backward/Forward,
+        Rear Left/Right, Right Backward/Forward and Sphere
    -v   be verbose
 EOF
 	exit 1
 }
 
 input_dir="$(pwd)"
+num_cams='9'
 
 unset verbose
 
-while getopts ":i:v" option ; do
+while getopts ":in::v" option ; do
    case ${option} in
       "i") input_dir="${OPTARG}"
+           ;;
+      "n") num_cams="${OPTARG}"
            ;;
       "v") verbose="yes"
            ;;
@@ -101,8 +107,21 @@ if [[ -s "$csv_only" ]] ; then
 fi
 
 i=0
+j=0
 while read regel ; do
-	i=$((i + 1))
+	if [[ $j -eq 0 ]] ; then
+
+		if [[ $regel =~ .*Track.*-.* ]] ; then
+			if [[ $regel =~ .*Track.*-1.* ]] ; then
+				i=$((i + 1))
+			fi
+		else
+			i=$((i + 1))
+		fi
+
+		j=$num_cams
+	fi
+	j=$((j - 1))
 
 	track_nr="${regel##*Track}"
 	track_nr="${track_nr%%_*}"
@@ -121,8 +140,21 @@ while read regel ; do
 done < "$txt_list"
 
 i=0
+j=0
 while read regel ; do
-	i=$((i + 1))
+	if [[ $j -eq 0 ]] ; then
+
+		if [[ $regel =~ .*Track.*-.* ]] ; then
+			if [[ $regel =~ .*Track.*-1.* ]] ; then
+				i=$((i + 1))
+			fi
+		else
+			i=$((i + 1))
+		fi
+
+		j=$num_cams
+	fi
+	j=$((j - 1))
 
 	track_nr="${regel##*Track}"
 	track_nr="${track_nr%_*}"
