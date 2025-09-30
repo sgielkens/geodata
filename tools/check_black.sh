@@ -3,7 +3,7 @@
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-i input_dir] [-v]
+usage: ${0##*/} [-d] [-i input_dir] [-v]
 
 Use this script to check if a track has black only pictures. It checks only
 the first picture found for a track. So it does not consider spheric and planar
@@ -14,6 +14,7 @@ It needs as input directory the JPEG export directory at the level of the tracks
 foo.PegasusProject/Export/JPEG/bar.job
 
 The options are as follows:
+   -d   debugging output, implies verbosity
    -i   input directory. By default current directory.
    -v   be verbose
 EOF
@@ -22,10 +23,13 @@ EOF
 
 input_dir=$(pwd)
 
+unset debug
 unset verbose
 
-while getopts ":i:v" option ; do
+while getopts ":di:v" option ; do
    case ${option} in
+      "d") debug="yes"
+           ;;
       "i") input_dir="${OPTARG}"
            ;;
       "v") verbose="yes"
@@ -38,6 +42,10 @@ done
 if [[ ! -d "$input_dir" ]] ; then
 	echo "$0: input directory $input_dir does not exist" >&2
 	exit 1
+fi
+
+if [[ -n "$debug" ]] ; then
+	verbose='yes'
 fi
 
 convert_bin="$(which convert)"
@@ -65,7 +73,7 @@ find . -type d -name 'Track*' | \
 		(
 
 		while read camera ; do
-			if [[ -n "$verbose" ]] ; then
+			if [[ -n "$debug" ]] ; then
 				echo "$0: checking camera: $camera"
 			fi
 
