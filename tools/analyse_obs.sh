@@ -76,6 +76,10 @@ trap 'rm -f $tmp_file' EXIT
 touch "$move3_report"
 i=0
 
+#
+# Filter and order Move3 observation file
+#
+
 # Use option -r to keep \ from Windows paths
 while read -r id field1 field2 field3 field4 rest ; do
 	if [[ "$id" == 'DH' ]] ; then
@@ -106,10 +110,84 @@ while read -r id field1 field2 field3 field4 rest ; do
 		# Remove Windows carriage return
 		gsi_file="${gsi_file//$'\r'}"
 
+		if [[ "$from" > "$to" ]] ; then
+			temp_field="$from"
+			from="$to"
+			to="$temp_field"
+		fi
 		echo "${from};${to};${DH};${SH};$gsi_file" >> "$move3_report"
 		i=0
 	fi
 
 done < "$obs_file"
+
+sort "$move3_report" > "$tmp_file"
+mv -f "$tmp_file" "$move3_report"
+
+#
+# Match back and forth data
+#
+
+move3_result="$move3_report.2"
+touch "$move3_result"
+echo "Van;Naar;DH-Heen;DH-Terug;SH-Heen;SH-Terug;Sluitfout;Tolerantie;Percentage;Voldoet;GSI-Heen;GSI-Terug" > "$move3_result"
+
+non_standard=0
+i=0
+
+while IFS=';' read field1 field2 field3 field4 field5 ; do
+	if [[ $i -eq 0 ]] ; then
+		van="$field1"
+		naar="$field2"
+		dh_heen="$field3"
+		sh_heen="$field4"
+		gsi_heen="$field5"
+
+		i=$((i + 1))
+		continue
+	fi
+
+	if [[ $i -eq 1 ]] ; then
+		if [[ "$field1" == "$van" ]] ; then
+			dh_terug="$field3"
+			sh_terug="$field4"
+			gsi_terug="$field5"
+		else
+			dh_terug=0
+			sh_terug=0
+			gsi_terug='ENKEL OF DUBBEL'
+
+			non_standard=1
+		fi
+
+		sluitfout=$(echo "scale=3 ; 1000 * ($dh_heen + $dh_terug)" | bc)
+		lengte=$(echo "scale=3 ; ($sh_heen + $sh_terug) / 2000" | bc)
+
+		tolerantie=$(echo "scale=3 ; 3 * sqrt($lengte)" | bc)
+		percentage=$(echo "scale=3 ; 100 * $sluitfout / $tolerantie" | bc)
+
+		voldoet=$(echo "scale=3 ; $sluitfout <= $tolerantie" | bc)
+		if [[ $voldoet -eq 0 ]] ; then
+			voldoet='***'
+		else
+			unset voldoet
+		fi
+
+		echo "${van};${naar};${dh_heen};${dh_terug};$sh_heen;$sh_terug;$sluitfout;$tolerantie;$percentage;$voldoet;$gsi_heen;$gsi_terug" >> "$move3_result"
+
+		i=$((i + 1))
+
+		if [[ $non_standard -eq 1 ]] ; then
+			dh_heen="$field3"
+			sh_heen="$field4"
+			gsi_heen="$field5"
+
+			non_standard=0
+			i=0
+		fi
+		i=0
+	fi
+	
+done < "$move3_report"
 
 exit 0
