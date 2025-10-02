@@ -89,7 +89,7 @@ while read -r id field1 field2 field3 field4 rest ; do
 	if [[ "$id" == 'DH' ]] ; then
 		if [[ $i -ne 0 ]] ; then
 			echo "$0: unexpected order of DH and FL lines" >&2
-			echo "${field1};${field2};${field3};${field4};" >&2
+			echo "${id};${field1};${field2};${field3};${field4};" >&2
 			exit 2
 		fi
 
@@ -104,7 +104,7 @@ while read -r id field1 field2 field3 field4 rest ; do
 	if [[ "$id" == 'FL' ]] ; then
 		if [[ $i -ne 1 ]] ; then
 			echo "$0: unexpected order of DH and FL lines" >&2
-			echo "${field1};${field2};${field3};${field4};" >&2
+			echo "${id};${field1};${field2};${field3};${field4};" >&2
 			exit 2
 		fi
 
@@ -146,7 +146,7 @@ while IFS=';' read field1 field2 field3 field4 field5 ; do
 		sh_heen="$field4"
 		gsi_heen="$field5"
 
-		i=$((i + 1))
+		i=1
 		continue
 	fi
 
@@ -155,6 +155,8 @@ while IFS=';' read field1 field2 field3 field4 field5 ; do
 			dh_terug="$field3"
 			sh_terug="$field4"
 			gsi_terug="$field5"
+
+			i=0
 		else
 			dh_terug=0
 			sh_terug=0
@@ -165,6 +167,12 @@ while IFS=';' read field1 field2 field3 field4 field5 ; do
 
 		# Remove possible hash tag that Move3 appends to deselected observations
 		sluitfout=$(echo "scale=3 ; 1000 * (${dh_heen%#} + ${dh_terug%#})" | bc)
+
+		negatief=$(echo "scale=3 ; $sluitfout < 0" | bc)
+		if [[ $negatief -eq 1 ]] ; then
+			sluitfout=$(echo "scale=3 ; -1 * $sluitfout" | bc)
+		fi
+
 		lengte=$(echo "scale=3 ; ($sh_heen + $sh_terug) / 2000" | bc)
 
 		tolerantie=$(echo "scale=3 ; 3 * sqrt($lengte)" | bc)
@@ -174,24 +182,52 @@ while IFS=';' read field1 field2 field3 field4 field5 ; do
 		if [[ $voldoet -eq 0 ]] ; then
 			voldoet='X'
 		else
-			voldoet='v'
+			voldoet=''
 		fi
 
 		echo "${van};${naar};${dh_heen};${dh_terug};$sh_heen;$sh_terug;$sluitfout;$tolerantie;$verhouding;$voldoet;$gsi_heen;$gsi_terug" >> "$move3_report"
 
-		i=$((i + 1))
-
 		if [[ $non_standard -eq 1 ]] ; then
+			van="$field1"
+			naar="$field2"
 			dh_heen="$field3"
 			sh_heen="$field4"
 			gsi_heen="$field5"
 
 			non_standard=0
-			i=0
 		fi
-		i=0
 	fi
 	
 done < "$move3_extract"
+
+# Only back part has been read at end of file, forth is missing
+if [[ $i -eq 1 ]] ; then
+	dh_terug=0
+	sh_terug=0
+	gsi_terug='ENKEL'
+
+	# Remove possible hash tag that Move3 appends to deselected observations
+	sluitfout=$(echo "scale=3 ; 1000 * (${dh_heen%#} + ${dh_terug%#})" | bc)
+
+	negatief=$(echo "scale=3 ; $sluitfout < 0" | bc)
+	if [[ $negatief -eq 1 ]] ; then
+		sluitfout=$(echo "scale=3 ; -1 * $sluitfout" | bc)
+	fi
+
+	lengte=$(echo "scale=3 ; ($sh_heen + $sh_terug) / 2000" | bc)
+
+	tolerantie=$(echo "scale=3 ; 3 * sqrt($lengte)" | bc)
+	verhouding=$(echo "scale=3 ; $sluitfout / $tolerantie" | bc)
+
+	voldoet=$(echo "scale=3 ; $sluitfout <= $tolerantie" | bc)
+	if [[ $voldoet -eq 0 ]] ; then
+		voldoet='X'
+	else
+		voldoet=''
+	fi
+
+	echo "${van};${naar};${dh_heen};${dh_terug};$sh_heen;$sh_terug;$sluitfout;$tolerantie;$verhouding;$voldoet;$gsi_heen;$gsi_terug" >> "$move3_report"
+
+fi
 
 exit 0
