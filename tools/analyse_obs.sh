@@ -43,19 +43,25 @@ fi
 obs_file="${input_file##*/}"
 obs_dir="${input_file%/*}"
 
-obs_name="${obs_file%.Obs}"
-move3_report="$obs_name.analysis"
+if [[ "$obs_dir" == "$obs_file" ]] ; then
+	obs_dir="$(pwd)"
+fi
 
-if [[ -f "$move3_report" ]] ; then
+obs_name="${obs_file%.Obs}"
+
+move3_report="$obs_name.report"
+move3_extract="$obs_name.extract"
+
+if [[ -f "$move3_extract" ]] ; then
 	if [[ -z $force ]] ; then
-		echo "$0: Move3 analysis report $move3_report already exists, exiting" >&2
+		echo "$0: Move3 extract file $move3_extract already exists, exiting" >&2
 		exit 1
 	fi
 
 	if [[ -n "$verbose" ]] ; then
-		echo "$0: overwriting Move3 analysis report $move3_report" >&2
+		echo "$0: overwriting Move3 extract file $move3_extract" >&2
 	fi
-	rm -f "$move3_report"
+	rm -f "$move3_extract"
 fi
 
 pushd "$obs_dir" 1>/dev/null
@@ -70,10 +76,8 @@ if [[ $? -ne 0 ]] ; then
 	echo "$0: could not create temporary file" >&2
 	exit 1
 fi
-
 trap 'rm -f $tmp_file' EXIT
 
-touch "$move3_report"
 i=0
 
 #
@@ -109,28 +113,27 @@ while read -r id field1 field2 field3 field4 rest ; do
 		gsi_file="${gsi_file##*\\}"
 		# Remove Windows carriage return
 		gsi_file="${gsi_file//$'\r'}"
+		# and trailing blanks
+		gsi_file="${gsi_file// }"
 
 		if [[ "$from" > "$to" ]] ; then
 			temp_field="$from"
 			from="$to"
 			to="$temp_field"
 		fi
-		echo "${from};${to};${DH};${SH};$gsi_file" >> "$move3_report"
+		echo "${from};${to};${DH};${SH};$gsi_file" >> "$tmp_file"
 		i=0
 	fi
 
 done < "$obs_file"
 
-sort "$move3_report" > "$tmp_file"
-mv -f "$tmp_file" "$move3_report"
+sort "$tmp_file" > "$move3_extract"
 
 #
 # Match back and forth data
 #
 
-move3_result="$move3_report.2"
-touch "$move3_result"
-echo "Van;Naar;DH-Heen;DH-Terug;SH-Heen;SH-Terug;Sluitfout;Tolerantie;Percentage;Voldoet;GSI-Heen;GSI-Terug" > "$move3_result"
+echo "Van;Naar;DH-Heen;DH-Terug;SH-Heen;SH-Terug;Sluitfout;Tolerantie;Verhouding;Voldoet;GSI-Heen;GSI-Terug" > "$move3_report"
 
 non_standard=0
 i=0
@@ -155,25 +158,26 @@ while IFS=';' read field1 field2 field3 field4 field5 ; do
 		else
 			dh_terug=0
 			sh_terug=0
-			gsi_terug='ENKEL OF DUBBEL'
+			gsi_terug='ENKEL'
 
 			non_standard=1
 		fi
 
-		sluitfout=$(echo "scale=3 ; 1000 * ($dh_heen + $dh_terug)" | bc)
+		# Remove possible hash tag that Move3 appends to deselected observations
+		sluitfout=$(echo "scale=3 ; 1000 * (${dh_heen%#} + ${dh_terug%#})" | bc)
 		lengte=$(echo "scale=3 ; ($sh_heen + $sh_terug) / 2000" | bc)
 
 		tolerantie=$(echo "scale=3 ; 3 * sqrt($lengte)" | bc)
-		percentage=$(echo "scale=3 ; 100 * $sluitfout / $tolerantie" | bc)
+		verhouding=$(echo "scale=3 ; $sluitfout / $tolerantie" | bc)
 
 		voldoet=$(echo "scale=3 ; $sluitfout <= $tolerantie" | bc)
 		if [[ $voldoet -eq 0 ]] ; then
-			voldoet='***'
+			voldoet='X'
 		else
-			unset voldoet
+			voldoet='v'
 		fi
 
-		echo "${van};${naar};${dh_heen};${dh_terug};$sh_heen;$sh_terug;$sluitfout;$tolerantie;$percentage;$voldoet;$gsi_heen;$gsi_terug" >> "$move3_result"
+		echo "${van};${naar};${dh_heen};${dh_terug};$sh_heen;$sh_terug;$sluitfout;$tolerantie;$verhouding;$voldoet;$gsi_heen;$gsi_terug" >> "$move3_report"
 
 		i=$((i + 1))
 
@@ -188,6 +192,6 @@ while IFS=';' read field1 field2 field3 field4 field5 ; do
 		i=0
 	fi
 	
-done < "$move3_report"
+done < "$move3_extract"
 
 exit 0
