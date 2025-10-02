@@ -49,8 +49,8 @@ fi
 
 obs_name="${obs_file%.Obs}"
 
-move3_report="$obs_name.report"
-move3_extract="$obs_name.extract"
+move3_report="$obs_name.report.csv"
+move3_extract="$obs_name.extract.csv"
 
 if [[ -f "$move3_extract" ]] ; then
 	if [[ -z $force ]] ; then
