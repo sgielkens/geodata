@@ -64,7 +64,7 @@ if [[ -f "$move3_extract" ]] ; then
 	rm -f "$move3_extract"
 fi
 
-pushd "$obs_dir" 1>/dev/null
+#pushd "$obs_dir" 1>/dev/null
 
 if [[ $? -ne 0 ]] ; then
 	echo "$0: could not enter $obs_dir" >&2
@@ -125,9 +125,10 @@ while read -r id field1 field2 field3 field4 rest ; do
 		i=0
 	fi
 
-done < "$obs_file"
+done < "${obs_dir}/${obs_file}"
 
-sort "$tmp_file" > "$move3_extract"
+# Sort by from, to and GSI file to keep measurements together
+sort -t ';' -k 1,2 -k 5 "$tmp_file" > "$move3_extract"
 
 #
 # Match back and forth data
@@ -151,7 +152,7 @@ while IFS=';' read field1 field2 field3 field4 field5 ; do
 	fi
 
 	if [[ $i -eq 1 ]] ; then
-		if [[ "$field1" == "$van" ]] ; then
+		if [[ "$field1" == "$van" && "$field2" == "$naar" ]] ; then
 			dh_terug="$field3"
 			sh_terug="$field4"
 			gsi_terug="$field5"
