@@ -3,7 +3,7 @@
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-f] [-i input_file] [-v]
+usage: ${0##*/} [-f] [-i input_file] [-s] [-v]
 
 Use this script to check if all Ladybug recordings have the necessary files.
 
@@ -14,19 +14,23 @@ having the correct name pattern (YYYY_MM_DD_hh_mm_ss) are skipped.
 The options are as follows:
    -f   force overwriting output file
    -i   input file. This should be the Move3 Obs file
+   -s   skip deselected observations
    -v   be verbose
 EOF
 	exit 1
 }
 
 unset force
+unset skip
 unset verbose
 
-while getopts ":fi:v" option ; do
+while getopts ":fi:sv" option ; do
    case ${option} in
       "f") force="yes"
            ;;
       "i") input_file="${OPTARG}"
+           ;;
+      "s") skip="yes"
            ;;
       "v") verbose="yes"
            ;;
@@ -121,7 +125,15 @@ while read -r id field1 field2 field3 field4 rest ; do
 			from="$to"
 			to="$temp_field"
 		fi
-		echo "${from};${to};${DH};${SH};$gsi_file" >> "$tmp_file"
+
+		if [[ ${DH: -1} == '#' ]] ; then
+			if [[ -z "$skip" ]] ; then
+				echo "${from};${to};${DH};${SH};$gsi_file" >> "$tmp_file"
+			fi
+		else
+			echo "${from};${to};${DH};${SH};$gsi_file" >> "$tmp_file"
+		fi
+
 		i=0
 	fi
 
