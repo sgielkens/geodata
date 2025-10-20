@@ -157,8 +157,23 @@ while IFS=';' read field1 field2 field3 field4 field5 field6 ; do
 		van="$field1"
 		naar="$field2"
 		dx_heen="$field3"
+		negatief=$(echo "scale=3 ; $dx_heen < 0" | bc)
+		if [[ $negatief -eq 1 ]] ; then
+			dx_heen=$(echo "scale=3 ; -1 * $dx_heen" | bc)
+		fi
+
 		dy_heen="$field4"
+		negatief=$(echo "scale=3 ; $dy_heen < 0" | bc)
+		if [[ $negatief -eq 1 ]] ; then
+			dy_heen=$(echo "scale=3 ; -1 * $dy_heen" | bc)
+		fi
+
 		dz_heen="$field5"
+		negatief=$(echo "scale=3 ; $dz_heen < 0" | bc)
+		if [[ $negatief -eq 1 ]] ; then
+			dz_heen=$(echo "scale=3 ; -1 * $dz_heen" | bc)
+		fi
+
 		ski_heen="$field6"
 
 		i=1
@@ -168,8 +183,23 @@ while IFS=';' read field1 field2 field3 field4 field5 field6 ; do
 	if [[ $i -eq 1 ]] ; then
 		if [[ "$field1" == "$van" && "$field2" == "$naar" ]] ; then
 			dx_terug="$field3"
+			negatief=$(echo "scale=3 ; $dx_terug < 0" | bc)
+			if [[ $negatief -eq 1 ]] ; then
+				dx_terug=$(echo "scale=3 ; -1 * $dx_terug" | bc)
+			fi
+
 			dy_terug="$field4"
+			negatief=$(echo "scale=3 ; $dy_terug < 0" | bc)
+			if [[ $negatief -eq 1 ]] ; then
+				dy_terug=$(echo "scale=3 ; -1 * $dy_terug" | bc)
+			fi
+
 			dz_terug="$field5"
+			negatief=$(echo "scale=3 ; $dz_terug < 0" | bc)
+			if [[ $negatief -eq 1 ]] ; then
+				dz_terug=$(echo "scale=3 ; -1 * $dz_terug" | bc)
+			fi
+
 			ski_terug="$field6"
 
 			i=0
@@ -186,11 +216,6 @@ while IFS=';' read field1 field2 field3 field4 field5 field6 ; do
 		delta_x=$(echo "scale=3 ; 100 * (${dx_heen%#} - ${dx_terug%#})" | bc)
 		delta_y=$(echo "scale=3 ; 100 * (${dy_heen%#} - ${dy_terug%#})" | bc)
 		delta_z=$(echo "scale=3 ; 100 * (${dz_heen%#} - ${dz_terug%#})" | bc)
-
-#		negatief=$(echo "scale=3 ; $sluitfout < 0" | bc)
-#		if [[ $negatief -eq 1 ]] ; then
-#			sluitfout=$(echo "scale=3 ; -1 * $sluitfout" | bc)
-#		fi
 
 #		lengte=$(echo "scale=3 ; ($dy_heen + $dy_terug) / 2000" | bc)
 
@@ -210,8 +235,23 @@ while IFS=';' read field1 field2 field3 field4 field5 field6 ; do
 			van="$field1"
 			naar="$field2"
 			dx_heen="$field3"
+			negatief=$(echo "scale=3 ; $dx_heen < 0" | bc)
+			if [[ $negatief -eq 1 ]] ; then
+				dx_heen=$(echo "scale=3 ; -1 * $dx_heen" | bc)
+			fi
+
 			dy_heen="$field4"
+			negatief=$(echo "scale=3 ; $dy_heen < 0" | bc)
+			if [[ $negatief -eq 1 ]] ; then
+				dy_heen=$(echo "scale=3 ; -1 * $dy_heen" | bc)
+			fi
+
 			dz_heen="$field5"
+			negatief=$(echo "scale=3 ; $dz_heen < 0" | bc)
+			if [[ $negatief -eq 1 ]] ; then
+				dz_heen=$(echo "scale=3 ; -1 * $dz_heen" | bc)
+			fi
+
 			ski_heen="$field6"
 
 			non_standard=0
@@ -231,11 +271,6 @@ if [[ $i -eq 1 ]] ; then
 	delta_x=$(echo "scale=3 ; 100 * (${dx_heen%#} - ${dx_terug%#})" | bc)
 	delta_y=$(echo "scale=3 ; 100 * (${dy_heen%#} - ${dy_terug%#})" | bc)
 	delta_z=$(echo "scale=3 ; 100 * (${dz_heen%#} - ${dz_terug%#})" | bc)
-
-#	negatief=$(echo "scale=3 ; $sluitfout < 0" | bc)
-#if [[ $negatief -eq 1 ]] ; then
-#	sluitfout=$(echo "scale=3 ; -1 * $sluitfout" | bc)
-#fi
 
 #lengte=$(echo "scale=3 ; ($dy_heen + $dy_terug) / 2000" | bc)
 
