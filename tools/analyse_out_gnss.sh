@@ -45,7 +45,7 @@ fi
 out_name="${out_file%.out?}"
 out_suf="${out_file##*.}"
 
-move3_vereff_coors="${out_name}_coors_${out_suf}.txt"
+move3_vereff_coors="${out_name}_vereff_coors_${out_suf}.txt"
 if [[ -f "$move3_vereff_coors" ]] ; then
 	if [[ -z $force ]] ; then
 		echo "$0: Move3 file $move3_vereff_coors already exists, exiting" >&2
@@ -53,7 +53,7 @@ if [[ -f "$move3_vereff_coors" ]] ; then
 	fi
 
 	if [[ -n "$verbose" ]] ; then
-		echo "$0: overwriting Move3 extract file $move3_vereff_coors" >&2
+		echo "$0: overwriting Move3 file $move3_vereff_coors" >&2
 	fi
 
 	rm -f "$move3_vereff_coors"
@@ -61,7 +61,22 @@ if [[ -f "$move3_vereff_coors" ]] ; then
 fi
 
 
-move3_toets_obs="${out_name}_obs_${out_suf}.txt"
+move3_toets_coors="${out_name}_toets_coors_${out_suf}.txt"
+if [[ -f "$move3_toets_coors" ]] ; then
+	if [[ -z $force ]] ; then
+		echo "$0: Move3 file $move3_toets_coors already exists, exiting" >&2
+		exit 1
+	fi
+
+	if [[ -n "$verbose" ]] ; then
+		echo "$0: overwriting Move3 file $move3_toets_coors" >&2
+	fi
+
+	rm -f "$move3_toets_coors"
+	touch "$move3_toets_coors"
+fi
+
+move3_toets_obs="${out_name}_toets_obs_${out_suf}.txt"
 if [[ -f "$move3_toets_obs" ]] ; then
 	if [[ -z $force ]] ; then
 		echo "$0: Move3 file $move3_toets_obs already exists, exiting" >&2
@@ -69,7 +84,7 @@ if [[ -f "$move3_toets_obs" ]] ; then
 	fi
 
 	if [[ -n "$verbose" ]] ; then
-		echo "$0: overwriting Move3 extract file $move3_toets_obs" >&2
+		echo "$0: overwriting Move3 file $move3_toets_obs" >&2
 	fi
 
 	rm -f "$move3_toets_obs"
@@ -90,6 +105,11 @@ while read -r line ; do
 			filtered="$move3_vereff_coors"
 		fi
 
+		if [[ "$line" =~ TOETSING[[:space:]]VAN[[:space:]]BEKENDE[[:space:]]COORDINATEN.* ]] ; then
+			start='toets_coors'
+			filtered="$move3_toets_coors"
+		fi
+
 		if [[ "$line" =~ TOETSING[[:space:]]VAN[[:space:]]WAARNEMINGEN.* ]] ; then
 			start='toets_obs'
 			filtered="$move3_toets_obs"
@@ -99,8 +119,17 @@ while read -r line ; do
 	fi
 
 	if [[ $start == 'vereff_coors' ]] ; then
+		# For out1
 		if [[ "$line" =~ EXTERNE[[:space:]]BETROUWBAARHEID.* ]] ; then
 			unset start
+			continue
+		fi
+
+		# For out2
+		if [[ "$line" =~ TOETSING[[:space:]]VAN[[:space:]]BEKENDE[[:space:]]COORDINATEN.* ]] ; then
+			start='toets_coors'
+			filtered="$move3_toets_coors"
+
 			continue
 		fi
 
@@ -112,6 +141,17 @@ while read -r line ; do
 
 		echo "$line" | sed -n -e 's/.m.//g;s/ X /_X_/;s/Y /'"$station"'_Y_/;s/Hoogte/'"$station"'_Hoogte/;s/  */;/g;s/;$//;p' >> "$filtered"
 	fi
+
+	if [[ $start == 'toets_coors' ]] ; then
+		if [[ "$line" =~ EXTERNE[[:space:]]BETROUWBAARHEID.* ]] ; then
+			unset start
+			continue
+		fi
+
+		# s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/ selects first 4 csv columns
+		echo "$line" | sed -n -e 's/.m.//g;s/Gs fout.*//;s/ X /_X_/;s/ Y /_Y_/;s/ Hoogte /_Hoogte_/;s/  */;/g;s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
+	fi
+
 
 	if [[ $start == 'toets_obs' ]] ; then
 		if [[ "$line" =~ Station.* ]] ; then
