@@ -3,10 +3,11 @@
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-f] [-i input_file] [-v]
+usage: ${0##*/} [-a] [-f] [-i input_file] [-v]
 
 
 The options are as follows:
+   -a   output all filtered reports
    -f   force overwriting output file
    -i   input file. This should be the Move3 Obs file
    -v   be verbose
@@ -14,11 +15,14 @@ EOF
 	exit 1
 }
 
+unset all
 unset force
 unset verbose
 
-while getopts ":fi:sv" option ; do
+while getopts ":afi:v" option ; do
    case ${option} in
+      "a") all="yes"
+           ;;
       "f") force="yes"
            ;;
       "i") input_file="${OPTARG}"
@@ -101,18 +105,24 @@ while read -r line ; do
 
 	if [[ -z $start ]] ; then
 		if [[ "$line" =~ VEREFFENDE[[:space:]]COORDINATEN.* ]] ; then
-			start='vereff_coors'
-			filtered="$move3_vereff_coors"
+			if [[ -n $all || $out_suf == 'out2' ]] ; then
+				start='vereff_coors'
+				filtered="$move3_vereff_coors"
+			fi
 		fi
 
 		if [[ "$line" =~ TOETSING[[:space:]]VAN[[:space:]]BEKENDE[[:space:]]COORDINATEN.* ]] ; then
-			start='toets_coors'
-			filtered="$move3_toets_coors"
+			if [[ -n $all || $out_suf == 'out2' ]] ; then
+				start='toets_coors'
+				filtered="$move3_toets_coors"
+			fi
 		fi
 
 		if [[ "$line" =~ TOETSING[[:space:]]VAN[[:space:]]WAARNEMINGEN.* ]] ; then
-			start='toets_obs'
-			filtered="$move3_toets_obs"
+			if [[ -n $all || $out_suf == 'out1' ]] ; then
+				start='toets_obs'
+				filtered="$move3_toets_obs"
+			fi
 		fi
 
 		continue
