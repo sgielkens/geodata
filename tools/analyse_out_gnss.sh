@@ -45,7 +45,7 @@ fi
 out_name="${out_file%.out?}"
 out_suf="${out_file##*.}"
 
-move3_vereff_coors="${out_name}_vereff_coors_${out_suf}.txt"
+move3_vereff_coors="${out_name}_${out_suf}_vereff_coors.txt"
 if [[ -f "$move3_vereff_coors" ]] ; then
 	if [[ -z $force ]] ; then
 		echo "$0: Move3 file $move3_vereff_coors already exists, exiting" >&2
@@ -61,7 +61,7 @@ if [[ -f "$move3_vereff_coors" ]] ; then
 fi
 
 
-move3_toets_coors="${out_name}_toets_coors_${out_suf}.txt"
+move3_toets_coors="${out_name}_${out_suf}_toets_coors.txt"
 if [[ -f "$move3_toets_coors" ]] ; then
 	if [[ -z $force ]] ; then
 		echo "$0: Move3 file $move3_toets_coors already exists, exiting" >&2
@@ -76,7 +76,7 @@ if [[ -f "$move3_toets_coors" ]] ; then
 	touch "$move3_toets_coors"
 fi
 
-move3_toets_obs="${out_name}_toets_obs_${out_suf}.txt"
+move3_toets_obs="${out_name}_${out_suf}_toets_obs.txt"
 if [[ -f "$move3_toets_obs" ]] ; then
 	if [[ -z $force ]] ; then
 		echo "$0: Move3 file $move3_toets_obs already exists, exiting" >&2
