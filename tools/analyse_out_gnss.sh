@@ -64,7 +64,6 @@ if [[ -f "$move3_vereff_coors" ]] ; then
 	touch "$move3_vereff_coors"
 fi
 
-
 move3_toets_coors="${out_name}_${out_suf}_toets_coors.txt"
 if [[ -f "$move3_toets_coors" ]] ; then
 	if [[ -z $force ]] ; then
@@ -78,6 +77,21 @@ if [[ -f "$move3_toets_coors" ]] ; then
 
 	rm -f "$move3_toets_coors"
 	touch "$move3_toets_coors"
+fi
+
+move3_vereff_obs="${out_name}_${out_suf}_vereff_obs.txt"
+if [[ -f "$move3_vereff_obs" ]] ; then
+	if [[ -z $force ]] ; then
+		echo "$0: Move3 file $move3_vereff_obs already exists, exiting" >&2
+		exit 1
+	fi
+
+	if [[ -n "$verbose" ]] ; then
+		echo "$0: overwriting Move3 file $move3_vereff_obs" >&2
+	fi
+
+	rm -f "$move3_vereff_obs"
+	touch "$move3_vereff_obs"
 fi
 
 move3_toets_obs="${out_name}_${out_suf}_toets_obs.txt"
@@ -115,6 +129,13 @@ while read -r line ; do
 			if [[ -n $all || $out_suf == 'out2' ]] ; then
 				start='toets_coors'
 				filtered="$move3_toets_coors"
+			fi
+		fi
+
+		if [[ "$line" =~ VEREFFENDE[[:space:]]WAARNEMINGEN.* ]] ; then
+			if [[ -n $all ]] ; then
+				start='vereff_obs'
+				filtered="$move3_vereff_obs"
 			fi
 		fi
 
@@ -180,6 +201,20 @@ while read -r line ; do
 		echo "$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/\(\([^;]*;\)\{5\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
 	fi
 
+
+	if [[ $start == 'vereff_obs' ]] ; then
+		if [[ "$line" =~ GNSS/GPS[[:space:]]BASISLIJN[[:space:]]VECTOR[[:space:]]CORRECTIES.* ]] ; then
+			unset start
+			continue
+		fi
+
+		if [[ "$line" =~ Station.* ]] ; then
+			echo 'Richting;'"$line" | sed -n -e 's/ wn/_wn/;s/Sa/Sa(m)/;s/  */;/g;s/;$//;p' >> "$filtered"
+			continue
+		fi
+
+		echo "$line" | sed -n -e 's/.m.//g;s/  */;/g;s/;$//;p' >> "$filtered"
+	fi
 
 	if [[ $start == 'toets_obs' ]] ; then
 		if [[ "$line" =~ Station.* ]] ; then
