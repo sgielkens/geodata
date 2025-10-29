@@ -155,8 +155,10 @@ while read -r line ; do
 		if [[ ! "$naam" == "$line" ]] ; then
 			station="${naam%}"
 		else
-		# so add it to Y and Z
-			line="${station};${line}"
+			# so add it to Y and Z, unless line is empty (i.e. the one after the list)
+			if [[ -n "$line" ]] ; then
+				line="${station};${line}"
+			fi
 		fi
 
 		echo "$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/;$//;p' >> "$filtered"
@@ -174,8 +176,8 @@ while read -r line ; do
 		fi
 
 
-		# s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/ selects first 4 csv columns
-		echo "$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
+		# s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/ selects first 5 csv columns
+		echo "$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/\(\([^;]*;\)\{5\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
 	fi
 
 
