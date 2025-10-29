@@ -143,13 +143,23 @@ while read -r line ; do
 			continue
 		fi
 
-		naam="${line%% X*}"
-
-		if [[ ! "$naam" == "$line" ]] ; then
-			station="${naam%}"
+		if [[ "$line" =~ Station.* ]] ; then
+			echo "$line" | sed -n -e 's/Station/Station;Richting/;s/ (m)/(m)/g;s/  */;/g;s/;$//;p' >> "$filtered"
+			continue
 		fi
 
-		echo "$line" | sed -n -e 's/.m.//g;s/ X /_X_/;s/Y /'"$station"'_Y_/;s/Hoogte/'"$station"'_Hoogte/;s/  */;/g;s/;$//;p' >> "$filtered"
+
+		naam="${line%% X*}"
+
+		# only X direction contains station name
+		if [[ ! "$naam" == "$line" ]] ; then
+			station="${naam%}"
+		else
+		# so add it to Y and Z
+			line="${station};${line}"
+		fi
+
+		echo "$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/;$//;p' >> "$filtered"
 	fi
 
 	if [[ $start == 'toets_coors' ]] ; then
@@ -158,14 +168,20 @@ while read -r line ; do
 			continue
 		fi
 
+		if [[ "$line" =~ Station.* ]] ; then
+			echo "$line" | sed -n -e 's/Station/Station;Richting/;s/Gs fout.*//;s/ (m)/(m)/g;s/  */;/g;s/;$//;p' >> "$filtered"
+			continue
+		fi
+
+
 		# s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/ selects first 4 csv columns
-		echo "$line" | sed -n -e 's/.m.//g;s/Gs fout.*//;s/ X /_X_/;s/ Y /_Y_/;s/ Hoogte /_Hoogte_/;s/  */;/g;s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
+		echo "$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
 	fi
 
 
 	if [[ $start == 'toets_obs' ]] ; then
 		if [[ "$line" =~ Station.* ]] ; then
-			echo 'Richting;'"$line" | sed -n -e 's/Gs fout.*//;s/  */;/g;s/;$//;p' >> "$filtered"
+			echo 'Richting;'"$line" | sed -n -e 's/Gs fout.*//;s/MDB/MDB(m)/;s/  */;/g;s/;$//;p' >> "$filtered"
 			continue
 		fi
 
