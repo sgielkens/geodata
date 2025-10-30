@@ -49,6 +49,21 @@ fi
 out_name="${out_file%.out?}"
 out_suf="${out_file##*.}"
 
+move3_in_obs="${out_name}_${out_suf}_in_obs.txt"
+if [[ -f "$move3_in_obs" ]] ; then
+	if [[ -z $force ]] ; then
+		echo "$0: Move3 file $move3_in_obs already exists, exiting" >&2
+		exit 1
+	fi
+
+	if [[ -n "$verbose" ]] ; then
+		echo "$0: overwriting Move3 file $move3_in_obs" >&2
+	fi
+
+	rm -f "$move3_in_obs"
+	touch "$move3_in_obs"
+fi
+
 move3_vereff_coors="${out_name}_${out_suf}_vereff_coors.txt"
 if [[ -f "$move3_vereff_coors" ]] ; then
 	if [[ -z $force ]] ; then
@@ -137,6 +152,14 @@ while read -r line ; do
 	fi
 
 	if [[ -z $start ]] ; then
+		if [[ "$line" =~ INVOER[[:space:]]WAARNEMINGEN.* ]] ; then
+			if [[ -n $all ]] ; then
+				start='in_obs'
+				filtered="$move3_in_obs"
+				i=0
+			fi
+		fi
+
 		if [[ "$line" =~ VEREFFENDE[[:space:]]COORDINATEN.* ]] ; then
 			if [[ -n $all || $out_suf == 'out2' ]] ; then
 				start='vereff_coors'
@@ -180,6 +203,48 @@ while read -r line ; do
 		continue
 	fi
 
+	if [[ $start == 'in_obs' ]] ; then
+		if [[ "$line" =~ INVOER[[:space:]]OVERIGE[[:space:]]PARAMETERS.* ]] ; then
+			unset start
+
+			continue
+		fi
+
+		if [[ "$line" =~ Centreerafwijking.* ]] ; then
+			continue
+		fi
+		if [[ "$line" =~ Instrumenthoogte[[:space:]]afwijking.* ]] ; then
+			continue
+		fi
+
+		if [[ "$line" =~ Station.* ]] ; then
+			echo "Nr;Obs;Richting;Station;Status" >> "$filtered"
+
+			i_obs=0
+			unset arr_obs
+
+			i=$((i+1))
+
+			continue
+		fi
+
+		if [[ "${line:0:1}" == 'X' || "${line:0:2}" == 'DX' ]] ; then
+			i_obs=$((i_obs + 1))
+		fi
+
+		unset status
+		if [[ "$line" =~ .*desel ]] ; then
+			status='desel'
+			arr_obs[$i_obs]=$status
+		fi
+
+		# s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/ selects first 4 csv columns
+		echo "$i;$i_obs;$line" | sed -n -e 's/  */;/g;s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/;s/;$/;'"$status"'/;p' >> "$filtered"
+
+		i=$((i+1))
+	fi
+
+
 	if [[ $start == 'vereff_coors' ]] ; then
 		# For out1
 		if [[ "$line" =~ EXTERNE[[:space:]]BETROUWBAARHEID.* ]] ; then
@@ -211,10 +276,7 @@ while read -r line ; do
 		if [[ ! "$naam" == "$line" ]] ; then
 			station="${naam%}"
 		else
-			# so add it to Y and Z, unless line is empty (i.e. the one after the list)
-#			if [[ -n "$line" ]] ; then
-				line="${station};${line}"
-#		#	fi
+			line="${station};${line}"
 		fi
 
 		echo "$i;$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/;$//;p' >> "$filtered"
@@ -237,8 +299,8 @@ while read -r line ; do
 		fi
 
 
-		# s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/ selects first 5 csv columns
-		echo "$i;$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/\(\([^;]*;\)\{5\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
+		# s/\(\([^;]*;\)\{6\}\)\(.*\)/\1/ selects first 6 csv columns
+		echo "$i;$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/\(\([^;]*;\)\{6\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
 		i=$((i+1))
 	fi
 
@@ -293,14 +355,31 @@ while read -r line ; do
 
 	if [[ $start == 'toets_obs' ]] ; then
 		if [[ "$line" =~ Station.* ]] ; then
-			echo "Nr;Richting;$line" | sed -n -e 's/Gs fout.*//;s/MDB/MDB(m)/;s/  */;/g;s/;$//;p' >> "$filtered"
+			echo "Nr;Obs;Richting;$line" | sed -n -e 's/Gs fout.*//;s/MDB/MDB(m)/;s/  */;/g;s/;$//;p' >> "$filtered"
+
+			i_obs=1
+			k=0
 			i=$((i+1))
 
 			continue
 		fi
 
-		# s/\(\([^;]*;\)\{8\}\)\(.*\)/\1/ selects first 8 csv columns
-		echo "$i;$line" | sed -n -e 's/.m.//g;s/  */;/g;s/\(\([^;]*;\)\{8\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
+
+		if [[ $k -eq 0 ]] ; then
+			while [[ ${arr_obs[$i_obs]} == 'desel' ]] ; do
+				i_obs=$((i_obs + 1))
+			done
+		fi
+
+		# s/\(\([^;]*;\)\{10\}\)\(.*\)/\1/ selects first 10 csv columns
+		echo "$i;$i_obs;$line" | sed -n -e 's/.m.//g;s/  */;/g;s/\(\([^;]*;\)\{10\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
+
+		k=$((k+1))
+		if [[ $k -eq 3 ]] ; then
+			k=0
+			i_obs=$((i_obs + 1))
+		fi
+
 		i=$((i+1))
 	fi
 
