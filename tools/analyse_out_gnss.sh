@@ -132,11 +132,16 @@ while read -r line ; do
 	# Remove Windows carriage return
 	line="${line//$'\r'}"
 
+	if [[ -z "$line" ]] ; then
+		continue
+	fi
+
 	if [[ -z $start ]] ; then
 		if [[ "$line" =~ VEREFFENDE[[:space:]]COORDINATEN.* ]] ; then
 			if [[ -n $all || $out_suf == 'out2' ]] ; then
 				start='vereff_coors'
 				filtered="$move3_vereff_coors"
+				i=0
 			fi
 		fi
 
@@ -144,6 +149,7 @@ while read -r line ; do
 			if [[ -n $all || $out_suf == 'out2' ]] ; then
 				start='toets_coors'
 				filtered="$move3_toets_coors"
+				i=0
 			fi
 		fi
 
@@ -151,6 +157,7 @@ while read -r line ; do
 			if [[ -n $all ]] ; then
 				start='gnss_corrs'
 				filtered="$move3_gnss_corrs"
+				i=0
 			fi
 		fi
 
@@ -158,6 +165,7 @@ while read -r line ; do
 			if [[ -n $all ]] ; then
 				start='vereff_obs'
 				filtered="$move3_vereff_obs"
+				i=0
 			fi
 		fi
 
@@ -165,6 +173,7 @@ while read -r line ; do
 			if [[ -n $all || $out_suf == 'out1' ]] ; then
 				start='toets_obs'
 				filtered="$move3_toets_obs"
+				i=0
 			fi
 		fi
 
@@ -175,6 +184,7 @@ while read -r line ; do
 		# For out1
 		if [[ "$line" =~ EXTERNE[[:space:]]BETROUWBAARHEID.* ]] ; then
 			unset start
+
 			continue
 		fi
 
@@ -182,12 +192,15 @@ while read -r line ; do
 		if [[ "$line" =~ TOETSING[[:space:]]VAN[[:space:]]BEKENDE[[:space:]]COORDINATEN.* ]] ; then
 			start='toets_coors'
 			filtered="$move3_toets_coors"
+			i=0
 
 			continue
 		fi
 
 		if [[ "$line" =~ Station.* ]] ; then
-			echo "$line" | sed -n -e 's/Station/Station;Richting/;s/ (m)/(m)/g;s/  */;/g;s/;$//;p' >> "$filtered"
+			echo "Nr;$line" | sed -n -e 's/Station/Station;Richting/;s/ (m)/(m)/g;s/  */;/g;s/;$//;p' >> "$filtered"
+			i=$((i+1))
+
 			continue
 		fi
 
@@ -199,28 +212,34 @@ while read -r line ; do
 			station="${naam%}"
 		else
 			# so add it to Y and Z, unless line is empty (i.e. the one after the list)
-			if [[ -n "$line" ]] ; then
+#			if [[ -n "$line" ]] ; then
 				line="${station};${line}"
-			fi
+#		#	fi
 		fi
 
-		echo "$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/;$//;p' >> "$filtered"
+		echo "$i;$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/;$//;p' >> "$filtered"
+		i=$((i+1))
 	fi
 
 	if [[ $start == 'toets_coors' ]] ; then
 		if [[ "$line" =~ EXTERNE[[:space:]]BETROUWBAARHEID.* ]] ; then
 			unset start
+			i=0
+
 			continue
 		fi
 
 		if [[ "$line" =~ Station.* ]] ; then
-			echo "$line" | sed -n -e 's/Station/Station;Richting/;s/Gs fout.*//;s/ (m)/(m)/g;s/  */;/g;s/;$//;p' >> "$filtered"
+			echo "Nr;$line" | sed -n -e 's/Station/Station;Richting/;s/Gs fout.*//;s/ (m)/(m)/g;s/  */;/g;s/;$//;p' >> "$filtered"
+			i=$((i+1))
+
 			continue
 		fi
 
 
 		# s/\(\([^;]*;\)\{4\}\)\(.*\)/\1/ selects first 5 csv columns
-		echo "$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/\(\([^;]*;\)\{5\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
+		echo "$i;$line" | sed -n -e 's/X /X_/;s/Y /Y_/;s/  */;/g;s/\(\([^;]*;\)\{5\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
+		i=$((i+1))
 	fi
 
 	if [[ $start == 'gnss_corrs' ]] ; then
@@ -228,6 +247,7 @@ while read -r line ; do
 			if [[ -n $all || $out_suf == 'out1' ]] ; then
 				start='toets_obs'
 				filtered="$move3_toets_obs"
+				i=0
 			else
 				unset start
 			fi
@@ -236,11 +256,14 @@ while read -r line ; do
 		fi
 
 		if [[ "$line" =~ Station.* ]] ; then
-			echo 'Vector;'"$line" | sed -n -e 's/ vec/_vec/;s/ ppm/(ppm)/;s/  */;/g;s/;$//;p' >> "$filtered"
+			echo "Nr;Vector;$line" | sed -n -e 's/ vec/_vec/;s/ ppm/(ppm)/;s/  */;/g;s/;$//;p' >> "$filtered"
+			i=$((i+1))
+
 			continue
 		fi
 
-		echo "$line" | sed -n -e 's/.ppm//g;s/  */;/g;s/;$//;p' >> "$filtered"
+		echo "$i;$line" | sed -n -e 's/.ppm//g;s/  */;/g;s/;$//;p' >> "$filtered"
+		i=$((i+1))
 	fi
 
 
@@ -249,6 +272,7 @@ while read -r line ; do
 			if [[ -n $all ]] ; then
 				start='gnss_corrs'
 				filtered="$move3_gnss_corrs"
+				i=0
 			else
 				unset start
 			fi
@@ -257,21 +281,27 @@ while read -r line ; do
 		fi
 
 		if [[ "$line" =~ Station.* ]] ; then
-			echo 'Richting;'"$line" | sed -n -e 's/ wn/_wn/;s/Sa/Sa(m)/;s/  */;/g;s/;$//;p' >> "$filtered"
+			echo "Nr;Richting;$line" | sed -n -e 's/ wn/_wn/;s/Sa/Sa(m)/;s/  */;/g;s/;$//;p' >> "$filtered"
+			i=$((i+1))
+
 			continue
 		fi
 
-		echo "$line" | sed -n -e 's/.m.//g;s/  */;/g;s/;$//;p' >> "$filtered"
+		echo "$i;$line" | sed -n -e 's/.m.//g;s/  */;/g;s/;$//;p' >> "$filtered"
+		i=$((i+1))
 	fi
 
 	if [[ $start == 'toets_obs' ]] ; then
 		if [[ "$line" =~ Station.* ]] ; then
-			echo 'Richting;'"$line" | sed -n -e 's/Gs fout.*//;s/MDB/MDB(m)/;s/  */;/g;s/;$//;p' >> "$filtered"
+			echo "Nr;Richting;$line" | sed -n -e 's/Gs fout.*//;s/MDB/MDB(m)/;s/  */;/g;s/;$//;p' >> "$filtered"
+			i=$((i+1))
+
 			continue
 		fi
 
 		# s/\(\([^;]*;\)\{8\}\)\(.*\)/\1/ selects first 8 csv columns
-		echo "$line" | sed -n -e 's/.m.//g;s/  */;/g;s/\(\([^;]*;\)\{8\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
+		echo "$i;$line" | sed -n -e 's/.m.//g;s/  */;/g;s/\(\([^;]*;\)\{8\}\)\(.*\)/\1/;s/;$//;p' >> "$filtered"
+		i=$((i+1))
 	fi
 
 done < "${out_dir}/${out_file}"
