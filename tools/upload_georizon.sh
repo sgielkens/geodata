@@ -6,7 +6,7 @@ lbg_record_suf='ec'
 usage()
 {
    cat << EOF
-usage: ${0##*/} [-d] [-l] [-p trk_project] [-r ladybug_recordings] [-s] [-t] [-v] <connection>
+usage: ${0##*/} [-d] [-l] [-f] [-p trk_project] [-r ladybug_recordings] [-s] [-t] [-v] <connection>
 
 Use this script to upload the necessary files from the TRK project and Ladybug
 recordings to the online Geo-platform. It does this per job. As background tool
@@ -24,6 +24,7 @@ to deduce the directory or directories.
 
 The options are as follows:
    -d   show detailed debug information. This implies verbosity.
+   -f   upload Leica field log only
    -l   upload Ladybug recordings only
    -p   TRK project directory, i.e. the directory with suffix PegasusProject
         If left empty, it is constructed from the Ladybug record directory
@@ -34,7 +35,7 @@ The options are as follows:
         If left empty, it is constructed from the TRK project directory.
         If option -p is also unset, it checks if the current directory
         is a TRK project or Ladybug record.
-   -s   upload only scan TRK project
+   -s   upload only scans TRK project
    -t   upload trajectory only
    -v   be verbose
 EOF
@@ -49,6 +50,7 @@ geo_traj='Trajectory'
 
 unset debug
 unset connection
+unset field_log_only
 unset progress
 unset ladybug_only
 unset scan_only
@@ -56,9 +58,11 @@ unset traj_only
 unset traj_skip
 unset verbose
 
-while getopts ":p:dlr:stv" option ; do
+while getopts ":p:dflr:stv" option ; do
    case ${option} in
       "d") debug='yes'
+           ;;
+      "f") field_log_only='yes'
            ;;
       "l") ladybug_only='yes'
            ;;
@@ -81,6 +85,10 @@ shift $((OPTIND-1))
 
 if [[ $# -ne 1 ]] ; then
 	usage
+fi
+
+if [[ -n "$field_log_only" ]] ; then
+	traj_skip='yes'
 fi
 
 connection="$1"
@@ -231,6 +239,11 @@ if [[ -z "$ladybug_only" ]] ; then
 			echo "$0: uploading Leica Field log for job $job" >&2
 		fi
 		rclone copy --verbose $progress Logs --include 'LeicaField_*' "$connection:$geo_prefix/${job_name}/$geo_log"
+
+		if [[ -n $field_log_only ]] ; then
+			exit 0
+		fi
+
 
 		if [[ -n "$verbose" ]] ; then
 			echo "$0: uploading LiDAR data for job $job" >&2
