@@ -51,6 +51,7 @@ function run(...)
     end
 
     project_folder = args[1]
+    correlation_method = args[2] or "clock_drift"
 
     -- Horus signals
     local signal_ctx = horus.signals.Signals_context.new()
@@ -93,7 +94,7 @@ function run(...)
     
     horus.signals.peaks.compare(signal_ctx, "mark4", "ladybug")
     
-    correlate_signals(signal_ctx, "mark4", "ladybug", 0.03)
+    correlate_signals(signal_ctx, "mark4", "ladybug", 0.03, correlation_method)
 
     -- print(signal_ctx:info())
 
@@ -232,7 +233,7 @@ function add_ladybug_signals(project_folder, ctx)
 
     local lbg_index_files = horus.filesystem.find_files(project_folder, "ladybug*idx", true, false)
     table.sort(lbg_index_files)
-	local signals_context_processor = horus.signals.Signals_context_processor.new()
+    local signals_context_processor = horus.signals.Signals_context_processor.new()
 
     local lbg_signal = horus.signals.new_signal()
     lbg_signal.id = "ladybug"
@@ -314,7 +315,7 @@ end
 ----------- Adding stop start recording as track
 function add_track_signals(project_folder, ctx)
     local state_index_files = horus.filesystem.find_files(project_folder, "systemstate*idx", true, false)
-	table.sort(state_index_files)
+    table.sort(state_index_files)
     local track_start = horus.signals.new_vec_double()
     local track_stop = horus.signals.new_vec_double()
 
@@ -449,7 +450,7 @@ end
 
 ----------------------------------------------------------------------------------
 ----------- Correlates 2 signals assuming 
-function correlate_signals(ctx, lead_name, sig_name, epsilon)
+function correlate_signals(ctx, lead_name, sig_name, epsilon, method)
     print("\n******************************************************")
     print("correlate_signals", lead_name, sig_name)
 
@@ -464,7 +465,13 @@ function correlate_signals(ctx, lead_name, sig_name, epsilon)
     if (available(ctx, sig_name, "peaks", lead_name .. "_offset", "sig_offset")) then
         local lead_offset = horus.signals.get_view_value(sig:find(lead_name .. "_offset").signal:at(2))
         local sig_offset = horus.signals.get_view_value(sig:find("sig_offset").signal:at(2))
-        horus.signals.correlate.by_index_and_diff_drift(ctx, lead_name, lead_offset, sig_name, sig_offset, epsilon)
+        if (method == "clock_drift") then
+            horus.signals.correlate.by_index_and_diff_drift(ctx, lead_name, lead_offset, sig_name, sig_offset, epsilon)
+        elseif (method == "time_diff") then
+            horus.signals.correlate.by_index_and_diff(ctx, lead_name, lead_offset, sig_name, sig_offset, epsilon)
+        else
+            print("unnsupported correlate_signals method")
+        end
     end
 end
 
