@@ -5,11 +5,9 @@ usage()
    cat << EOF
 usage: ${0##*/} [-f] [-i input_file] [-s] [-v]
 
-Use this script to check if all Ladybug recordings have the necessary files.
-
-It reads from the input directory all subdirectories. These subdirectories
-are assumed to be the recording directories of the Ladybug. Directories not
-having the correct name pattern (YYYY_MM_DD_hh_mm_ss) are skipped.
+Use this script to check leveling measurements.
+It uses data from a Move3 project. To that end it is sufficient
+to import the GSI files into the project.
 
 The options are as follows:
    -f   force overwriting output file
