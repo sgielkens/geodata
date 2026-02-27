@@ -11,15 +11,15 @@ are actually the reports from the adjustment calculations in ASCII format.
 The information extracted is primarily of interest to check compliance with
 product specifications by RWS (Rijkswaterstaat). It generates several files:
 
-1. <Move3 project>_out2_vereff_coors.txt
+1. <Move3 project>_out1_toets_obs.txt
 2. <Move3 project>_out2_toets_coors.txt
-3. <Move3 project>_out1_toets_obs.txt
+3. <Move3 project>_out2_vereff_coors.txt
 
 
-Ad 1. Adjusted coordinates with standard deviation
-      from the pseudo least squares adjustment
+Ad 1. Among others, MDBs and BNRs from the free network adjustment
 Ad 2. Among others, MDBs and BNRs from the pseudo least squares adjustment
-Ad 3. Among others, MDBs and BNRs from the free network adjustment
+Ad 3. Adjusted coordinates with standard deviation
+      from the pseudo least squares adjustment
 
 The options are as follows:
    -a   output all filtered reports
