@@ -5,11 +5,8 @@ usage()
    cat << EOF
 usage: ${0##*/} [-f] [-i input_file] [-s] [-v]
 
-Use this script to check if all Ladybug recordings have the necessary files.
-
-It reads from the input directory all subdirectories. These subdirectories
-are assumed to be the recording directories of the Ladybug. Directories not
-having the correct name pattern (YYYY_MM_DD_hh_mm_ss) are skipped.
+This is an unfinished script for baselines. It is intended to be the equivalent
+of analyse_obs.sh that handles leveling adjustment results of Move3.
 
 The options are as follows:
    -f   force overwriting output file

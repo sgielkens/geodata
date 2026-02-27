@@ -5,11 +5,26 @@ usage()
    cat << EOF
 usage: ${0##*/} [-a] [-f] [-i input_file] [-v]
 
+Use this script to extract information from the Move3 out files. These files
+are actually the reports from the adjustment calculations in ASCII format.
+
+The information extracted is primarily of interest to check compliance with
+product specifications by RWS (Rijkswaterstaat). It generates several files:
+
+1. <Move3 project>_out2_vereff_coors.txt
+2. <Move3 project>_out2_toets_coors.txt
+3. <Move3 project>_out1_toets_obs.txt
+
+
+Ad 1. Adjusted coordinates with standard deviation
+      from the pseudo least squares adjustment
+Ad 2. Among others, MDBs and BNRs from the pseudo least squares adjustment
+Ad 3. Among others, MDBs and BNRs from the free network adjustment
 
 The options are as follows:
    -a   output all filtered reports
    -f   force overwriting output file
-   -i   input file. This should be the Move3 Obs file
+   -i   input file. This should be the Move3 out1 or out2 file.
    -v   be verbose
 EOF
 	exit 1
