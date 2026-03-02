@@ -5,15 +5,16 @@ usage()
    cat << EOF
 usage: ${0##*/} [-f frequency] [-m mapping_csv] [-v]
 
-This script removes from the so-called mapping csv file the entries in 
-free run mode. These are the signals at 7 HZ or above.
+This script removes from the so-called mapping csv file the entries in
+free run mode. These are the signals at 7 Hz or above. The original file
+will be saved with extension 'horus'
 
 Two extra files will be generated:
 - signal_freq_full, containing signal frequencies of the original mapping csv
 - signal_freq_fltered, containing signal frequencies of the filtered mapping csv
 
 The options are as follows:
-   -f   frequency above which free run mode is supposed, by default $freq_free HZ
+   -f   frequency above which free run mode is supposed, by default $freq_free Hz
    -m   mapping csv. By default $mapping_csv_name in current directory.
    -v   be verbose
 EOF
@@ -46,7 +47,7 @@ while getopts ":f:m:v" option ; do
    esac
 done
 
-if [[ $freq_free -le 0 ]] ; then
+if [[ $(echo "$freq_free < 0" | bc) -eq 1 ]] ; then
 	echo "$0: frequency should be > 0" >&2
 	exit 1
 fi
@@ -68,18 +69,19 @@ if [[ ! -f "$mapping_csv_file" ]] ; then
 	exit 1
 fi
 
-nr_lines=$(wc -l "$mapping_csv_file" | cut -f1 -d' ')
-# Disregard header line
-nr_lines=$(( nr_lines - 1 ))
-
 mapping_horus_file="$mapping_csv_file"."$horus_suf"
 
 if [[ -f "$mapping_horus_file" ]] ; then
-	echo "$0: mapping horus file $mapping_horus_file present. Possibly already cleaned, so exiting" >&2
-	exit 1
+	echo "$0: mapping horus file $mapping_horus_file already present." >&2
+	echo "$0: reusing $mapping_csv_file to output filtered results" >&2
+else
+	mv "$mapping_csv_file" "$mapping_horus_file"
 fi
 
-mv "$mapping_csv_file" "$mapping_horus_file"
+nr_lines=$(wc -l "$mapping_horus_file" | cut -f1 -d' ')
+# Disregard header line
+nr_lines=$(( nr_lines - 1 ))
+
 echo > "$mapping_csv_file"
 
 i=0
