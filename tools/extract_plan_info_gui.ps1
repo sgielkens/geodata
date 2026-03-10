@@ -7,7 +7,7 @@ $pdfToTextPath = ".\pdftotext.exe"
 # --- CREATE FORM ---
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "PDF Planfile Extractor"
-$form.Size = New-Object System.Drawing.Size(600,350)
+$form.Size = New-Object System.Drawing.Size(600,470)
 $form.StartPosition = "CenterScreen"
 
 # --- CREATION DATE LABEL + BUTTON ---
@@ -21,7 +21,6 @@ $datePicker = New-Object System.Windows.Forms.DateTimePicker
 $datePicker.Location = New-Object System.Drawing.Point(120,20)
 $datePicker.Format = "Short"
 $form.Controls.Add($datePicker)
-
 
 # --- PDF FOLDER LABEL + BUTTON ---
 $pdfLabel = New-Object System.Windows.Forms.Label
@@ -65,12 +64,22 @@ $statusBox.Multiline = $true
 $statusBox.ScrollBars = "Vertical"
 $statusBox.Location = New-Object System.Drawing.Point(20,140)
 $statusBox.Size = New-Object System.Drawing.Size(540,100)
+$statusBox.ReadOnly = $true
 $form.Controls.Add($statusBox)
+
+# --- LOG BOX ---
+$logBox = New-Object System.Windows.Forms.TextBox
+$logBox.Location = New-Object System.Drawing.Point(20,260)
+$logBox.Size = New-Object System.Drawing.Size(540,100)
+$logBox.Multiline = $true
+$logBox.ScrollBars = "Vertical"
+$logBox.ReadOnly = $true
+$form.Controls.Add($logBox)
 
 # --- PROCESS BUTTON ---
 $processButton = New-Object System.Windows.Forms.Button
 $processButton.Text = "Verwerk PDFs"
-$processButton.Location = New-Object System.Drawing.Point(230,260)
+$processButton.Location = New-Object System.Drawing.Point(230,380)
 $processButton.Size = New-Object System.Drawing.Size(120,30)
 $form.Controls.Add($processButton)
 
@@ -165,7 +174,9 @@ $processButton.Add_Click({
 		$aantal = $null
 
 		if (! (Test-Path $order_file) ) {
-			Write-Host "Geen orderbestand $order_file gevonden bij plan document $pdfFile"
+			$logBox.AppendText("Bij plandocument $($pdfFile.FullName):`r`n")
+			$logBox.AppendText("Geen orderbestand $order_file`r`n")
+			$logBox.AppendText("`r`n")
 		} else {
 			$lines = Get-Content $order_file
 
