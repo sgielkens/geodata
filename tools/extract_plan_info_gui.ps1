@@ -6,58 +6,71 @@ $pdfToTextPath = ".\pdftotext.exe"
 
 # --- CREATE FORM ---
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "PDF Coordinate Extractor"
-$form.Size = New-Object System.Drawing.Size(600,300)
+$form.Text = "PDF Planfile Extractor"
+$form.Size = New-Object System.Drawing.Size(600,350)
 $form.StartPosition = "CenterScreen"
+
+# --- CREATION DATE LABEL + BUTTON ---
+$cmodLabel = New-Object System.Windows.Forms.Label
+$cmodLabel.Text = "Aanmaakdatum:"
+$cmodLabel.Location = New-Object System.Drawing.Point(20,20)
+$cmodLabel.Size = New-Object System.Drawing.Size(100,20)
+$form.Controls.Add($cmodLabel)
+
+$datePicker = New-Object System.Windows.Forms.DateTimePicker
+$datePicker.Location = New-Object System.Drawing.Point(120,20)
+$datePicker.Format = "Short"
+$form.Controls.Add($datePicker)
+
 
 # --- PDF FOLDER LABEL + BUTTON ---
 $pdfLabel = New-Object System.Windows.Forms.Label
-$pdfLabel.Text = "PDF Folder:"
-$pdfLabel.Location = New-Object System.Drawing.Point(20,20)
+$pdfLabel.Text = "PDF map:"
+$pdfLabel.Location = New-Object System.Drawing.Point(20,60)
 $pdfLabel.Size = New-Object System.Drawing.Size(100,20)
 $form.Controls.Add($pdfLabel)
 
 $pdfTextBox = New-Object System.Windows.Forms.TextBox
 $pdfTextBox.Text = "C:\806 Kempkes\Splitsingen"
-$pdfTextBox.Location = New-Object System.Drawing.Point(120,20)
+$pdfTextBox.Location = New-Object System.Drawing.Point(120,60)
 $pdfTextBox.Size = New-Object System.Drawing.Size(350,20)
 $form.Controls.Add($pdfTextBox)
 
 $pdfButton = New-Object System.Windows.Forms.Button
 $pdfButton.Text = "Browse"
-$pdfButton.Location = New-Object System.Drawing.Point(480,18)
+$pdfButton.Location = New-Object System.Drawing.Point(480,58)
 $form.Controls.Add($pdfButton)
 
 # --- OUTPUT FOLDER LABEL + BUTTON ---
 $outputLabel = New-Object System.Windows.Forms.Label
-$outputLabel.Text = "Output Folder:"
-$outputLabel.Location = New-Object System.Drawing.Point(20,60)
+$outputLabel.Text = "Uitvoer map:"
+$outputLabel.Location = New-Object System.Drawing.Point(20,100)
 $outputLabel.Size = New-Object System.Drawing.Size(100,20)
 $form.Controls.Add($outputLabel)
 
 $outputTextBox = New-Object System.Windows.Forms.TextBox
 $outputTextBox.Text = "C:\806 Kempkes\Splitsingen"
-$outputTextBox.Location = New-Object System.Drawing.Point(120,60)
+$outputTextBox.Location = New-Object System.Drawing.Point(120,100)
 $outputTextBox.Size = New-Object System.Drawing.Size(350,20)
 $form.Controls.Add($outputTextBox)
 
 $outputButton = New-Object System.Windows.Forms.Button
 $outputButton.Text = "Browse"
-$outputButton.Location = New-Object System.Drawing.Point(480,58)
+$outputButton.Location = New-Object System.Drawing.Point(480,98)
 $form.Controls.Add($outputButton)
 
 # --- STATUS BOX ---
 $statusBox = New-Object System.Windows.Forms.TextBox
 $statusBox.Multiline = $true
 $statusBox.ScrollBars = "Vertical"
-$statusBox.Location = New-Object System.Drawing.Point(20,100)
+$statusBox.Location = New-Object System.Drawing.Point(20,140)
 $statusBox.Size = New-Object System.Drawing.Size(540,100)
 $form.Controls.Add($statusBox)
 
 # --- PROCESS BUTTON ---
 $processButton = New-Object System.Windows.Forms.Button
-$processButton.Text = "Process PDFs"
-$processButton.Location = New-Object System.Drawing.Point(230,220)
+$processButton.Text = "Verwerk PDFs"
+$processButton.Location = New-Object System.Drawing.Point(230,260)
 $processButton.Size = New-Object System.Drawing.Size(120,30)
 $form.Controls.Add($processButton)
 
@@ -93,20 +106,24 @@ $outputButton.Add_Click({
 # --- PROCESS LOGIC ---
 $processButton.Add_Click({
 
+	$cmodDate = $datePicker.Value.Date
+
     $rootDirectory = $pdfTextBox.Text
     $outputFolder = $outputTextBox.Text
 
     if (!(Test-Path $rootDirectory) -or !(Test-Path $outputFolder)) {
-        [System.Windows.Forms.MessageBox]::Show("Please select valid folders.")
+        [System.Windows.Forms.MessageBox]::Show("Selecteer een bestaande map.")
         return
     }
 
     $results = @()
-    $pdfFiles = Get-ChildItem -Path $rootDirectory -Recurse -Filter "*plan.pdf"
+    $pdfFiles = Get-ChildItem -Path $rootDirectory -Recurse -Filter "*plan.pdf" |
+#				Where-Object { $_.CreationTime -ge $cmodDate }
+				Where-Object { $_.LastWriteTime -ge $cmodDate }
 
     foreach ($pdfFile in $pdfFiles) {
 
-        $statusBox.AppendText("Processing $($pdfFile.Name)...`r`n")
+        $statusBox.AppendText("Verwerking van $($pdfFile.Name)...`r`n")
         $form.Refresh()
 
         $tempTxt = [System.IO.Path]::GetTempFileName()
@@ -158,7 +175,7 @@ $processButton.Add_Click({
     $results | Export-Csv -Path $csvPath -NoTypeInformation
 #    $results | Export-Excel -Path $excelPath -WorksheetName "Results" -AutoSize -BoldTopRow -FreezeTopRow
 
-    [System.Windows.Forms.MessageBox]::Show("Processing complete!")
+    [System.Windows.Forms.MessageBox]::Show("Verwerking afgerond!")
 })
 
 # --- RUN FORM ---
