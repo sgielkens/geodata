@@ -126,7 +126,7 @@ $processButton.Add_Click({
 		$order_number = $pdfFile.Basename -replace ' plan$',''
 		$order_file = Join-Path $pdfFile.DirectoryName "$order_number.txt"
 
-        $statusBox.AppendText("Verwerking van $($pdfFile.Name)...`r`n")
+		$statusBox.AppendText("Verwerking van $($pdfFile.Name)...`r`n")
         $form.Refresh()
 
 		$tempTxt = [System.IO.Path]::GetTempFileName()
@@ -164,15 +164,19 @@ $processButton.Add_Click({
 		# And for order text file
 		$aantal = $null
 
-		$lines = Get-Content $order_file
+		if (! (Test-Path $order_file) ) {
+			Write-Host "Geen orderbestand $order_file gevonden bij plan document $pdfFile"
+		} else {
+			$lines = Get-Content $order_file
 
-		for ($i = 0; $i -lt $lines.Count; $i++) {
-			if ($lines[$i] -match 'Aantal$') {
+			for ($i = 0; $i -lt $lines.Count; $i++) {
+				if ($lines[$i] -match 'Aantal$') {
 
-				$nextLine = $lines[$i + 1]
+					$nextLine = $lines[$i + 1]
 
-				if ($nextLine -match '(\d+)\s*$') {
-					$aantal = $Matches[1]
+					if ($nextLine -match '(\d+)\s*$') {
+						$aantal = $Matches[1]
+					}
 				}
 			}
 		}
@@ -184,7 +188,6 @@ $processButton.Add_Click({
 			"Kad. Gem."       = $KadGem
 			Aantal		      = $aantal
 		}
-
 	}
 
     Remove-Item $tempTxt -Force
