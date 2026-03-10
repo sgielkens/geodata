@@ -118,26 +118,29 @@ $processButton.Add_Click({
 
     $results = @()
     $pdfFiles = Get-ChildItem -Path $rootDirectory -Recurse -Filter "*plan.pdf" |
-#				Where-Object { $_.CreationTime -ge $cmodDate }
-				Where-Object { $_.LastWriteTime -ge $cmodDate }
+				Where-Object { $_.CreationTime -ge $cmodDate }
+#				Where-Object { $_.LastWriteTime -ge $cmodDate }
 
     foreach ($pdfFile in $pdfFiles) {
+
+		$order_number = $pdfFile.Basename -replace ' plan$',''
+		$order_file = Join-Path $pdfFile.DirectoryName "$order_number.txt"
 
         $statusBox.AppendText("Verwerking van $($pdfFile.Name)...`r`n")
         $form.Refresh()
 
-        $tempTxt = [System.IO.Path]::GetTempFileName()
+		$tempTxt = [System.IO.Path]::GetTempFileName()
 
         & $pdfToTextPath -table -f 2 -l 2 $pdfFile.FullName $tempTxt
 
-        $content = Get-Content $tempTxt -Raw
-
-        $xValue = $null
+        # Regex extraction for plan PDF
+		$xValue = $null
 	    $yValue = $null
 	    $OrderNr = $null
 	    $KadGem = $null
+
+		$content = Get-Content $tempTxt -Raw
 		
-        # Regex extraction	
 	    $regex_coor = "\s+(\d+\,\d+)"
 	    $regex_nr = "\s+(\d+)"
 	    $regex_gem = "\s+(\w+\d+)"
@@ -158,22 +161,38 @@ $processButton.Add_Click({
             $KadGem = $matches[1]
         }
 
-        $results += [PSCustomObject]@{
-#            FileName = $pdfFile.FullName
-		    Ordernummer       = $OrderNr
-            "X-Coordinaat"    = $xValue
-            "Y-Coordinaat"    = $yValue
-		    "Kad. Gem."       = $KadGem
-        }
+		# And for order text file
+		$aantal = $null
 
-        Remove-Item $tempTxt -Force
-    }
+		$lines = Get-Content $order_file
+
+		for ($i = 0; $i -lt $lines.Count; $i++) {
+			if ($lines[$i] -match 'Aantal$') {
+
+				$nextLine = $lines[$i + 1]
+
+				if ($nextLine -match '(\d+)\s*$') {
+					$aantal = $Matches[1]
+				}
+			}
+		}
+
+	    $results += [PSCustomObject]@{
+			Ordernummer       = $OrderNr
+			"X-Coordinaat"    = $xValue
+			"Y-Coordinaat"    = $yValue
+			"Kad. Gem."       = $KadGem
+			Aantal		      = $aantal
+		}
+
+	}
+
+    Remove-Item $tempTxt -Force
 
     $csvPath = Join-Path $outputFolder "results.csv"
     $excelPath = Join-Path $outputFolder "results.xlsx"
 
     $results | Export-Csv -Path $csvPath -NoTypeInformation
-#    $results | Export-Excel -Path $excelPath -WorksheetName "Results" -AutoSize -BoldTopRow -FreezeTopRow
 
     [System.Windows.Forms.MessageBox]::Show("Verwerking afgerond!")
 })
