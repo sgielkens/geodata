@@ -18,6 +18,7 @@ $pdfLabel.Size = New-Object System.Drawing.Size(100,20)
 $form.Controls.Add($pdfLabel)
 
 $pdfTextBox = New-Object System.Windows.Forms.TextBox
+$pdfTextBox.Text = "C:\806 Kempkes\Splitsingen"
 $pdfTextBox.Location = New-Object System.Drawing.Point(120,20)
 $pdfTextBox.Size = New-Object System.Drawing.Size(350,20)
 $form.Controls.Add($pdfTextBox)
@@ -35,6 +36,7 @@ $outputLabel.Size = New-Object System.Drawing.Size(100,20)
 $form.Controls.Add($outputLabel)
 
 $outputTextBox = New-Object System.Windows.Forms.TextBox
+$outputTextBox.Text = "C:\806 Kempkes\Splitsingen"
 $outputTextBox.Location = New-Object System.Drawing.Point(120,60)
 $outputTextBox.Size = New-Object System.Drawing.Size(350,20)
 $form.Controls.Add($outputTextBox)
@@ -63,12 +65,26 @@ $form.Controls.Add($processButton)
 $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
 
 $pdfButton.Add_Click({
+
+	if (! (Test-Path $pdfTextBox.Text) ) {
+		$pdfTextBox.Text = "C:\"
+	}
+
+	$folderBrowser.SelectedPath = $pdfTextBox.Text
+
     if ($folderBrowser.ShowDialog() -eq "OK") {
         $pdfTextBox.Text = $folderBrowser.SelectedPath
     }
 })
 
 $outputButton.Add_Click({
+
+	if (! (Test-Path $outputTextBox.Text) ) {
+		$outputTextBox.Text = "C:\"
+	}
+
+	$folderBrowser.SelectedPath = $outputTextBox.Text
+
     if ($folderBrowser.ShowDialog() -eq "OK") {
         $outputTextBox.Text = $folderBrowser.SelectedPath
     }
