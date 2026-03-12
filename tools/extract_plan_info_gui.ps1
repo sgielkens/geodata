@@ -7,7 +7,7 @@ $pdfToTextPath = ".\pdftotext.exe"
 # --- CREATE FORM ---
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "PDF Planfile Extractor"
-$form.Size = New-Object System.Drawing.Size(600,470)
+$form.Size = New-Object System.Drawing.Size(600,500)
 $form.StartPosition = "CenterScreen"
 
 # --- CREATION DATE LABEL + BUTTON ---
@@ -59,17 +59,29 @@ $outputButton.Location = New-Object System.Drawing.Point(480,98)
 $form.Controls.Add($outputButton)
 
 # --- STATUS BOX ---
+$statusLabel = New-Object System.Windows.Forms.Label
+$statusLabel.Text = "Status verwerking"
+$statusLabel.Location = New-Object System.Drawing.Point(250,140)
+$statusLabel.Size = New-Object System.Drawing.Size(100,20)
+$form.Controls.Add($statusLabel)
+
 $statusBox = New-Object System.Windows.Forms.TextBox
 $statusBox.Multiline = $true
 $statusBox.ScrollBars = "Vertical"
-$statusBox.Location = New-Object System.Drawing.Point(20,140)
+$statusBox.Location = New-Object System.Drawing.Point(20,160)
 $statusBox.Size = New-Object System.Drawing.Size(540,100)
 $statusBox.ReadOnly = $true
 $form.Controls.Add($statusBox)
 
 # --- LOG BOX ---
+$statusLabel = New-Object System.Windows.Forms.Label
+$statusLabel.Text = "Foutmeldingen"
+$statusLabel.Location = New-Object System.Drawing.Point(255,280)
+$statusLabel.Size = New-Object System.Drawing.Size(100,20)
+$form.Controls.Add($statusLabel)
+
 $logBox = New-Object System.Windows.Forms.TextBox
-$logBox.Location = New-Object System.Drawing.Point(20,260)
+$logBox.Location = New-Object System.Drawing.Point(20,300)
 $logBox.Size = New-Object System.Drawing.Size(540,100)
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
@@ -79,7 +91,7 @@ $form.Controls.Add($logBox)
 # --- PROCESS BUTTON ---
 $processButton = New-Object System.Windows.Forms.Button
 $processButton.Text = "Verwerk PDFs"
-$processButton.Location = New-Object System.Drawing.Point(230,380)
+$processButton.Location = New-Object System.Drawing.Point(230,420)
 $processButton.Size = New-Object System.Drawing.Size(120,30)
 $form.Controls.Add($processButton)
 
