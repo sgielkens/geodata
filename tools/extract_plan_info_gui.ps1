@@ -145,9 +145,29 @@ $processButton.Add_Click({
     }
 
     $results = @()
-    $pdfFiles = Get-ChildItem -Path $rootDirectory -Recurse -Filter "*plan.pdf" |
-				Where-Object { $_.CreationTime -ge $cmodDate }
-#				Where-Object { $_.LastWriteTime -ge $cmodDate }
+	$planFolders = @()
+	$pdfFiles = @()
+
+	$maandFolders = Get-ChildItem -Path $rootDirectory -Directory
+
+# -- Select second level subdirs
+	foreach ($maandFolder in $maandFolders) {
+		$planFolders += Get-ChildItem $maandFolder.FullName -directory
+	}
+
+	$filteredplanFolders = $planFolders | Where-Object {
+		$_.CreationTime -ge $cmodDate}
+#		$_.LastWriteTime -ge $cmodDate}
+
+	foreach ($planFolder in $filteredplanFolders) {
+		$pdfFiles += Get-ChildItem -Path $planFolder.FullName -Recurse -Filter "*plan.pdf"
+	}
+
+	if ($pdfFiles.Count -eq 0) {
+		$statusBox.AppendText("Geen PDF plandocumenten gevonden`r`n")
+		$form.Refresh()
+		return
+	}
 
 	$tempTxt = [System.IO.Path]::GetTempFileName()
 
