@@ -1,9 +1,6 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-# --- CONFIGURE PDFTOTEXT PATH ---
-$pdfToTextPath = ".\pdftotext.exe"
-
 # --- CREATE FORM ---
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "PDF Planfile Extractor"
@@ -98,6 +95,10 @@ $form.Controls.Add($processButton)
 # --- FOLDER BROWSER FUNCTION ---
 $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
 
+# --- CONFIGURE PDFTOTEXT PATH ---
+$pdfToTextPath = ".\tools\pdftotext.exe"
+
+
 $pdfButton.Add_Click({
 
 	if (! (Test-Path $pdfTextBox.Text) ) {
@@ -127,6 +128,12 @@ $outputButton.Add_Click({
 # --- PROCESS LOGIC ---
 $processButton.Add_Click({
 
+	if (! (Test-Path $pdfToTextPath) ) {
+		$logBox.AppendText("Tool $($PSScriptRoot + "\" + $pdfToTextPath) niet aanwezig`r`n")
+		$logBox.AppendText("`r`n")
+		return
+	}
+
 	$cmodDate = $datePicker.Value.Date
 
     $rootDirectory = $pdfTextBox.Text
@@ -142,15 +149,15 @@ $processButton.Add_Click({
 				Where-Object { $_.CreationTime -ge $cmodDate }
 #				Where-Object { $_.LastWriteTime -ge $cmodDate }
 
+	$tempTxt = [System.IO.Path]::GetTempFileName()
+
     foreach ($pdfFile in $pdfFiles) {
 
 		$order_number = $pdfFile.Basename -replace ' plan$',''
 		$order_file = Join-Path $pdfFile.DirectoryName "$order_number.txt"
 
-		$statusBox.AppendText("Verwerking van $($pdfFile.Name)...`r`n")
+		$statusBox.AppendText("Verwerking van $($pdfFile.Name)`r`n")
         $form.Refresh()
-
-		$tempTxt = [System.IO.Path]::GetTempFileName()
 
         & $pdfToTextPath -table -f 2 -l 2 $pdfFile.FullName $tempTxt
 
@@ -213,7 +220,7 @@ $processButton.Add_Click({
 		}
 	}
 
-    Remove-Item $tempTxt -Force
+	Remove-Item $tempTxt -Force
 
     $csvPath = Join-Path $outputFolder "results.csv"
     $excelPath = Join-Path $outputFolder "results.xlsx"
