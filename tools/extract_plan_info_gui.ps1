@@ -240,12 +240,31 @@ $processButton.Add_Click({
 		}
 	}
 
-	Remove-Item $tempTxt -Force
-
-    $csvPath = Join-Path $outputFolder "results.csv"
+	$csvPath = Join-Path $outputFolder "results.csv"
     $excelPath = Join-Path $outputFolder "results.xlsx"
 
-    $results | Export-Csv -Path $csvPath -NoTypeInformation
+	$tempCsvIn = [System.IO.Path]::GetTempFileName()
+	$tempCsvOut = [System.IO.Path]::GetTempFileName()
+
+    $results | Export-Csv -Path $tempCsvIn -NoTypeInformation -Delimiter ','
+
+	# Remove double quotes and replace decimal comma by decimal point
+	$regex_decimal = "^\d+\,\d+$"
+
+	Import-Csv $tempCsvIn -Delimiter ',' | ForEach-Object {
+		foreach ($prop in $_.PSObject.Properties) {
+			if ($prop.Value -match "$regex_decimal") {
+				$prop.Value = $prop.Value -replace ',', '.'
+			}
+		}
+		$_
+	} | Export-Csv $tempCsvOut -Delimiter ',' -NoTypeInformation
+
+	(Get-Content $tempCsvOut) -replace '"' | Set-Content "$csvPath"
+
+	Remove-Item $tempTxt -Force
+	Remove-Item $tempCsvIn -Force
+	Remove-Item $tempCsvOut -Force
 
     [System.Windows.Forms.MessageBox]::Show("Verwerking afgerond!")
 })
