@@ -95,9 +95,19 @@ $form.Controls.Add($processButton)
 # --- FOLDER BROWSER FUNCTION ---
 $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
 
-# --- CONFIGURE PDFTOTEXT PATH ---
-$pdfToTextPath = ".\tools\pdftotext.exe"
 
+# --- CONFIGURE PATHS ---
+$cur_dir = Get-Location
+
+$pdfToTextPath = "$cur_dir\tools\pdftotext.exe"
+$pdfImagesPath = "$cur_dir\tools\pdfimages.exe"
+$magickPath = "$cur_dir\tools\magick.exe"
+
+$tempPath = [System.IO.Path]::GetTempPath()
+$tempDir  = [System.IO.Path]::Combine($tempPath, [System.IO.Path]::GetRandomFileName())
+New-Item -ItemType Directory -Path $tempDir | Out-Null
+
+$tempTxt = [System.IO.Path]::GetTempFileName()
 
 $pdfButton.Add_Click({
 
@@ -169,8 +179,6 @@ $processButton.Add_Click({
 		return
 	}
 
-	$tempTxt = [System.IO.Path]::GetTempFileName()
-
     foreach ($pdfFile in $pdfFiles) {
 
 		$order_number = $pdfFile.Basename -replace ' plan$',''
@@ -179,6 +187,7 @@ $processButton.Add_Click({
 		$statusBox.AppendText("Verwerking van $($pdfFile.Name)`r`n")
         $form.Refresh()
 
+# --- PROCESS TEXT PART ---
         & $pdfToTextPath -table -f 2 -l 2 $pdfFile.FullName $tempTxt
 
         # Regex extraction for plan PDF
@@ -238,8 +247,36 @@ $processButton.Add_Click({
 			"Kad. Gem."       = $KadGem
 			Aantal		      = $aantal
 		}
+
+# --- PROCESS IMAGE PART ---
+		# pdfimages needs this
+		cd $tempDir
+		& $pdfImagesPath $pdfFile.FullName $OrderNr
+
+		$PNMs = @()
+		$PNMs = Get-ChildItem -File | Where-Object { $_.Length -gt 1MB }
+
+		foreach ( $PNM in $PNMs ) {
+			$JPG = $PNM -replace 'p..$','jpg'
+			& $magickPath $PNM $JPG
+		}
+
+		$orderDir = New-Item -ItemType Directory -Path $OrderNr
+
+		$JPGs = @()
+		$JPGs = Get-Childitem -Filter *.jpg
+
+		foreach ( $JPG in $JPGs ) {
+			Move-Item $JPG $orderDir
+		}
+
+		# Remove remaining PNM files
+		Get-ChildItem -File | Remove-Item
+
+		cd $cur_dir
 	}
 
+# --- POST PROCESS TEXT PART ---
 	$csvPath = Join-Path $outputFolder "results.csv"
     $excelPath = Join-Path $outputFolder "results.xlsx"
 
@@ -265,6 +302,14 @@ $processButton.Add_Click({
 	Remove-Item $tempTxt -Force
 	Remove-Item $tempCsvIn -Force
 	Remove-Item $tempCsvOut -Force
+
+# --- POST PROCESS IMAGE PART ---
+
+	$zipName = "$cmodDate.zip"
+	$zipFile = $zipName -replace '[\\/:*?"<>|]', '_'
+	Compress-Archive -Path $tempDir\* -DestinationPath "$zipFile"
+
+	Remove-Item $tempDir -Force -Recurse
 
     [System.Windows.Forms.MessageBox]::Show("Verwerking afgerond!")
 })
