@@ -278,7 +278,6 @@ $processButton.Add_Click({
 
 # --- POST PROCESS TEXT PART ---
 	$csvPath = Join-Path $outputFolder "results.csv"
-    $excelPath = Join-Path $outputFolder "results.xlsx"
 
 	$tempCsvIn = [System.IO.Path]::GetTempFileName()
 	$tempCsvOut = [System.IO.Path]::GetTempFileName()
@@ -305,9 +304,9 @@ $processButton.Add_Click({
 
 # --- POST PROCESS IMAGE PART ---
 
-	$zipName = "$cmodDate.zip"
-	$zipFile = $zipName -replace '[\\/:*?"<>|]', '_'
-	Compress-Archive -Path $tempDir\* -DestinationPath "$zipFile"
+	$zipDate=$datePicker.Value.ToString("yyyy-MM-dd")
+	$zipName = "$zipDate.zip"
+	Compress-Archive -Path $tempDir\* -DestinationPath "$zipName"
 
 	Remove-Item $tempDir -Force -Recurse
 
