@@ -276,37 +276,39 @@ $processButton.Add_Click({
 		cd $cur_dir
 	}
 
+	$procesDate=$datePicker.Value.ToString("yyyy-MM-dd")
+
 # --- POST PROCESS TEXT PART ---
-	$csvPath = Join-Path $outputFolder "results.csv"
+	$csvPath = Join-Path $outputFolder "$procesDate-info.csv"
 
 	$tempCsvIn = [System.IO.Path]::GetTempFileName()
 	$tempCsvOut = [System.IO.Path]::GetTempFileName()
 
-    $results | Export-Csv -Path $tempCsvIn -NoTypeInformation -Delimiter ','
+    $results | Export-Csv -Path $tempCsvIn -NoTypeInformation -Delimiter ';'
 
 	# Remove double quotes and replace decimal comma by decimal point
 	$regex_decimal = "^\d+\,\d+$"
 
-	Import-Csv $tempCsvIn -Delimiter ',' | ForEach-Object {
+	Import-Csv $tempCsvIn -Delimiter ';' | ForEach-Object {
 		foreach ($prop in $_.PSObject.Properties) {
 			if ($prop.Value -match "$regex_decimal") {
 				$prop.Value = $prop.Value -replace ',', '.'
 			}
 		}
 		$_
-	} | Export-Csv $tempCsvOut -Delimiter ',' -NoTypeInformation
+	} | Export-Csv $tempCsvOut -Delimiter ';' -NoTypeInformation
 
-	(Get-Content $tempCsvOut) -replace '"' | Set-Content "$csvPath"
+	#(Get-Content $tempCsvOut) -replace 'Aantal;','Aantal;Uren;Set' | Set-Content "$csvPath"
+	(Get-Content $tempCsvOut) -replace '"','' -replace 'Aantal','Aantal;Uren;Set' | Set-Content "$csvPath"
 
 	Remove-Item $tempTxt -Force
 	Remove-Item $tempCsvIn -Force
 	Remove-Item $tempCsvOut -Force
 
 # --- POST PROCESS IMAGE PART ---
+	$zipName = "$procesDate-plaatjes.zip"
 
-	$zipDate=$datePicker.Value.ToString("yyyy-MM-dd")
-	$zipName = "$zipDate.zip"
-	Compress-Archive -Path $tempDir\* -DestinationPath "$zipName"
+	Compress-Archive -Path $tempDir\* -Force -DestinationPath "$zipName"
 
 	Remove-Item $tempDir -Force -Recurse
 
