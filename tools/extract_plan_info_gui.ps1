@@ -103,12 +103,6 @@ $pdfToTextPath = "$cur_dir\tools\pdftotext.exe"
 $pdfImagesPath = "$cur_dir\tools\pdfimages.exe"
 $magickPath = "$cur_dir\tools\magick.exe"
 
-$tempPath = [System.IO.Path]::GetTempPath()
-$tempDir  = [System.IO.Path]::Combine($tempPath, [System.IO.Path]::GetRandomFileName())
-New-Item -ItemType Directory -Path $tempDir | Out-Null
-
-$tempTxt = [System.IO.Path]::GetTempFileName()
-
 $pdfButton.Add_Click({
 
 	if (! (Test-Path $pdfTextBox.Text) ) {
@@ -138,6 +132,12 @@ $outputButton.Add_Click({
 # --- PROCESS LOGIC ---
 $processButton.Add_Click({
 
+	$tempPath = [System.IO.Path]::GetTempPath()
+	$tempDir  = [System.IO.Path]::Combine($tempPath, [System.IO.Path]::GetRandomFileName())
+	New-Item -ItemType Directory -Path $tempDir | Out-Null
+
+	$tempTxt = [System.IO.Path]::GetTempFileName()
+
 	if (! (Test-Path $pdfToTextPath) ) {
 		$logBox.AppendText("Tool $($PSScriptRoot + "\" + $pdfToTextPath) niet aanwezig`r`n")
 		$logBox.AppendText("`r`n")
@@ -162,7 +162,7 @@ $processButton.Add_Click({
 
 # -- Select second level subdirs
 	foreach ($maandFolder in $maandFolders) {
-		$planFolders += Get-ChildItem $maandFolder.FullName -directory
+		$planFolders += Get-ChildItem $maandFolder.FullName -Directory
 	}
 
 	$filteredplanFolders = $planFolders | Where-Object {
@@ -298,18 +298,18 @@ $processButton.Add_Click({
 		$_
 	} | Export-Csv $tempCsvOut -Delimiter ';' -NoTypeInformation
 
-	#(Get-Content $tempCsvOut) -replace 'Aantal;','Aantal;Uren;Set' | Set-Content "$csvPath"
 	(Get-Content $tempCsvOut) -replace '"','' -replace 'Aantal','Aantal;Uren;Set' | Set-Content "$csvPath"
 
-	Remove-Item $tempTxt -Force
 	Remove-Item $tempCsvIn -Force
 	Remove-Item $tempCsvOut -Force
+
 
 # --- POST PROCESS IMAGE PART ---
 	$zipName = "$procesDate-plaatjes.zip"
 
 	Compress-Archive -Path $tempDir\* -Force -DestinationPath "$zipName"
 
+	Remove-Item $tempTxt -Force
 	Remove-Item $tempDir -Force -Recurse
 
     [System.Windows.Forms.MessageBox]::Show("Verwerking afgerond!")
