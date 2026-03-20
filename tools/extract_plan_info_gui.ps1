@@ -45,7 +45,7 @@ $outputLabel.Size = New-Object System.Drawing.Size(100,20)
 $form.Controls.Add($outputLabel)
 
 $outputTextBox = New-Object System.Windows.Forms.TextBox
-$outputTextBox.Text = "C:\806 Kempkes\Splitsingen"
+$outputTextBox.Text = "C:\806 Kempkes"
 $outputTextBox.Location = New-Object System.Drawing.Point(120,100)
 $outputTextBox.Size = New-Object System.Drawing.Size(350,20)
 $form.Controls.Add($outputTextBox)
@@ -305,9 +305,14 @@ $processButton.Add_Click({
 
 
 # --- POST PROCESS IMAGE PART ---
-	$zipName = "$procesDate-plaatjes.zip"
+	$zipName = Join-Path $outputFolder "$procesDate-plaatjes.zip"
 
-	Compress-Archive -Path $tempDir\* -Force -DestinationPath "$zipName"
+	# suppress progress stream temporarily. PS 5.1 hack
+	& {
+		function global:Write-Progress { }
+		Compress-Archive -Path $tempDir\* -Force -DestinationPath "$zipName"
+		Remove-Item function:\Write-Progress
+	}
 
 	Remove-Item $tempTxt -Force
 	Remove-Item $tempDir -Force -Recurse
