@@ -188,7 +188,12 @@ $processButton.Add_Click({
         $form.Refresh()
 
 # --- PROCESS TEXT PART ---
-        & $pdfToTextPath -table -f 2 -l 2 $pdfFile.FullName $tempTxt
+        & $pdfToTextPath -table -f 2 -l 2 $pdfFile.FullName $tempTxt 2>$null
+
+		if ( $LASTEXITCODE -ne 0 ) {
+				$logBox.AppendText("Fout in conversie naar tekst van plandocument $pdfFile`r`n")
+				$logBox.AppendText("`r`n")
+		}
 
         # Regex extraction for plan PDF
 		$xValue = $null
@@ -251,14 +256,24 @@ $processButton.Add_Click({
 # --- PROCESS IMAGE PART ---
 		# pdfimages needs this
 		cd $tempDir
-		& $pdfImagesPath $pdfFile.FullName $OrderNr
+		& $pdfImagesPath $pdfFile.FullName $OrderNr 2>$null
+
+		if ( $LASTEXITCODE -ne 0 ) {
+				$logBox.AppendText("Fout in extractie van plaatjes uit plandocument $pdfFile`r`n")
+				$logBox.AppendText("`r`n")
+		}
 
 		$PNMs = @()
 		$PNMs = Get-ChildItem -File | Where-Object { $_.Length -gt 1MB }
 
 		foreach ( $PNM in $PNMs ) {
-			$JPG = $PNM -replace 'p..$','jpg'
-			& $magickPath $PNM $JPG
+			$JPG = $PNM -replace 'p..$','jpgz'
+			& $magickPath $PNM $JPG 2>$null
+
+			if ( $LASTEXITCODE -ne 0 ) {
+				$logBox.AppendText("Fout in conversion van plaatje $PNM naar JPG in plandocument $pdfFile`r`n")
+				$logBox.AppendText("`r`n")
+			}
 		}
 
 		$orderDir = New-Item -ItemType Directory -Path $OrderNr
