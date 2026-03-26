@@ -138,6 +138,8 @@ $processButton.Add_Click({
 
 	$tempTxt = [System.IO.Path]::GetTempFileName()
 
+	$stderrFile = [System.IO.Path]::GetTempFileName()
+
 	if (! (Test-Path $pdfToTextPath) ) {
 		$logBox.AppendText("Tool $($PSScriptRoot + "\" + $pdfToTextPath) niet aanwezig`r`n")
 		$logBox.AppendText("`r`n")
@@ -188,9 +190,11 @@ $processButton.Add_Click({
         $form.Refresh()
 
 # --- PROCESS TEXT PART ---
-        & $pdfToTextPath -table -f 2 -l 2 $pdfFile.FullName $tempTxt 2>$null
+		Clear-Content $stderrFile
+        & $pdfToTextPath -table -f 2 -l 2 $pdfFile.FullName $tempTxt 2>$stderrFile
+		$errors = Get-Content $stderrFile
 
-		if ( $LASTEXITCODE -ne 0 ) {
+		if ( ($LASTEXITCODE -ne 0) -or ($errors) ) {
 				$logBox.AppendText("Fout in conversie naar tekst van plandocument $pdfFile`r`n")
 				$logBox.AppendText("`r`n")
 		}
@@ -256,22 +260,30 @@ $processButton.Add_Click({
 # --- PROCESS IMAGE PART ---
 		# pdfimages needs this
 		cd $tempDir
-		& $pdfImagesPath $pdfFile.FullName $OrderNr 2>$null
 
-		if ( $LASTEXITCODE -ne 0 ) {
-				$logBox.AppendText("Fout in extractie van plaatjes uit plandocument $pdfFile`r`n")
-				$logBox.AppendText("`r`n")
+		Clear-Content $stderrFile
+		& $pdfImagesPath $pdfFile.FullName $OrderNr 2>$stderrFile
+		$errors = Get-Content $stderrFile
+
+		if ( ($LASTEXITCODE -ne 0) -or ($errors) ) {
+			$logBox.AppendText("Fout in extractie van plaatjes uit plandocument $pdfFile`r`n")
+			$logBox.AppendText("`r`n")
 		}
 
 		$PNMs = @()
 		$PNMs = Get-ChildItem -File | Where-Object { $_.Length -gt 1MB }
 
 		foreach ( $PNM in $PNMs ) {
-			$JPG = $PNM -replace 'p..$','jpgz'
-			& $magickPath $PNM $JPG 2>$null
+			$JPG = $PNM -replace 'p..$','jpg'
 
-			if ( $LASTEXITCODE -ne 0 ) {
+			Clear-Content $stderrFile
+			& $magickPath $PNM $JPG 2>$stderrFile
+			$errors = Get-Content $stderrFile
+
+			if ( ($LASTEXITCODE -ne 0) -or ($errors) ) {
+				write-host $magickPath $PNM $JPG
 				$logBox.AppendText("Fout in conversion van plaatje $PNM naar JPG in plandocument $pdfFile`r`n")
+				$logBox.AppendText("$erros`r`n")
 				$logBox.AppendText("`r`n")
 			}
 		}
@@ -331,6 +343,8 @@ $processButton.Add_Click({
 
 	Remove-Item $tempTxt -Force
 	Remove-Item $tempDir -Force -Recurse
+
+	Remove-Item $stderrFile -Force
 
     [System.Windows.Forms.MessageBox]::Show("Verwerking afgerond!")
 })
